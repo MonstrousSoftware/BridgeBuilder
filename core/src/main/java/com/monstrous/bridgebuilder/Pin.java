@@ -3,6 +3,7 @@ package com.monstrous.bridgebuilder;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 public class Pin {
     private static Texture pinTexture;
@@ -14,6 +15,7 @@ public class Pin {
     public final Sprite sprite;
     public final float W;
     public final float H;
+    public Body body;
 
 
     public Pin(float x, float y) {

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -14,6 +15,9 @@ public class GameScreen extends ScreenAdapter {
 
     public Array<Pin> pins;
     public Array<Beam> beams;
+
+    public Physics physics;
+    private OrthographicCamera camera;
 
 
     private SpriteBatch spriteBatch;
@@ -25,6 +29,11 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void show() {
         spriteBatch = new SpriteBatch();
+        physics = new Physics();
+
+        // for debug renderer
+        camera = new OrthographicCamera(Gdx.graphics.getWidth()*4, Gdx.graphics.getHeight()*4);
+
 
         pins = new Array<>();
         beams = new Array<>();
@@ -53,9 +62,10 @@ public class GameScreen extends ScreenAdapter {
                     currentPin.setPosition(x2, y2);
                     pins.add(currentPin);
                     currentBeam.setEndPin(currentPin);
+                    physics.addBeam(currentBeam);
                     currentBeam = new Beam(x2, y2, x2, y2);
                     currentBeam.setStartPin(currentPin);
-                    currentPin = new Pin(x2, y2);
+                    currentPin = createPin(x2, y2);
                     beams.add(currentBeam);
                 }
                 return false;
@@ -83,13 +93,13 @@ public class GameScreen extends ScreenAdapter {
                     sy = overPin.position.y;
                     startPin = overPin;
                 } else {
-                    startPin = new Pin(sx, sy);
+                    startPin = createPin(sx, sy);
                     pins.add(startPin);
                 }
                 currentBeam = new Beam(sx, sy, ex, ey);
                 currentBeam.setStartPin(startPin);
                 beams.add(currentBeam);
-                currentPin = new Pin(ex, ey);
+                currentPin = createPin(ex, ey);
 
                 return false;
             }
@@ -111,6 +121,7 @@ public class GameScreen extends ScreenAdapter {
                         pins.add(currentPin);
                         currentBeam.setEndPin(currentPin);
                     }
+                    physics.addBeam(currentBeam);
                 }
                 currentPin = null;
                 currentBeam = null;
@@ -140,6 +151,21 @@ public class GameScreen extends ScreenAdapter {
 
     private final Array<Beam> beamsToDelete = new Array<>();
 
+
+    private Pin createPin(float x, float y){
+        return createPin(x,y, false);
+    }
+
+    private Pin createPin(float x, float y, boolean anchor){
+        Pin pin = new Pin(x,y, anchor);
+        if(anchor)
+            pin.body = physics.addAnchor(pin);
+        else
+            pin.body = physics.addPin(pin);
+        return pin;
+    }
+
+
     private void deletePin( Pin pinToDelete ){
         if(pinToDelete.isAnchor)    // cannot delete anchors
             return;
@@ -158,6 +184,9 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
 
+        physics.update(delta);
+        physics.updatePinPositions();
+
         ScreenUtils.clear(Color.TEAL);
 
         spriteBatch.begin();
@@ -169,6 +198,8 @@ public class GameScreen extends ScreenAdapter {
         }
 
         spriteBatch.end();
+
+        physics.debugRender(camera);
     }
 
     @Override
@@ -181,10 +212,10 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void populate(){
-        Pin anchor1 = new Pin(100, 300, true);
+        Pin anchor1 = createPin(100, 300, true);
         pins.add(anchor1);
 
-        Pin anchor2 = new Pin(650, 400, true);
+        Pin anchor2 = createPin(650, 400, true);
         pins.add(anchor2);
 
     }
