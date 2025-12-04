@@ -7,8 +7,8 @@ import com.badlogic.gdx.math.Vector2;
 public class Pin {
     private static Texture pinTexture;
 
-    public Vector2 position;
-    public Sprite sprite;
+    public final Vector2 position;
+    public final Sprite sprite;
 
     public Pin(float x, float y) {
         this.position = new Vector2(x,y);
@@ -19,5 +19,10 @@ public class Pin {
         sprite.setOriginCenter();
         sprite.setOriginBasedPosition(x,y);
         sprite.setSize(pinTexture.getWidth(), pinTexture.getHeight());
+    }
+
+    public void setPosition(float x, float y){
+        position.set(x,y);
+        sprite.setOriginBasedPosition(x,y);
     }
 }

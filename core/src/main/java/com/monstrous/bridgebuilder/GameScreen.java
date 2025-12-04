@@ -1,11 +1,13 @@
 package com.monstrous.bridgebuilder;
 
-import com.badlogic.gdx.Screen;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -17,6 +19,8 @@ public class GameScreen extends ScreenAdapter {
 
 
     private SpriteBatch spriteBatch;
+    private Pin currentPin;
+
 
     @Override
     public void show() {
@@ -27,6 +31,29 @@ public class GameScreen extends ScreenAdapter {
         pins = new Array<>();
         beams = new Array<>();
         populate();
+        InputAdapter inputProcessor = new InputAdapter() {
+
+            public boolean touchDragged(int x, int y, int pointer) {
+                currentPin.setPosition(x, Gdx.graphics.getHeight() - y);
+                return false;
+            }
+
+            public boolean touchDown(int x, int y, int pointer, int newParam) {
+                if(currentPin != null)
+                    return false;
+                currentPin = new Pin(x, Gdx.graphics.getHeight() - y);
+                pins.add(currentPin);
+                return false;
+            }
+
+            public boolean touchUp(int x, int y, int pointer, int newParam) {
+                currentPin = null;
+                return false;
+            }
+
+        };
+        Gdx.input.setInputProcessor(inputProcessor);
+
     }
 
     @Override
@@ -43,7 +70,8 @@ public class GameScreen extends ScreenAdapter {
         for(Pin pin : pins){
             pin.sprite.draw(spriteBatch);
         }
-
+//        if(currentPin != null)
+//            currentPin.sprite.draw(spriteBatch);
         spriteBatch.end();
     }
 

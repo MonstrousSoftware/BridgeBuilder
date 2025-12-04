@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 public class Beam {
-    public Vector2 position1;
-    public Vector2 position2;
-    public Sprite sprite;
     public static Texture beamTexture;
 
+    public final Vector2 position1;
+    public final Vector2 position2;
+    public final Sprite sprite;
 
 
     public Beam(float x, float y, float x2, float y2) {
@@ -35,7 +35,5 @@ public class Beam {
 
         float len = (float)Math.sqrt(dx*dx+dy*dy);
         sprite.setSize(len+W, H);
-
-
     }
 }
