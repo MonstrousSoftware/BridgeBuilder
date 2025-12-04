@@ -46,6 +46,18 @@ public class Beam {
         sprite.setSize(length, H);
     }
 
+    /** adjust position2 so that length does not exceed MAX_LENGTH */
+    public void truncateLength(){
+        if(length <= MAX_LENGTH)
+            return;
+        float fraction = MAX_LENGTH/length;
+        float dx = position2.x - position1.x;
+        float dy = position2.y - position1.y;
+        position2.x = position1.x + fraction * dx;
+        position2.y = position1.y + fraction * dy;
+        adaptShape();
+    }
+
 
     public void setEndPosition(float x, float y){
         position2.set(x,y);

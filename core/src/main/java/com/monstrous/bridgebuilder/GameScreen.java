@@ -1,6 +1,5 @@
 package com.monstrous.bridgebuilder;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -8,7 +7,6 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 
@@ -19,9 +17,9 @@ public class GameScreen extends ScreenAdapter {
 
 
     private SpriteBatch spriteBatch;
-    private Pin currentPin;             // is not in pins
+    private Pin currentPin;             // is not in pins, non-null during dragging
     private Beam currentBeam;           // is in beams
-    private Pin overPin;
+    private Pin overPin;                // highlighted pin, or null
 
 
     @Override
@@ -48,11 +46,16 @@ public class GameScreen extends ScreenAdapter {
                 currentBeam.setEndPosition(x, sy);
                 // if the beam gets too long, place a pin and create a new beam
                 if(currentBeam.length > Beam.MAX_LENGTH){
+                    // we might have overshot the max, so truncate the beam length and get adjusted end position
+                    currentBeam.truncateLength();
+                    float x2 = currentBeam.position2.x;
+                    float y2 = currentBeam.position2.y;
+                    currentPin.setPosition(x2, y2);
                     pins.add(currentPin);
                     currentBeam.setEndPin(currentPin);
-                    currentBeam = new Beam(x, sy, x, sy);
+                    currentBeam = new Beam(x2, y2, x2, y2);
                     currentBeam.setStartPin(currentPin);
-                    currentPin = new Pin(x, sy);
+                    currentPin = new Pin(x2, y2);
                     beams.add(currentBeam);
                 }
                 return false;
