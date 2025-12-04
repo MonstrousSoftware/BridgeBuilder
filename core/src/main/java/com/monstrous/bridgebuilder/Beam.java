@@ -5,11 +5,18 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 public class Beam {
+    public static float MAX_LENGTH = 150;
+
     public static Texture beamTexture;
 
     public final Vector2 position1;
     public final Vector2 position2;
     public final Sprite sprite;
+    public final float W;
+    public final float H;
+    public float length;
+    public Pin startPin;
+    public Pin endPin;
 
 
     public Beam(float x, float y, float x2, float y2) {
@@ -20,12 +27,14 @@ public class Beam {
             beamTexture = new Texture("textures/beam.png");
 
         sprite = new Sprite(beamTexture);
-        float W = beamTexture.getWidth();
-        float H = beamTexture.getHeight();
-
-
+        W = beamTexture.getWidth();
+        H = beamTexture.getHeight();
+        sprite.setOrigin(0, H/2f);
         sprite.setOriginBasedPosition(position1.x, position1.y);
+        adaptShape();
+    }
 
+    private void adaptShape(){
         float dx = position2.x - position1.x;
         float dy = position2.y - position1.y;
         float angle = (float)Math.atan2(dy, dx);
@@ -33,7 +42,27 @@ public class Beam {
 
         sprite.setRotation(angleDegrees);
 
-        float len = (float)Math.sqrt(dx*dx+dy*dy);
-        sprite.setSize(len+W, H);
+        length = (float)Math.sqrt(dx*dx+dy*dy);
+        sprite.setSize(length, H);
     }
+
+
+    public void setEndPosition(float x, float y){
+        position2.set(x,y);
+        adaptShape();
+    }
+
+    public void setStartPin(Pin pin){
+        startPin = pin;
+    }
+
+    public void setEndPin(Pin pin){
+        endPin = pin;
+    }
+
+    public boolean attachedToPin(Pin pin){
+        return (pin == startPin || pin == endPin);
+    }
+
+
 }

@@ -40,6 +40,7 @@ public class Lwjgl3Launcher {
         //// are not intended for games that use GL30 (which is compatibility with OpenGL ES 3.0).
         configuration.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.ANGLE_GLES20, 0, 0);
 
+        configuration.setBackBufferConfig(8,8,8,8,0,0,4);
         return configuration;
     }
 }
