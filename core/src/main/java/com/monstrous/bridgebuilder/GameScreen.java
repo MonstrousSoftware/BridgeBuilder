@@ -7,6 +7,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -24,6 +25,10 @@ public class GameScreen extends ScreenAdapter {
     private Pin currentPin;             // is not in pins, non-null during dragging
     private Beam currentBeam;           // is in beams
     private Pin overPin;                // highlighted pin, or null
+    private Vector2 worldPos = new Vector2();
+    private Vector2 startPos = new Vector2();
+    private Vector2 correctedPos = new Vector2();
+    public boolean runPhysics = false;
 
 
     @Override
@@ -32,8 +37,7 @@ public class GameScreen extends ScreenAdapter {
         physics = new Physics();
 
         // for debug renderer
-        camera = new OrthographicCamera(Gdx.graphics.getWidth()*4, Gdx.graphics.getHeight()*4);
-
+        camera = new OrthographicCamera(Gdx.graphics.getWidth()/32f, Gdx.graphics.getHeight()/32f);
 
         pins = new Array<>();
         beams = new Array<>();
@@ -42,36 +46,40 @@ public class GameScreen extends ScreenAdapter {
 
             @Override
             public boolean mouseMoved(int x, int y) {
-                checkOverPin(x, y);
+                screenToWorldUnits(x,y, worldPos);
+                checkOverPin(worldPos);
                 return false;
             }
 
             public boolean touchDragged(int x, int y, int pointer) {
-                checkOverPin(x, y);
+                screenToWorldUnits(x,y, worldPos);
+                checkOverPin(worldPos);
                 if(currentPin == null)
                     return false;
-                float sy = Gdx.graphics.getHeight() - y;
-                currentPin.setPosition(x, sy);
-                currentBeam.setEndPosition(x, sy);
+                //float sy = Gdx.graphics.getHeight() - y;
+                currentPin.setPosition(worldPos.x, worldPos.y);
+                currentBeam.setEndPosition(worldPos.x, worldPos.y);
                 // if the beam gets too long, place a pin and create a new beam
                 if(currentBeam.length > Beam.MAX_LENGTH){
                     // we might have overshot the max, so truncate the beam length and get adjusted end position
                     currentBeam.truncateLength();
-                    float x2 = currentBeam.position2.x;
-                    float y2 = currentBeam.position2.y;
-                    currentPin.setPosition(x2, y2);
+                    correctedPos.set(currentBeam.position2.x, currentBeam.position2.y);
+//                    float x2 = currentBeam.position2.x;
+//                    float y2 = currentBeam.position2.y;
+                    currentPin.setPosition(correctedPos.x, correctedPos.y);
                     pins.add(currentPin);
                     currentBeam.setEndPin(currentPin);
                     physics.addBeam(currentBeam);
-                    currentBeam = new Beam(x2, y2, x2, y2);
+                    currentBeam = new Beam(correctedPos.x, correctedPos.y, correctedPos.x, correctedPos.y);
                     currentBeam.setStartPin(currentPin);
-                    currentPin = createPin(x2, y2);
+                    currentPin = createPin(correctedPos.x, correctedPos.y);
                     beams.add(currentBeam);
                 }
                 return false;
             }
 
             public boolean touchDown(int x, int y, int pointer, int button) {
+
                 if(button == Input.Buttons.RIGHT){  // RMB to delete
                     if(overPin != null) {
                         deletePin(overPin);
@@ -80,26 +88,29 @@ public class GameScreen extends ScreenAdapter {
                     return false;
                 }
                 // LMB
-
+                screenToWorldUnits(x,y, worldPos);
+                System.out.println(worldPos);
                 if (currentPin != null) // already dragging
                     return false;
-                float sx = x;
-                float sy = Gdx.graphics.getHeight() - y;
-                float ex = sx;
-                float ey = sy;
+                startPos.set(worldPos);
+//                float sx = x;
+//                float sy = Gdx.graphics.getHeight() - y;
+//                float ex = sx;
+//                float ey = sy;
                 Pin startPin;
                 if (overPin != null) {    // if we were over a pin, use that as start
-                    sx = overPin.position.x;
-                    sy = overPin.position.y;
+                    startPos.set(overPin.position.x, overPin.position.y);
+//                    sx = overPin.position.x;
+//                    sy = overPin.position.y;
                     startPin = overPin;
                 } else {
-                    startPin = createPin(sx, sy);
+                    startPin = createPin(startPos.x, startPos.y);
                     pins.add(startPin);
                 }
-                currentBeam = new Beam(sx, sy, ex, ey);
+                currentBeam = new Beam(startPos.x, startPos.y, worldPos.x, worldPos.y);
                 currentBeam.setStartPin(startPin);
                 beams.add(currentBeam);
-                currentPin = createPin(ex, ey);
+                currentPin = createPin(worldPos.x, worldPos.y);
 
                 return false;
             }
@@ -107,15 +118,15 @@ public class GameScreen extends ScreenAdapter {
             public boolean touchUp(int x, int y, int pointer, int button) {
                 if(button == Input.Buttons.RIGHT)
                     return false;
-                float sy = Gdx.graphics.getHeight() - y;
-                if(currentBeam.startPin.isOver(x,sy)){   // we didn't move from start position, remove beam
+
+                screenToWorldUnits(x,y, worldPos);
+                if(currentBeam.startPin.isOver(worldPos)){   // we didn't move from start position, remove beam
                     beams.removeValue(currentBeam, true);
                 } else {
                     // if the dragging ends at an existing pin, snap to that instead of making a new pin
                     if (overPin != null) {
-                        float sx = overPin.position.x;
-                        sy = overPin.position.y;
-                        currentBeam.setEndPosition(sx, sy);
+                        worldPos.set(overPin.position.x, overPin.position.y);
+                        currentBeam.setEndPosition(worldPos.x, worldPos.y);
                         currentBeam.setEndPin(overPin);
                     } else {
                         pins.add(currentPin);
@@ -132,15 +143,19 @@ public class GameScreen extends ScreenAdapter {
 
     }
 
+
+    public void screenToWorldUnits(int x, int y, Vector2 worldPos){
+        worldPos.set((x-Gdx.graphics.getWidth()/2)/32f, (Gdx.graphics.getHeight()/2-y)/32f);
+    }
+
     /** check if the mouse is over a pin and if so highlight it and assign it to 'overPin' */
-    private void checkOverPin(int x, int y) {
-        float ty = Gdx.graphics.getHeight() - y;
+    private void checkOverPin(Vector2 mousePosition) {
         if (overPin != null)
             overPin.sprite.setColor(Color.WHITE);
         // check if the mouse is over a pin and if so highlight it
         overPin = null;
         for (Pin pin : pins) {
-            if (pin.isOver(x, ty)) {
+            if (pin.isOver(mousePosition)) {
                 overPin = pin;
                 overPin.sprite.setColor(Color.RED);
                 //System.out.println("highlight pin "+overPin.id);
@@ -184,12 +199,16 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
 
-        physics.update(delta);
-        physics.updatePinPositions();
+        if(runPhysics) {
+            physics.update(delta);
+            physics.updatePinPositions();
+        }
 
         ScreenUtils.clear(Color.TEAL);
+        spriteBatch.setProjectionMatrix(camera.combined);
 
         spriteBatch.begin();
+
         for(Beam beam : beams){
             beam.sprite.draw(spriteBatch);
         }
@@ -212,10 +231,10 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void populate(){
-        Pin anchor1 = createPin(100, 300, true);
+        Pin anchor1 = createPin(12, 9, true);
         pins.add(anchor1);
 
-        Pin anchor2 = createPin(650, 400, true);
+        Pin anchor2 = createPin(20, 12, true);
         pins.add(anchor2);
 
     }

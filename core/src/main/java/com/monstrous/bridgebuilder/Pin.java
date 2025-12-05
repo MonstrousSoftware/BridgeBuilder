@@ -28,10 +28,10 @@ public class Pin {
 
         if(pinTexture == null)
             pinTexture = new Texture("textures/pin.png");
-        W = pinTexture.getWidth();
-        H = pinTexture.getHeight();
+        W = pinTexture.getWidth()/32f;
+        H = pinTexture.getHeight()/32f;
         sprite = new Sprite(pinTexture);
-        sprite.setOriginCenter();
+        sprite.setOrigin((int)(0.5*W), (int)(0.5*H));;
         sprite.setOriginBasedPosition(x,y);
         sprite.setSize(W, H);
     }
@@ -41,10 +41,10 @@ public class Pin {
         sprite.setOriginBasedPosition(x,y);
     }
 
-    public boolean isOver(float x, float y){
-        if(x < position.x - 0.5*W || x > position.x + 0.5*W)
+    public boolean isOver(Vector2 pos){
+        if(pos.x < position.x - 0.5*W || pos.x > position.x + 0.5*W)
             return false;
-        if(y < position.y - 0.5*H || y > position.y + 0.5* H)
+        if(pos.y < position.y - 0.5*H || pos.y > position.y + 0.5* H)
             return false;
         return true;
     }

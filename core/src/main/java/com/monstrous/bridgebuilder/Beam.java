@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 public class Beam {
-    public static float MAX_LENGTH = 150;
+    public static float MAX_LENGTH = 5f;
 
     public static Texture beamTexture;
 
@@ -27,8 +27,8 @@ public class Beam {
             beamTexture = new Texture("textures/beam.png");
 
         sprite = new Sprite(beamTexture);
-        W = beamTexture.getWidth();
-        H = beamTexture.getHeight();
+        W = beamTexture.getWidth()/32f;
+        H = beamTexture.getHeight()/32f;
         sprite.setOrigin(0, H/2f);
         sprite.setOriginBasedPosition(position1.x, position1.y);
         adaptShape();
