@@ -31,7 +31,7 @@ public class Pin {
         W = pinTexture.getWidth()/32f;
         H = pinTexture.getHeight()/32f;
         sprite = new Sprite(pinTexture);
-        sprite.setOrigin((int)(0.5*W), (int)(0.5*H));;
+        sprite.setOrigin(W/2f, H/2f);;
         sprite.setOriginBasedPosition(x,y);
         sprite.setSize(W, H);
     }

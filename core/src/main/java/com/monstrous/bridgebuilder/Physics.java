@@ -19,101 +19,63 @@ public class Physics {
         world = new World(new Vector2(0, -10), true);
         debugRenderer = new Box2DDebugRenderer();
 
-        // First we create a body definition
-        BodyDef bodyDef = new BodyDef();
-// We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-// Set our body's starting position in the world
-        bodyDef.position.set(5, 10);
-
-// Create our body in the world using our body definition
-        Body body = world.createBody(bodyDef);
-
-// Create a circle shape and set its radius to 6
-        CircleShape circle = new CircleShape();
-        circle.setRadius(6f);
-
-// Create a fixture definition to apply our shape to
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = circle;
-        fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0.4f;
-        fixtureDef.restitution = 0.6f; // Make it bounce a little bit
-
-// Create our fixture and attach it to the body
-        Fixture fixture = body.createFixture(fixtureDef);
-
-// Remember to dispose of any shapes after you're done with them!
-// BodyDef and FixtureDef don't need disposing, but shapes do.
-        circle.dispose();
-
-
+        // define ground
 
 
         // Create our body definition
         BodyDef groundBodyDef = new BodyDef();
-// Set its world position
-        groundBodyDef.position.set(new Vector2(0, -250));
+        // Set its world position
+        groundBodyDef.position.set(new Vector2(0, -7));
 
-// Create a body from the definition and add it to the world
+        // Create a body from the definition and add it to the world
         Body groundBody = world.createBody(groundBodyDef);
 
-// Create a polygon shape
+        // Create a polygon shape
         PolygonShape groundBox = new PolygonShape();
-// Set the polygon shape as a box which is twice the size of our view port and 20 high
-// (setAsBox takes half-width and half-height as arguments)
-        groundBox.setAsBox(800, 10.0f);
-// Create a fixture from our polygon shape and add it to our ground body
+        // Set the polygon shape as a box which is twice the size of our view port and 20 high
+        // (setAsBox takes half-width and half-height as arguments)
+        groundBox.setAsBox(20, 0.5f);
+        // Create a fixture from our polygon shape and add it to our ground body
         groundBody.createFixture(groundBox, 0.0f);
-// Clean up after ourselves
+        // Clean up after ourselves
         groundBox.dispose();
     }
 
 
     public Body addPin(Pin pin){
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.type = pin.isAnchor? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(pin.position.x, pin.position.y);
 
         Body body = world.createBody(bodyDef);
         body.setUserData(pin);
 
         CircleShape circle = new CircleShape();
-        circle.setRadius(pin.W);
+        circle.setRadius(pin.W/2f);
 
-        // Create a fixture definition to apply our shape to
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = circle;
-        fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0.4f;
-        fixtureDef.restitution = 0.6f; // Make it bounce a little bit
+        if(pin.isAnchor){
+            // Create our fixture and attach it to the body
+            body.createFixture(circle, 0f);
+        } else {
 
-        // Create our fixture and attach it to the body
-        Fixture fixture = body.createFixture(fixtureDef);
+            // Create a fixture definition to apply our shape to
+            FixtureDef fixtureDef = new FixtureDef();
+            fixtureDef.shape = circle;
+            fixtureDef.density = 0.5f;
+            fixtureDef.friction = 0.4f;
+            fixtureDef.restitution = 0.6f; // Make it bounce a little bit
 
+            // Create our fixture and attach it to the body
+            Fixture fixture = body.createFixture(fixtureDef);
+        }
         // Remember to dispose of any shapes after you're done with them!
         // BodyDef and FixtureDef don't need disposing, but shapes do.
         circle.dispose();
         return body;
     }
 
-    public Body addAnchor(Pin pin){
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(pin.position.x, pin.position.y);
-
-        Body body = world.createBody(bodyDef);
-        body.setUserData(pin);
-
-        CircleShape circle = new CircleShape();
-        circle.setRadius(pin.W);
-
-        // Create our fixture and attach it to the body
-        body.createFixture(circle, 0f);
-
-        // Remember to dispose of any shapes after you're done with them!
-        // BodyDef and FixtureDef don't need disposing, but shapes do.
-        circle.dispose();
-        return body;
+    public void destroyPin(Pin pin){
+        world.destroyBody(pin.body);
     }
 
     public void addBeam(Beam beam){

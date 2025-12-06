@@ -173,10 +173,7 @@ public class GameScreen extends ScreenAdapter {
 
     private Pin createPin(float x, float y, boolean anchor){
         Pin pin = new Pin(x,y, anchor);
-        if(anchor)
-            pin.body = physics.addAnchor(pin);
-        else
-            pin.body = physics.addPin(pin);
+        pin.body = physics.addPin(pin);
         return pin;
     }
 
@@ -185,6 +182,7 @@ public class GameScreen extends ScreenAdapter {
         if(pinToDelete.isAnchor)    // cannot delete anchors
             return;
         pins.removeValue(pinToDelete, true);
+        physics.destroyPin(pinToDelete);
 
         // remove all attached beams
         beamsToDelete.clear();
@@ -198,6 +196,12 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.G)){
+            runPhysics = !runPhysics;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.R)){
+            reset();
+        }
 
         if(runPhysics) {
             physics.update(delta);
@@ -231,12 +235,22 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void populate(){
-        Pin anchor1 = createPin(12, 9, true);
+        Pin anchor1 = createPin(-8, 0, true);
         pins.add(anchor1);
 
-        Pin anchor2 = createPin(20, 12, true);
+        Pin anchor2 = createPin(8, 3, true);
         pins.add(anchor2);
 
+    }
+
+    public void reset(){
+
+        for(Pin pin : pins){
+            physics.destroyPin(pin);
+        }
+        pins.clear();
+        beams.clear();
+        populate();
     }
 
     @Override
