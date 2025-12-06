@@ -3,6 +3,7 @@ package com.monstrous.bridgebuilder;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 
 public class Beam {
     public static float MAX_LENGTH = 5f;
@@ -17,6 +18,7 @@ public class Beam {
     public float length;
     public Pin startPin;
     public Pin endPin;
+    public DistanceJoint joint;
 
 
     public Beam(float x, float y, float x2, float y2) {

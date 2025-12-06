@@ -71,6 +71,7 @@ public class Physics {
         // Remember to dispose of any shapes after you're done with them!
         // BodyDef and FixtureDef don't need disposing, but shapes do.
         circle.dispose();
+        pin.body = body;
         return body;
     }
 
@@ -84,10 +85,10 @@ public class Physics {
 
         DistanceJointDef defJoint = new DistanceJointDef ();
         defJoint.length = beam.length;
-        defJoint.frequencyHz = 0.8f;
-        defJoint.dampingRatio = 1.0f;
+        defJoint.frequencyHz = 0.04f;
+        defJoint.dampingRatio = 0.9f;
         defJoint.initialize(a.body, b.body, new Vector2(0,0), new Vector2(0, 0)); // anchor points??
-        DistanceJoint joint = (DistanceJoint) world.createJoint(defJoint); // Returns subclass Joint.
+        beam.joint = (DistanceJoint) world.createJoint(defJoint); // Returns subclass Joint.
     }
 
 
