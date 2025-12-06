@@ -64,6 +64,15 @@ public class Beam {
         adaptShape();
     }
 
+    public void updatePosition(){
+        if(endPin == null)  // beam still being created
+            return;
+        position1.set(startPin.position.x, startPin.position.y);
+        position2.set(endPin.position.x, endPin.position.y);
+        sprite.setOriginBasedPosition(position1.x, position1.y);
+        adaptShape();
+    }
+
     public void setStartPin(Pin pin){
         startPin = pin;
     }

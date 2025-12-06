@@ -4,6 +4,10 @@ A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://git
 
 This project was generated with a template including simple application launchers and a main class extending `Game` that sets the first screen.
 
+
+G to go (run physics)
+R to reset
+
 ## Platforms
 
 - `core`: Main module with the application logic shared by all platforms.

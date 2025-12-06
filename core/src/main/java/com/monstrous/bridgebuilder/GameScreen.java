@@ -93,15 +93,9 @@ public class GameScreen extends ScreenAdapter {
                 if (currentPin != null) // already dragging
                     return false;
                 startPos.set(worldPos);
-//                float sx = x;
-//                float sy = Gdx.graphics.getHeight() - y;
-//                float ex = sx;
-//                float ey = sy;
                 Pin startPin;
                 if (overPin != null) {    // if we were over a pin, use that as start
                     startPos.set(overPin.position.x, overPin.position.y);
-//                    sx = overPin.position.x;
-//                    sy = overPin.position.y;
                     startPin = overPin;
                 } else {
                     startPin = createPin(startPos.x, startPos.y);
@@ -200,12 +194,16 @@ public class GameScreen extends ScreenAdapter {
             runPhysics = !runPhysics;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.R)){
+            runPhysics = false;
             reset();
         }
 
         if(runPhysics) {
             physics.update(delta);
             physics.updatePinPositions();
+            for(Beam beam : beams){
+                beam.updatePosition();
+            }
         }
 
         ScreenUtils.clear(Color.TEAL);

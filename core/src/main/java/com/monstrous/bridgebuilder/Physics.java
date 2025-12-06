@@ -84,8 +84,8 @@ public class Physics {
 
         DistanceJointDef defJoint = new DistanceJointDef ();
         defJoint.length = beam.length;
-        defJoint.frequencyHz = 3;
-        defJoint.dampingRatio = 0.1f;
+        defJoint.frequencyHz = 0.8f;
+        defJoint.dampingRatio = 1.0f;
         defJoint.initialize(a.body, b.body, new Vector2(0,0), new Vector2(0, 0)); // anchor points??
         DistanceJoint joint = (DistanceJoint) world.createJoint(defJoint); // Returns subclass Joint.
     }
