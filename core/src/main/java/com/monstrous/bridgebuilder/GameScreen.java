@@ -19,6 +19,7 @@ public class GameScreen extends ScreenAdapter {
 
     public Physics physics;
     private OrthographicCamera camera;
+    private GUI gui;
 
 
     private SpriteBatch spriteBatch;
@@ -33,6 +34,7 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void show() {
+        gui = new GUI();
         spriteBatch = new SpriteBatch();
         physics = new Physics();
 
@@ -67,6 +69,7 @@ public class GameScreen extends ScreenAdapter {
 //                    float x2 = currentBeam.position2.x;
 //                    float y2 = currentBeam.position2.y;
                     currentPin.setPosition(correctedPos.x, correctedPos.y);
+                    currentPin.body = physics.addPin(currentPin);
                     pins.add(currentPin);
                     currentBeam.setEndPin(currentPin);
                     physics.addBeam(currentBeam);
@@ -99,6 +102,7 @@ public class GameScreen extends ScreenAdapter {
                     startPin = overPin;
                 } else {
                     startPin = createPin(startPos.x, startPos.y);
+                    startPin.body = physics.addPin(startPin);
                     pins.add(startPin);
                 }
                 currentBeam = new Beam(startPos.x, startPos.y, worldPos.x, worldPos.y);
@@ -123,6 +127,7 @@ public class GameScreen extends ScreenAdapter {
                         currentBeam.setEndPosition(worldPos.x, worldPos.y);
                         currentBeam.setEndPin(overPin);
                     } else {
+                        currentPin.body = physics.addPin(currentPin);
                         pins.add(currentPin);
                         currentBeam.setEndPin(currentPin);
                     }
@@ -167,7 +172,7 @@ public class GameScreen extends ScreenAdapter {
 
     private Pin createPin(float x, float y, boolean anchor){
         Pin pin = new Pin(x,y, anchor);
-        pin.body = physics.addPin(pin);
+        //pin.body = physics.addPin(pin);
         return pin;
     }
 
@@ -221,6 +226,17 @@ public class GameScreen extends ScreenAdapter {
         spriteBatch.end();
 
         physics.debugRender(camera);
+
+        StringBuilder sb = new StringBuilder();
+        for(Pin pin: pins) {
+            sb.append("[");
+            sb.append(pin.position.x);
+            sb.append(",");
+            sb.append(pin.position.y);
+            sb.append("]");
+        }
+        gui.setStatus(sb.toString());
+        gui.draw();
     }
 
     @Override
@@ -234,9 +250,11 @@ public class GameScreen extends ScreenAdapter {
 
     public void populate(){
         Pin anchor1 = createPin(-8, 0, true);
+        anchor1.body = physics.addPin(anchor1);
         pins.add(anchor1);
 
         Pin anchor2 = createPin(8, 3, true);
+        anchor2.body = physics.addPin(anchor2);
         pins.add(anchor2);
 
     }
@@ -254,6 +272,7 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         // Destroy screen's assets here.
+        gui.dispose();
 
     }
 }
