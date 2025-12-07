@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.utils.Array;
 
 public class Physics {
-    public static final float TIME_STEP = 1/60f;
+    public static final float TIME_STEP = 1/200f;
 
     private final World world;
     public Box2DDebugRenderer debugRenderer;
@@ -61,7 +61,7 @@ public class Physics {
             // Create a fixture definition to apply our shape to
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = circle;
-            fixtureDef.density = 0.5f;
+            fixtureDef.density = 0.0005f;
             fixtureDef.friction = 0.4f;
             fixtureDef.restitution = 0.6f; // Make it bounce a little bit
 
@@ -85,9 +85,10 @@ public class Physics {
 
         DistanceJointDef defJoint = new DistanceJointDef ();
         defJoint.length = beam.length;
-        defJoint.frequencyHz = 0.04f;
-        defJoint.dampingRatio = 0.9f;
-        defJoint.initialize(a.body, b.body, new Vector2(0,0), new Vector2(0, 0)); // anchor points??
+        defJoint.frequencyHz = 10f;
+        defJoint.dampingRatio = 1f;
+        //defJoint.en
+        defJoint.initialize(a.body, b.body, a.position, b.position); // anchor points
         beam.joint = (DistanceJoint) world.createJoint(defJoint); // Returns subclass Joint.
     }
 

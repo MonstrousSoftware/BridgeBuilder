@@ -217,13 +217,12 @@ public class GameScreen extends ScreenAdapter {
         physics.debugRender(camera);
 
         StringBuilder sb = new StringBuilder();
-        for(Pin pin: pins) {
-            sb.append("[");
-            sb.append(pin.position.x);
-            sb.append(",");
-            sb.append(pin.position.y);
-            sb.append("]");
-        }
+//        for(Beam beam : beams) {
+//            float force = beam.joint.getReactionForce();
+//            sb.append("[");
+//            sb.append(beam.joint..position.x);
+//            sb.append("]");
+//        }
         gui.setStatus(sb.toString());
         gui.draw();
     }
