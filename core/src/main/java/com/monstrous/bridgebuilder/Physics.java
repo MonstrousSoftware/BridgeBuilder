@@ -17,7 +17,8 @@ public class Physics {
     Array<Body> tmpBodies = new Array<Body>();
 
     public Physics() {
-        world = new World(new Vector2(0, -10), true);
+        Vector2 gravity = new Vector2(0,-10);
+        world = new World(gravity, true);
         debugRenderer = new Box2DDebugRenderer();
 
         // define ground
@@ -176,21 +177,6 @@ public class Physics {
             Body b = pin.body;
             pin.setPosition(b.getPosition().x, b.getPosition().y);
         }
-//        // Now fill the array with all bodies
-//        world.getBodies(tmpBodies);
-//
-//        for (Body b : tmpBodies) {
-//            // Get the body's user data - in this example, our user
-//            // data is an instance of the Entity class
-//            Pin e = (Pin) b.getUserData();
-//
-//            if (e != null) {
-//                // Update the entities/sprites position and angle
-//                e.setPosition(b.getPosition().x, b.getPosition().y);
-//                // We need to convert our angle from radians to degrees
-//                //e.setRotation(MathUtils.radiansToDegrees * b.getAngle());
-//            }
-//        }
     }
 
 }
