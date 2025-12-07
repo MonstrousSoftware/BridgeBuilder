@@ -8,16 +8,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.*;
 
 
 public class GameScreen extends ScreenAdapter {
-
     public static float COLOR_SCALE = 500;
 
     public Array<Pin> pins;
     public Array<Beam> beams;
+    public GameWorld world;
 
     public Physics physics;
     private OrthographicCamera camera;
@@ -46,6 +45,8 @@ public class GameScreen extends ScreenAdapter {
         pins = new Array<>();
         beams = new Array<>();
         populate();
+        world = new GameWorld();
+        world.set(pins, beams);
         InputAdapter inputProcessor = new InputAdapter() {
 
             @Override
@@ -199,6 +200,15 @@ public class GameScreen extends ScreenAdapter {
             runPhysics = false;
             reset();
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
+            world.save("savefile.txt");
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
+            clear();
+            world.load("savefile.txt", physics);
+            pins = world.pins;
+            beams = world.beams;
+        }
 
         if(runPhysics) {
             physics.update(delta);
@@ -251,7 +261,7 @@ public class GameScreen extends ScreenAdapter {
         stressColor.set(force, 1f-force, 0, 1.0f);
         beam.setColor(stressColor);
 
-        if(force > 0.8f)
+        if(force > 0.9f)
             deleteBeam(beam);
 
     }
@@ -273,16 +283,18 @@ public class GameScreen extends ScreenAdapter {
         Pin anchor2 = new Pin(9, 3, true);
         physics.addPin(anchor2);
         pins.add(anchor2);
-
     }
 
-    public void reset(){
-
+    public void clear(){
         for(Pin pin : pins){
             physics.destroyPin(pin);
         }
         pins.clear();
         beams.clear();
+    }
+
+    public void reset(){
+        clear();
         populate();
     }
 
@@ -292,4 +304,7 @@ public class GameScreen extends ScreenAdapter {
         gui.dispose();
 
     }
+
+
+
 }

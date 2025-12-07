@@ -5,8 +5,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 
-public class Beam {
+public class Beam implements Json.Serializable {
     public static float MAX_LENGTH = 5f;
 
     public static Texture beamTexture;
@@ -19,24 +21,29 @@ public class Beam {
     public float length;
     public Pin startPin;
     public Pin endPin;
+    private int startId;
+    private int endId;
     public DistanceJoint joint;
     public Color tint;
 
-
-    public Beam(float x, float y, float x2, float y2) {
-        this.position1 = new Vector2(x,y);
-        this.position2 = new Vector2(x2,y2);
-
+    public Beam(){
+        this.position1 = new Vector2();
+        this.position2 = new Vector2();
         if(beamTexture == null)
             beamTexture = new Texture("textures/beam.png");
-
         sprite = new Sprite(beamTexture);
         W = beamTexture.getWidth()/32f;
         H = beamTexture.getHeight()/32f;
         sprite.setOrigin(0, H/2f);
+        tint = new Color(Color.WHITE);
+    }
+
+    public Beam(float x, float y, float x2, float y2) {
+        this();
+        this.position1.set(x,y);
+        this.position2.set(x2,y2);
         sprite.setOriginBasedPosition(position1.x, position1.y);
         adaptShape();
-        tint = new Color(Color.WHITE);
     }
 
     private void adaptShape(){
@@ -94,5 +101,16 @@ public class Beam {
         return (pin == startPin || pin == endPin);
     }
 
+    @Override
+    public void write(Json json) {
+        json.writeValue("startPin", startPin.id);
+        json.writeValue("endPin", endPin.id);
+    }
 
+    @Override
+    public void read(Json json, JsonValue jsonData) {
+        startId = json.readValue("startPin", Integer.class, jsonData);
+        endId = json.readValue("endPin", Integer.class, jsonData);
+        // to fix up
+    }
 }
