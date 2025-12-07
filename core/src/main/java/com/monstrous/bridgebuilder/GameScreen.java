@@ -12,8 +12,8 @@ import com.badlogic.gdx.utils.*;
 
 
 public class GameScreen extends ScreenAdapter {
-    public static float COLOR_SCALE = 1000;
-    public static float BREAK_FORCE = 1.0f;
+    //public static float COLOR_SCALE = 1000;
+    public static float BREAK_FORCE = 2000f;
 
     public Array<Pin> pins;
     public Array<Beam> beams;
@@ -33,6 +33,7 @@ public class GameScreen extends ScreenAdapter {
     private Vector2 startPos = new Vector2();
     private Vector2 correctedPos = new Vector2();
     public boolean runPhysics = false;
+    public boolean deckMode = true; // are beams decks? otherwise they are supports
 
 
     @Override
@@ -77,6 +78,7 @@ public class GameScreen extends ScreenAdapter {
                     currentBeam.setEndPin(currentPin);
                     physics.addBeam(currentBeam);
                     currentBeam = new Beam(correctedPos.x, correctedPos.y, correctedPos.x, correctedPos.y);
+                    currentBeam.setDeck(deckMode);
                     currentBeam.setStartPin(currentPin);
                     currentPin = new Pin(correctedPos.x, correctedPos.y);
                     beams.add(currentBeam);
@@ -109,6 +111,7 @@ public class GameScreen extends ScreenAdapter {
                     pins.add(startPin);
                 }
                 currentBeam = new Beam(startPos.x, startPos.y, worldPos.x, worldPos.y);
+                currentBeam.setDeck(deckMode);
                 currentBeam.setStartPin(startPin);
                 beams.add(currentBeam);
                 currentPin = new Pin(worldPos.x, worldPos.y);
@@ -214,6 +217,12 @@ public class GameScreen extends ScreenAdapter {
             pins = world.pins;
             beams = world.beams;
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
+            deckMode = true;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+            deckMode = false;
+        }
 
         if(runPhysics) {
             physics.update(delta);
@@ -232,7 +241,6 @@ public class GameScreen extends ScreenAdapter {
         spriteBatch.begin();
 
         for(Beam beam : beams){
-
             beam.sprite.draw(spriteBatch);
         }
         for(Pin pin : pins){
@@ -260,19 +268,47 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void testBeam(Beam beam){
-        if(beam.joint == null)
-            return;
-        Vector2 forceVec = beam.joint.getReactionForce(1f / Physics.TIME_STEP);
-        float force = forceVec.len();
-        force = force / COLOR_SCALE;
-        if (force > 1f)
-            force = 1f;
-        stressColor.set(force, 1f-force, 0, 1.0f);
+
+        float force;
+
+
+        if(beam.isDeck){
+            force = 0;
+            int denom = 0;
+            if(beam.joint != null) {
+                Vector2 forceVec = beam.joint.getReactionForce(1f / Physics.TIME_STEP);
+                force += forceVec.len();
+                denom++;
+                if (forceVec.len()  > BREAK_FORCE) {
+                    physics.destroyJoint(beam.joint);
+                    beam.joint = null;
+                }
+            }
+            if(beam.joint2 != null) {
+                Vector2 forceVec2 = beam.joint2.getReactionForce(1f / Physics.TIME_STEP);
+                force += forceVec2.len();
+                denom++;
+                if (forceVec2.len()  > BREAK_FORCE) {
+                    physics.destroyJoint(beam.joint2);
+                    beam.joint2 = null;
+                }
+            }
+            force /= (float)denom;  // use average force on joints for colouring
+        } else {
+            if(beam.joint == null)
+                return;
+            Vector2 forceVec = beam.joint.getReactionForce(1f / Physics.TIME_STEP);
+            force = forceVec.len();
+            if (force > BREAK_FORCE) {
+                deleteBeam(beam);
+                return;
+            }
+        }
+        float nForce = force / BREAK_FORCE;
+        if (nForce > 1f)
+            nForce = 1f;
+        stressColor.set(nForce, 1f-nForce, 0, 1.0f);
         beam.setColor(stressColor);
-
-        if(force > BREAK_FORCE)
-            deleteBeam(beam);
-
     }
 
     @Override

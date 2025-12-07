@@ -7,6 +7,10 @@ This project was generated with a template including simple application launcher
 
 G to go (run physics)
 R to reset
+S to save
+L to load
+1 for deck mode
+2 for beam mode
 
 ## Platforms
 

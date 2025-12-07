@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -12,18 +14,23 @@ public class Beam implements Json.Serializable {
     public static float MAX_LENGTH = 5f;
 
     public static Texture beamTexture;
+    public static Texture deckTexture;
 
     public final Vector2 position1;
     public final Vector2 position2;
+    public boolean isDeck;
     public final Sprite sprite;
     public final float W;
     public final float H;
     public float length;
+    public float angle;
     public Pin startPin;
     public Pin endPin;
     public int startId;
     public int endId;
-    public DistanceJoint joint;
+    public Joint joint;
+    public Joint joint2;    // only for deck
+    public Body body;   // only for deck
     public Color tint;
 
     public Beam(){
@@ -31,12 +38,16 @@ public class Beam implements Json.Serializable {
         this.position2 = new Vector2();
         if(beamTexture == null)
             beamTexture = new Texture("textures/beam.png");
+        if(deckTexture == null)
+            deckTexture = new Texture("textures/deck.png");
         sprite = new Sprite(beamTexture);
         W = beamTexture.getWidth()/32f;
         H = beamTexture.getHeight()/32f;
         sprite.setOrigin(0, H/2f);
         tint = new Color(Color.WHITE);
     }
+
+
 
     public Beam(float x, float y, float x2, float y2) {
         this();
@@ -49,7 +60,7 @@ public class Beam implements Json.Serializable {
     private void adaptShape(){
         float dx = position2.x - position1.x;
         float dy = position2.y - position1.y;
-        float angle = (float)Math.atan2(dy, dx);
+        angle = (float)Math.atan2(dy, dx);
         float angleDegrees = 180f * angle / (float)Math.PI;
 
         sprite.setRotation(angleDegrees);
@@ -73,6 +84,11 @@ public class Beam implements Json.Serializable {
     public void setColor(Color color){
         tint.set(color);
         sprite.setColor(tint);
+    }
+
+    public void setDeck(boolean deck){
+        this.isDeck = deck;
+        sprite.setTexture( deck? deckTexture : beamTexture);
     }
 
     public void setEndPosition(float x, float y){

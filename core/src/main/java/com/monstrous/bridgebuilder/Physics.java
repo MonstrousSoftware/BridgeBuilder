@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Array;
 
 public class Physics {
@@ -108,7 +110,7 @@ public class Physics {
         Body body = world.createBody(bodyDef);
         body.setUserData(vehicle);
 
-        body.setAngularVelocity(-1);
+        body.setAngularVelocity(-3);
 
         CircleShape circle = new CircleShape();
         circle.setRadius(vehicle.W/2f);
@@ -116,7 +118,7 @@ public class Physics {
         // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circle;
-        fixtureDef.density = 5.5f;
+        fixtureDef.density = 15.5f;
         fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0.1f; // Make it bounce a little bit
 
@@ -139,6 +141,13 @@ public class Physics {
     }
 
     public void addBeam(Beam beam){
+        if(beam.isDeck)
+            addDeck(beam);
+        else
+            addSupport(beam);
+    }
+
+    public void addSupport(Beam beam){
         Pin a = beam.startPin;
         Pin b = beam.endPin;
 
@@ -151,9 +160,50 @@ public class Physics {
         beam.joint = (DistanceJoint) world.createJoint(defJoint); // Returns subclass Joint.
     }
 
+    /** a deck is modeled as a dynamic body with a box shape with revolute joints to both pins */
+    public void addDeck(Beam beam){
+        Pin a = beam.startPin;
+        Pin b = beam.endPin;
+
+        BodyDef deckBodyDef = new BodyDef();
+        deckBodyDef.type = BodyDef.BodyType.DynamicBody;
+        Vector2 centre = new Vector2();
+        centre.set(a.position).add(b.position).scl(0.5f);
+        Body deckBody = world.createBody(deckBodyDef);
+        deckBody.setUserData(beam);
+
+        PolygonShape deckBox = new PolygonShape();
+
+        deckBox.setAsBox(beam.length/2, 0.25f, centre, beam.angle);
+
+
+        // Create a fixture definition to apply our shape to
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = deckBox;
+        fixtureDef.density = 5.5f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.1f; // Make it bounce a little bit
+
+        // Create our fixture and attach it to the body
+        Fixture fixture = deckBody.createFixture(fixtureDef);
+
+        deckBox.dispose();
+        beam.body = deckBody;
+
+        RevoluteJointDef defJoint = new RevoluteJointDef();
+        defJoint.initialize(a.body, beam.body, a.position);
+        beam.joint = world.createJoint(defJoint);
+        defJoint.initialize(b.body, beam.body, b.position);
+        beam.joint2 = world.createJoint(defJoint);
+    }
+
     public void destroyBeam(Beam beam){
         world.destroyJoint(beam.joint);
         beam.joint = null;
+    }
+
+    public void destroyJoint(Joint joint){
+        world.destroyJoint(joint);
     }
 
 
