@@ -13,6 +13,7 @@ public class GameWorld implements Json.Serializable {
 
     public Array<Pin> pins;
     public Array<Beam> beams;
+    public Vehicle vehicle;
 
     public GameWorld() {
     }
@@ -29,6 +30,7 @@ public class GameWorld implements Json.Serializable {
         json.setWriter(writer);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
+        json.addClassTag("Vehicle", Vehicle.class);
 
         FileHandle file = Gdx.files.local(fileName);	// save file
         file.writeString("",  false);	// overwrite
@@ -36,8 +38,6 @@ public class GameWorld implements Json.Serializable {
         // save array
         String s = json.prettyPrint(this);
         file.writeString(s,  true);	// append
-        //String s2 = json.prettyPrint(beams);
-        //file.writeString(s2,  true);
     }
 
     public void load( final String fileName, Physics physics )
@@ -80,12 +80,14 @@ public class GameWorld implements Json.Serializable {
     public void write(Json json) {
         json.writeValue("pins", pins);
         json.writeValue("beams", beams);
+        //json.writeValue("vehicle", vehicle);
     }
 
     @Override
     public void read(Json json, JsonValue jsonData) {
         pins= json.readValue("pins", Array.class, Integer.class, jsonData);
         beams = json.readValue("beams", Array.class, Beam.class, jsonData);
+        //vehicle = json.readValue("vehicle", Vehicle.class, jsonData);
         System.out.println("read pins: "+pins.size);
     }
 

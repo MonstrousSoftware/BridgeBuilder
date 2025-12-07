@@ -2,7 +2,7 @@
 "pins": [
 	{
 		"class": "Pin",
-		"id": 44,
+		"id": 1,
 		"isAnchor": true,
 		"position": {
 			"x": -8
@@ -10,7 +10,7 @@
 	},
 	{
 		"class": "Pin",
-		"id": 45,
+		"id": 2,
 		"isAnchor": true,
 		"position": {
 			"x": 9,
@@ -19,52 +19,52 @@
 	},
 	{
 		"class": "Pin",
-		"id": 46,
+		"id": 3,
 		"isAnchor": false,
 		"position": {
-			"x": -4.095656,
-			"y": 3.1234753
+			"x": -3.051505,
+			"y": 0.71582
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 47,
+		"id": 4,
 		"isAnchor": false,
 		"position": {
-			"x": 0.86734533,
-			"y": 3.7306156
+			"x": 1.5172687,
+			"y": 2.7471514
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 48,
+		"id": 5,
 		"isAnchor": false,
 		"position": {
-			"x": 5.8631883,
-			"y": 3.9344678
+			"x": 6.033355,
+			"y": 4.8930693
 		}
 	}
 ],
 "beams": [
 	{
 		"class": "Beam",
-		"startPin": 44,
-		"endPin": 46
+		"startPin": 1,
+		"endPin": 3
 	},
 	{
 		"class": "Beam",
-		"startPin": 46,
-		"endPin": 47
+		"startPin": 3,
+		"endPin": 4
 	},
 	{
 		"class": "Beam",
-		"startPin": 47,
-		"endPin": 48
+		"startPin": 4,
+		"endPin": 5
 	},
 	{
 		"class": "Beam",
-		"startPin": 48,
-		"endPin": 45
+		"startPin": 5,
+		"endPin": 2
 	}
 ]
 }

@@ -1,6 +1,7 @@
 package com.monstrous.bridgebuilder;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
@@ -41,6 +42,24 @@ public class Physics {
         groundBox.dispose();
     }
 
+    public void addStartRamp(Pin pin){
+        BodyDef rampBodyDef = new BodyDef();
+        rampBodyDef.position.set(pin.position.x-10, pin.position.y);
+        Body rampBody = world.createBody(rampBodyDef);
+        PolygonShape rampBox = new PolygonShape();
+        rampBox.setAsBox(10, 0.5f);
+        rampBody.createFixture(rampBox, 0.0f);
+        rampBox.dispose();
+    }
+    public void addEndRamp(Pin pin){
+        BodyDef rampBodyDef = new BodyDef();
+        rampBodyDef.position.set(pin.position.x+10, pin.position.y);
+        Body rampBody = world.createBody(rampBodyDef);
+        PolygonShape rampBox = new PolygonShape();
+        rampBox.setAsBox(10, 0.5f);
+        rampBody.createFixture(rampBox, 0.0f);
+        rampBox.dispose();
+    }
 
     public Body addPin(Pin pin){
         BodyDef bodyDef = new BodyDef();
@@ -79,6 +98,45 @@ public class Physics {
         world.destroyBody(pin.body);
     }
 
+
+    public void addVehicle(Vehicle vehicle){
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(vehicle.position.x, vehicle.position.y);
+
+        Body body = world.createBody(bodyDef);
+        body.setUserData(vehicle);
+
+        body.setAngularVelocity(-1);
+
+        CircleShape circle = new CircleShape();
+        circle.setRadius(vehicle.W/2f);
+
+        // Create a fixture definition to apply our shape to
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = circle;
+        fixtureDef.density = 5.5f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.1f; // Make it bounce a little bit
+
+        // Create our fixture and attach it to the body
+        Fixture fixture = body.createFixture(fixtureDef);
+        // Remember to dispose of any shapes after you're done with them!
+        // BodyDef and FixtureDef don't need disposing, but shapes do.
+        circle.dispose();
+        vehicle.body = body;
+     }
+
+     public void updateVehiclePosition(Vehicle vehicle){
+         Body b = vehicle.body;
+         vehicle.setPosition(b.getPosition().x, b.getPosition().y);
+     }
+
+
+    public void destroyVehicle(Vehicle v){
+        world.destroyBody(v.body);
+    }
+
     public void addBeam(Beam beam){
         Pin a = beam.startPin;
         Pin b = beam.endPin;
@@ -113,23 +171,26 @@ public class Physics {
         debugRenderer.render(world, camera.combined);
     }
 
-    public void updatePinPositions(){
-
-        // Now fill the array with all bodies
-        world.getBodies(tmpBodies);
-
-        for (Body b : tmpBodies) {
-            // Get the body's user data - in this example, our user
-            // data is an instance of the Entity class
-            Pin e = (Pin) b.getUserData();
-
-            if (e != null) {
-                // Update the entities/sprites position and angle
-                e.setPosition(b.getPosition().x, b.getPosition().y);
-                // We need to convert our angle from radians to degrees
-                //e.setRotation(MathUtils.radiansToDegrees * b.getAngle());
-            }
+    public void updatePinPositions(Array<Pin> pins){
+        for(Pin pin : pins ) {
+            Body b = pin.body;
+            pin.setPosition(b.getPosition().x, b.getPosition().y);
         }
+//        // Now fill the array with all bodies
+//        world.getBodies(tmpBodies);
+//
+//        for (Body b : tmpBodies) {
+//            // Get the body's user data - in this example, our user
+//            // data is an instance of the Entity class
+//            Pin e = (Pin) b.getUserData();
+//
+//            if (e != null) {
+//                // Update the entities/sprites position and angle
+//                e.setPosition(b.getPosition().x, b.getPosition().y);
+//                // We need to convert our angle from radians to degrees
+//                //e.setRotation(MathUtils.radiansToDegrees * b.getAngle());
+//            }
+//        }
     }
 
 }

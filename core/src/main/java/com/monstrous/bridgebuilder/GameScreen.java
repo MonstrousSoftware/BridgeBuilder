@@ -17,6 +17,7 @@ public class GameScreen extends ScreenAdapter {
 
     public Array<Pin> pins;
     public Array<Beam> beams;
+    public Vehicle vehicle;
     public GameWorld world;
 
     public Physics physics;
@@ -194,6 +195,10 @@ public class GameScreen extends ScreenAdapter {
     public void render(float delta) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.G)){
             runPhysics = !runPhysics;
+            if(runPhysics)
+                addVehicle();
+            else
+                destroyVehicle();
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.R)){
             runPhysics = false;
@@ -212,11 +217,13 @@ public class GameScreen extends ScreenAdapter {
 
         if(runPhysics) {
             physics.update(delta);
-            physics.updatePinPositions();
+            physics.updatePinPositions(pins);
             for(Beam beam : beams){
                 beam.updatePosition();
                 testBeam(beam);
             }
+            if(vehicle != null)
+                physics.updateVehiclePosition(vehicle);
         }
 
         ScreenUtils.clear(Color.TEAL);
@@ -231,6 +238,8 @@ public class GameScreen extends ScreenAdapter {
         for(Pin pin : pins){
             pin.sprite.draw(spriteBatch);
         }
+        if(vehicle != null)
+            vehicle.sprite.draw(spriteBatch);
 
         spriteBatch.end();
 
@@ -275,14 +284,30 @@ public class GameScreen extends ScreenAdapter {
         // Resize your screen here. The parameters represent the new window size.
     }
 
+    public void addVehicle(){
+        Pin startAnchor = pins.get(0);
+        vehicle = new Vehicle(startAnchor.position.x-3, startAnchor.position.y+2);
+        physics.addVehicle(vehicle);
+    }
+
+    public void destroyVehicle(){
+        physics.destroyVehicle(vehicle);
+        vehicle = null;
+    }
+
+
     public void populate(){
         Pin anchor1 = new Pin(-8, 0, true);
         physics.addPin(anchor1);
         pins.add(anchor1);
+        physics.addStartRamp(anchor1);
 
         Pin anchor2 = new Pin(9, 3, true);
         physics.addPin(anchor2);
         pins.add(anchor2);
+        physics.addEndRamp(anchor2);
+
+        //addVehicle();
     }
 
     public void clear(){
@@ -291,6 +316,8 @@ public class GameScreen extends ScreenAdapter {
         }
         pins.clear();
         beams.clear();
+        if(vehicle != null)
+            destroyVehicle();
     }
 
     public void reset(){
