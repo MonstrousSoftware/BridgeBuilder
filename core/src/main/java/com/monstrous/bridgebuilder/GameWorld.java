@@ -60,6 +60,20 @@ public class GameWorld implements Json.Serializable {
         for(Pin pin: pins){
             physics.addPin(pin);
         }
+        for(Beam beam: beams){
+            beam.setStartPin( findPinById(beam.startId) );
+            beam.setEndPin( findPinById(beam.endId) );
+            beam.updatePosition();
+            physics.addBeam(beam);
+        }
+    }
+
+    private Pin findPinById(int id){
+        for(Pin pin: pins){
+            if(pin.id == id)
+                return pin;
+        }
+        return null;
     }
 
     @Override

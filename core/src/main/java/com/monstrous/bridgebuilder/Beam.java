@@ -21,8 +21,8 @@ public class Beam implements Json.Serializable {
     public float length;
     public Pin startPin;
     public Pin endPin;
-    private int startId;
-    private int endId;
+    public int startId;
+    public int endId;
     public DistanceJoint joint;
     public Color tint;
 

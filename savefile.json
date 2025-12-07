@@ -1,0 +1,70 @@
+{
+"pins": [
+	{
+		"class": "Pin",
+		"id": 44,
+		"isAnchor": true,
+		"position": {
+			"x": -8
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 45,
+		"isAnchor": true,
+		"position": {
+			"x": 9,
+			"y": 3
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 46,
+		"isAnchor": false,
+		"position": {
+			"x": -4.095656,
+			"y": 3.1234753
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 47,
+		"isAnchor": false,
+		"position": {
+			"x": 0.86734533,
+			"y": 3.7306156
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 48,
+		"isAnchor": false,
+		"position": {
+			"x": 5.8631883,
+			"y": 3.9344678
+		}
+	}
+],
+"beams": [
+	{
+		"class": "Beam",
+		"startPin": 44,
+		"endPin": 46
+	},
+	{
+		"class": "Beam",
+		"startPin": 46,
+		"endPin": 47
+	},
+	{
+		"class": "Beam",
+		"startPin": 47,
+		"endPin": 48
+	},
+	{
+		"class": "Beam",
+		"startPin": 48,
+		"endPin": 45
+	}
+]
+}

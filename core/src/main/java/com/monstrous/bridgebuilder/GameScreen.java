@@ -12,7 +12,8 @@ import com.badlogic.gdx.utils.*;
 
 
 public class GameScreen extends ScreenAdapter {
-    public static float COLOR_SCALE = 500;
+    public static float COLOR_SCALE = 1000;
+    public static float BREAK_FORCE = 1.0f;
 
     public Array<Pin> pins;
     public Array<Beam> beams;
@@ -69,8 +70,6 @@ public class GameScreen extends ScreenAdapter {
                     // we might have overshot the max, so truncate the beam length and get adjusted end position
                     currentBeam.truncateLength();
                     correctedPos.set(currentBeam.position2.x, currentBeam.position2.y);
-//                    float x2 = currentBeam.position2.x;
-//                    float y2 = currentBeam.position2.y;
                     currentPin.setPosition(correctedPos.x, correctedPos.y);
                     physics.addPin(currentPin);
                     pins.add(currentPin);
@@ -201,11 +200,12 @@ public class GameScreen extends ScreenAdapter {
             reset();
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
-            world.save("savefile.txt");
+            world.save("savefile.json");
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
+            runPhysics = false;
             clear();
-            world.load("savefile.txt", physics);
+            world.load("savefile.json", physics);
             pins = world.pins;
             beams = world.beams;
         }
@@ -261,7 +261,7 @@ public class GameScreen extends ScreenAdapter {
         stressColor.set(force, 1f-force, 0, 1.0f);
         beam.setColor(stressColor);
 
-        if(force > 0.9f)
+        if(force > BREAK_FORCE)
             deleteBeam(beam);
 
     }
