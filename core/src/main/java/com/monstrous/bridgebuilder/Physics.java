@@ -61,7 +61,7 @@ public class Physics {
             // Create a fixture definition to apply our shape to
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = circle;
-            fixtureDef.density = 0.0005f;
+            fixtureDef.density = 5.5f;
             fixtureDef.friction = 0.4f;
             fixtureDef.restitution = 0.6f; // Make it bounce a little bit
 
@@ -87,9 +87,14 @@ public class Physics {
         defJoint.length = beam.length;
         defJoint.frequencyHz = 10f;
         defJoint.dampingRatio = 1f;
-        //defJoint.en
+
         defJoint.initialize(a.body, b.body, a.position, b.position); // anchor points
         beam.joint = (DistanceJoint) world.createJoint(defJoint); // Returns subclass Joint.
+    }
+
+    public void destroyBeam(Beam beam){
+        world.destroyJoint(beam.joint);
+        beam.joint = null;
     }
 
 

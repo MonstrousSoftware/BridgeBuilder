@@ -14,6 +14,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class GameScreen extends ScreenAdapter {
 
+    public static float COLOR_SCALE = 500;
+
     public Array<Pin> pins;
     public Array<Beam> beams;
 
@@ -179,8 +181,14 @@ public class GameScreen extends ScreenAdapter {
                 beamsToDelete.add(beam);
         }
         beams.removeAll(beamsToDelete, true);
-
     }
+
+    private void deleteBeam(Beam beam){
+        physics.destroyBeam(beam);
+        beams.removeValue(beam, true);
+    }
+
+    Color stressColor = new Color();
 
     @Override
     public void render(float delta) {
@@ -197,6 +205,7 @@ public class GameScreen extends ScreenAdapter {
             physics.updatePinPositions();
             for(Beam beam : beams){
                 beam.updatePosition();
+                testBeam(beam);
             }
         }
 
@@ -206,6 +215,7 @@ public class GameScreen extends ScreenAdapter {
         spriteBatch.begin();
 
         for(Beam beam : beams){
+
             beam.sprite.draw(spriteBatch);
         }
         for(Pin pin : pins){
@@ -217,14 +227,33 @@ public class GameScreen extends ScreenAdapter {
         physics.debugRender(camera);
 
         StringBuilder sb = new StringBuilder();
-//        for(Beam beam : beams) {
-//            float force = beam.joint.getReactionForce();
-//            sb.append("[");
-//            sb.append(beam.joint..position.x);
-//            sb.append("]");
-//        }
+        for(Beam beam : beams) {
+            if(beam.joint == null)
+                continue;
+            Vector2 forceVec = beam.joint.getReactionForce(1f/Physics.TIME_STEP);
+            float force = forceVec.len();
+            sb.append("[");
+            sb.append(force);
+            sb.append("]");
+        }
         gui.setStatus(sb.toString());
         gui.draw();
+    }
+
+    private void testBeam(Beam beam){
+        if(beam.joint == null)
+            return;
+        Vector2 forceVec = beam.joint.getReactionForce(1f / Physics.TIME_STEP);
+        float force = forceVec.len();
+        force = force / COLOR_SCALE;
+        if (force > 1f)
+            force = 1f;
+        stressColor.set(force, 1f-force, 0, 1.0f);
+        beam.setColor(stressColor);
+
+        if(force > 0.8f)
+            deleteBeam(beam);
+
     }
 
     @Override

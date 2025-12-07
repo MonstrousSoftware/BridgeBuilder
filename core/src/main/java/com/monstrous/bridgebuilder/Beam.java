@@ -1,5 +1,6 @@
 package com.monstrous.bridgebuilder;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -19,6 +20,7 @@ public class Beam {
     public Pin startPin;
     public Pin endPin;
     public DistanceJoint joint;
+    public Color tint;
 
 
     public Beam(float x, float y, float x2, float y2) {
@@ -34,6 +36,7 @@ public class Beam {
         sprite.setOrigin(0, H/2f);
         sprite.setOriginBasedPosition(position1.x, position1.y);
         adaptShape();
+        tint = new Color(Color.WHITE);
     }
 
     private void adaptShape(){
@@ -60,6 +63,10 @@ public class Beam {
         adaptShape();
     }
 
+    public void setColor(Color color){
+        tint.set(color);
+        sprite.setColor(tint);
+    }
 
     public void setEndPosition(float x, float y){
         position2.set(x,y);
