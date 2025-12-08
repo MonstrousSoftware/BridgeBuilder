@@ -6,18 +6,19 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Array;
 
 public class Physics {
     public static final float TIME_STEP = 1/200f;
+    public static final float VEHICLE_MASS = 500f;
+    public static final float VEHICLE_TORQUE = 1200f;
 
     // collision bits
     public static final int DECK_FLAG = 1;
-    public static final int STRUCTURE_FLAG = 2;
-    public static final int PIN_FLAG = 4;
-    public static final int VEHICLE_FLAG = 8;
+    public static final int PIN_FLAG = 2;
+    public static final int VEHICLE_FLAG = 4;
+    public static final int FLAG_FLAG = 8;
 
     private final World world;
     public Box2DDebugRenderer debugRenderer;
@@ -28,6 +29,9 @@ public class Physics {
         Vector2 gravity = new Vector2(0,-10);
         world = new World(gravity, true);
         debugRenderer = new Box2DDebugRenderer();
+
+        world.setAutoClearForces(true); // useful?
+
 
         // define ground
 
@@ -68,6 +72,23 @@ public class Physics {
         rampBox.setAsBox(10, 0.5f);
         rampBody.createFixture(rampBox, 0.0f);
         rampBox.dispose();
+    }
+
+    public void addFlag(Flag flag){
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(flag.position.x, flag.position.y+1);
+        Body body = world.createBody(bodyDef);
+        PolygonShape box = new PolygonShape();
+        box.setAsBox(0.5f, 1f);
+        Fixture fixture = body.createFixture(box, 0.0f);
+        fixture.setSensor(true);
+
+        box.dispose();
+    }
+
+    public boolean isTouching(Flag flag){
+        //Array<Contact> contacts = world.getContactList();
+        return false;
     }
 
     public Body addPin(Pin pin){
@@ -121,12 +142,13 @@ public class Physics {
         //body.setAngularVelocity(-3);
 
         CircleShape circle = new CircleShape();
-        circle.setRadius(vehicle.W/2f);
+        float radius = vehicle.W/2f;
+        circle.setRadius(radius);
 
         // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circle;
-        fixtureDef.density = 15.5f;
+        fixtureDef.density = VEHICLE_MASS / ((float)Math.PI * radius * radius);
         fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0.1f; // Make it bounce a little bit
         fixtureDef.filter.categoryBits = VEHICLE_FLAG;
@@ -143,8 +165,9 @@ public class Physics {
      public void updateVehiclePosition(Vehicle vehicle){
          Body b = vehicle.body;
          vehicle.setPosition(b.getPosition().x, b.getPosition().y);
+         vehicle.setRotation(b.getAngle());
 
-         b.applyTorque(-450f, true);        // force wheel to turn
+         b.applyTorque(-VEHICLE_TORQUE, true);        // force wheel to turn
      }
 
 
@@ -205,16 +228,22 @@ public class Physics {
 
         RevoluteJointDef defJoint = new RevoluteJointDef();
         defJoint.initialize(a.body, beam.body, a.position);
+        defJoint.collideConnected = false;
+
         beam.joint = world.createJoint(defJoint);
         defJoint.initialize(b.body, beam.body, b.position);
+        defJoint.collideConnected = false;
         beam.joint2 = world.createJoint(defJoint);
     }
 
     public void destroyBeam(Beam beam){
+        // destroy joints before destroying attached bodies
+        if(beam.joint != null) // structure or deck
+            world.destroyJoint(beam.joint);
+        if(beam.joint2 != null) // deck
+            world.destroyJoint(beam.joint2);
         if(beam.body != null)   // deck
             world.destroyBody(beam.body);   // this will also destroy the joints
-        else if(beam.joint != null) // structure
-            world.destroyJoint(beam.joint);
         beam.joint = null;
         beam.joint2 = null;
         beam.body = null;
@@ -234,6 +263,7 @@ public class Physics {
             world.step(TIME_STEP, 6, 2);
             accumulator -= TIME_STEP;
         }
+
     }
 
     public void debugRender(Camera camera){

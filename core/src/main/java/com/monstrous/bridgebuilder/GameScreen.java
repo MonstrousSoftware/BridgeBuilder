@@ -15,12 +15,13 @@ import com.badlogic.gdx.utils.*;
 
 
 public class GameScreen extends ScreenAdapter {
-    //public static float COLOR_SCALE = 1000;
-    public static float BREAK_FORCE = 15000f;
+    public static float COLOR_SCALE = 10000;
+    public static float BREAK_FORCE = 150000f;
 
     public Array<Pin> pins;
     public Array<Beam> beams;
     public Vehicle vehicle;
+    public Flag flag;
     public GameWorld world;
 
     public Physics physics;
@@ -202,19 +203,20 @@ public class GameScreen extends ScreenAdapter {
     private void deletePin( Pin pinToDelete ){
         if(pinToDelete.isAnchor)    // cannot delete anchors
             return;
-        pins.removeValue(pinToDelete, true);
-        physics.destroyPin(pinToDelete);
 
         // remove all attached beams
+        // since beams have joints they need to be destroyed before the body they are attached to.
         beamsToDelete.clear();
         for(Beam beam : beams){
             if(beam.attachedToPin(pinToDelete)) {
-                if(beam.isDeck)
-                    physics.destroyBeam(beam);
+                physics.destroyBeam(beam);
                 beamsToDelete.add(beam);
             }
         }
         beams.removeAll(beamsToDelete, true);
+
+        pins.removeValue(pinToDelete, true);
+        physics.destroyPin(pinToDelete);
     }
 
     private void deleteBeam(Beam beam){
@@ -280,6 +282,9 @@ public class GameScreen extends ScreenAdapter {
             if(vehicle != null) {
                 physics.updateVehiclePosition(vehicle);
             }
+            if(physics.isTouching(flag)){
+                System.out.println("Flag reached!");
+            }
         }
 
         ScreenUtils.clear(Color.TEAL);
@@ -297,6 +302,7 @@ public class GameScreen extends ScreenAdapter {
         for(Pin pin : pins){
             pin.sprite.draw(spriteBatch);
         }
+        flag.sprite.draw(spriteBatch);
 
 
         spriteBatch.end();
@@ -306,11 +312,24 @@ public class GameScreen extends ScreenAdapter {
         StringBuilder sb = new StringBuilder();
         sb.append("Zoom: ");
         sb.append(zoom);
-        if(beams.size > 0 && beams.get(0).joint != null){
-            sb.append(" Force:");
-            Vector2 forceVec = beams.get(0).joint.getReactionForce(1f / Physics.TIME_STEP);
-            float force = forceVec.len();
-            sb.append((int)force);
+        sb.append(" Beam forces:");
+        for(Beam beam : beams){
+            if(!beam.isDeck)
+                continue;
+            if(beam.joint != null) {
+                Vector2 forceVec = beam.joint.getReactionForce(1f / Physics.TIME_STEP);
+                float force = forceVec.len();
+                sb.append((int) force);
+                sb.append("+");
+            } else
+                sb.append("- +");
+            if(beam.joint2 != null) {
+                Vector2 forceVec = beam.joint2.getReactionForce(1f / Physics.TIME_STEP);
+                float force = forceVec.len();
+                sb.append((int) force);
+                sb.append("   ");
+            } else
+                sb.append("-   ");
         }
 
         gui.setStatus(sb.toString());
@@ -321,41 +340,41 @@ public class GameScreen extends ScreenAdapter {
         float force;
 
         if(beam.isDeck){
+            // take average force of the two revoluteJoints
             force = 0;
             int denom = 0;
             if(beam.joint != null) {
-                Vector2 forceVec = beam.joint.getReactionForce(1f / Physics.TIME_STEP);
-                force += forceVec.len();
+                force += beam.joint.getReactionForce(1f / Physics.TIME_STEP).len();
                 denom++;
-                if (forceVec.len()  > BREAK_FORCE) {
-                    System.out.println("break joint at "+forceVec.len());
+                if (force  > BREAK_FORCE) {
+                    System.out.println("break joint at "+force);
                     physics.destroyJoint(beam.joint);
                     beam.joint = null;
                 }
             }
             if(beam.joint2 != null) {
-                Vector2 forceVec2 = beam.joint2.getReactionForce(1f / Physics.TIME_STEP);
-                force += forceVec2.len();
+                float force2 = beam.joint2.getReactionForce(1f / Physics.TIME_STEP).len();
+                force += force2;
                 denom++;
-                if (forceVec2.len()  > BREAK_FORCE) {
-                    System.out.println("break joint2 at "+forceVec2.len());
+                if (force2  > BREAK_FORCE) {
+                    System.out.println("break joint2 at "+force2);
                     physics.destroyJoint(beam.joint2);
                     beam.joint2 = null;
                 }
+                force += force2;
             }
             if(denom > 0)
                 force /= (float)denom;  // use average force on joints for colouring
         } else {
             if(beam.joint == null)
                 return;
-            Vector2 forceVec = beam.joint.getReactionForce(1f / Physics.TIME_STEP);
-            force = forceVec.len();
+            force = beam.joint.getReactionForce(1f / Physics.TIME_STEP).len();
             if (force > BREAK_FORCE) {
                 deleteBeam(beam);
                 return;
             }
         }
-        float nForce = force / BREAK_FORCE;
+        float nForce = force / COLOR_SCALE;
         if (nForce > 1f)
             nForce = 1f;
 
@@ -393,15 +412,19 @@ public class GameScreen extends ScreenAdapter {
 
 
     public void populate(){
-        Pin anchor1 = new Pin(-8, 0, true);
+        Pin anchor1 = new Pin(-7, 0, true);
         physics.addPin(anchor1);
         pins.add(anchor1);
         physics.addStartRamp(anchor1);
 
-        Pin anchor2 = new Pin(9, 3, true);
+        Pin anchor2 = new Pin(7, 0, true);
         physics.addPin(anchor2);
         pins.add(anchor2);
         physics.addEndRamp(anchor2);
+
+        flag = new Flag(10, 0.5f);
+        physics.addFlag(flag);
+
 
         //addVehicle();
     }

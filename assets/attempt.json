@@ -5,7 +5,7 @@
 		"id": 1,
 		"isAnchor": true,
 		"position": {
-			"x": -8
+			"x": -7
 		}
 	},
 	{
@@ -13,8 +13,7 @@
 		"id": 2,
 		"isAnchor": true,
 		"position": {
-			"x": 9,
-			"y": 3
+			"x": 7
 		}
 	},
 	{
@@ -22,8 +21,8 @@
 		"id": 3,
 		"isAnchor": false,
 		"position": {
-			"x": -3.826136,
-			"y": 2.7529736
+			"x": -2.00238,
+			"y": 0.15424737
 		}
 	},
 	{
@@ -31,26 +30,8 @@
 		"id": 4,
 		"isAnchor": false,
 		"position": {
-			"x": 1.1430149,
-			"y": 3.3075356
-		}
-	},
-	{
-		"class": "Pin",
-		"id": 5,
-		"isAnchor": false,
-		"position": {
-			"x": 5.925106,
-			"y": 1.8475345
-		}
-	},
-	{
-		"class": "Pin",
-		"id": 6,
-		"isAnchor": false,
-		"position": {
-			"x": 8.374999,
-			"y": 5.0312495
+			"x": 2.9972043,
+			"y": 0.21871375
 		}
 	}
 ],
@@ -70,18 +51,6 @@
 	{
 		"class": "Beam",
 		"startPin": 4,
-		"endPin": 5,
-		"isDeck": true
-	},
-	{
-		"class": "Beam",
-		"startPin": 5,
-		"endPin": 6,
-		"isDeck": true
-	},
-	{
-		"class": "Beam",
-		"startPin": 6,
 		"endPin": 2,
 		"isDeck": true
 	}
