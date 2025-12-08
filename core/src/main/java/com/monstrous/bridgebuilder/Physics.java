@@ -174,8 +174,8 @@ public class Physics {
 
         PolygonShape deckBox = new PolygonShape();
 
-        deckBox.setAsBox(beam.length/2, 0.25f, centre, beam.angle);
-
+        deckBox.setAsBox(beam.length/2, beam.H/2f, Vector2.Zero, 0);
+        deckBody.setTransform(centre, beam.angle);
 
         // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
@@ -198,8 +198,15 @@ public class Physics {
     }
 
     public void destroyBeam(Beam beam){
-        world.destroyJoint(beam.joint);
+        if(beam.joint != null)
+            world.destroyJoint(beam.joint);
+        if(beam.joint2 != null)
+            world.destroyJoint(beam.joint2);
+        if(beam.body != null)
+            world.destroyBody(beam.body);
         beam.joint = null;
+        beam.joint2 = null;
+        beam.body = null;
     }
 
     public void destroyJoint(Joint joint){
@@ -226,6 +233,27 @@ public class Physics {
         for(Pin pin : pins ) {
             Body b = pin.body;
             pin.setPosition(b.getPosition().x, b.getPosition().y);
+        }
+    }
+
+    private final Vector2 p1 = new Vector2();
+    private final Vector2 p2 = new Vector2();
+
+    public void updateBeamPositions(Array<Beam> beams){
+        for(Beam beam: beams) {
+            Body b = beam.body;
+
+            float halfLen = beam.length/2f;
+            p1.set(-halfLen, 0);
+            p1.set(b.getWorldVector(p1));
+            p2.set(halfLen, 0);
+            p2.set(b.getWorldVector(p2));
+
+            Vector2 centre = b.getWorldCenter();
+            p1.add(centre);
+            p2.add(centre);
+
+            beam.setPositions(p1, p2);
         }
     }
 

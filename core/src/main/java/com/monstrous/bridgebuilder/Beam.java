@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Joint;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -43,6 +42,9 @@ public class Beam implements Json.Serializable {
         sprite = new Sprite(beamTexture);
         W = beamTexture.getWidth()/32f;
         H = beamTexture.getHeight()/32f;
+        // have a repeating texture, not a stretched texture
+        deckTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        beamTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         sprite.setOrigin(0, H/2f);
         tint = new Color(Color.WHITE);
     }
@@ -51,9 +53,16 @@ public class Beam implements Json.Serializable {
 
     public Beam(float x, float y, float x2, float y2) {
         this();
-        this.position1.set(x,y);
-        this.position2.set(x2,y2);
+        this.position1.set(x, y);
+        this.position2.set(x2, y2);
         sprite.setOriginBasedPosition(position1.x, position1.y);
+        adaptShape();
+    }
+
+    public void setPositions(Vector2 start, Vector2 end) {
+        this.position1.set(start);
+        this.position2.set(end);
+        sprite.setOriginBasedPosition(start.x, start.y);
         adaptShape();
     }
 
@@ -67,6 +76,7 @@ public class Beam implements Json.Serializable {
 
         length = (float)Math.sqrt(dx*dx+dy*dy);
         sprite.setSize(length, H);
+        sprite.setRegion(0,0,length, 1);
     }
 
     /** adjust position2 so that length does not exceed MAX_LENGTH */
@@ -121,12 +131,14 @@ public class Beam implements Json.Serializable {
     public void write(Json json) {
         json.writeValue("startPin", startPin.id);
         json.writeValue("endPin", endPin.id);
+        json.writeValue("isDeck", isDeck);
     }
 
     @Override
     public void read(Json json, JsonValue jsonData) {
         startId = json.readValue("startPin", Integer.class, jsonData);
         endId = json.readValue("endPin", Integer.class, jsonData);
-        // to fix up
+        boolean deck = json.readValue("isDeck", Boolean.class, jsonData);
+        setDeck(deck);
     }
 }

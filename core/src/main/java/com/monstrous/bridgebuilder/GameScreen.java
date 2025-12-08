@@ -1,19 +1,21 @@
 package com.monstrous.bridgebuilder;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
+
+import static java.lang.Float.isNaN;
 
 
 public class GameScreen extends ScreenAdapter {
     //public static float COLOR_SCALE = 1000;
-    public static float BREAK_FORCE = 2000f;
+    public static float BREAK_FORCE = 15000f;
 
     public Array<Pin> pins;
     public Array<Beam> beams;
@@ -26,6 +28,7 @@ public class GameScreen extends ScreenAdapter {
 
 
     private SpriteBatch spriteBatch;
+    private ImmediateModeRenderer renderer;
     private Pin currentPin;             // is not in pins, non-null during dragging
     private Beam currentBeam;           // is in beams
     private Pin overPin;                // highlighted pin, or null
@@ -38,12 +41,14 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void show() {
-        gui = new GUI();
+        gui = new GUI(this);
         spriteBatch = new SpriteBatch();
         physics = new Physics();
 
         // for debug renderer
         camera = new OrthographicCamera(Gdx.graphics.getWidth()/32f, Gdx.graphics.getHeight()/32f);
+
+        renderer = new ImmediateModeRenderer20(false, true, 0);
 
         pins = new Array<>();
         beams = new Array<>();
@@ -144,7 +149,10 @@ public class GameScreen extends ScreenAdapter {
                 return false;
             }
         };
-        Gdx.input.setInputProcessor(inputProcessor);
+        InputMultiplexer im = new InputMultiplexer();
+        im.addProcessor(gui.stage);
+        im.addProcessor(inputProcessor);
+        Gdx.input.setInputProcessor(im);
 
     }
 
@@ -194,6 +202,20 @@ public class GameScreen extends ScreenAdapter {
 
     Color stressColor = new Color();
 
+    public void startSimulation(){
+        world.save("attempt.json");
+        runPhysics = true;
+        addVehicle();
+    }
+
+    public void retry(){
+        runPhysics = false;
+        clear();
+        world.load("attempt.json", physics);
+        pins = world.pins;
+        beams = world.beams;
+    }
+
     @Override
     public void render(float delta) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.G)){
@@ -227,15 +249,17 @@ public class GameScreen extends ScreenAdapter {
         if(runPhysics) {
             physics.update(delta);
             physics.updatePinPositions(pins);
+            physics.updateBeamPositions(beams);
             for(Beam beam : beams){
-                beam.updatePosition();
-                testBeam(beam);
+                //beam.updatePosition();
+                testBeamStress(beam);
             }
             if(vehicle != null)
                 physics.updateVehiclePosition(vehicle);
         }
 
         ScreenUtils.clear(Color.TEAL);
+        //renderGrid();
         spriteBatch.setProjectionMatrix(camera.combined);
 
         spriteBatch.begin();
@@ -254,20 +278,25 @@ public class GameScreen extends ScreenAdapter {
         physics.debugRender(camera);
 
         StringBuilder sb = new StringBuilder();
-        for(Beam beam : beams) {
-            if(beam.joint == null)
-                continue;
-            Vector2 forceVec = beam.joint.getReactionForce(1f/Physics.TIME_STEP);
-            float force = forceVec.len();
-            sb.append("[");
-            sb.append(force);
-            sb.append("]");
+//        for(Beam beam : beams) {
+//            if(beam.joint == null)
+//                continue;
+//            Vector2 forceVec = beam.joint.getReactionForce(1f/Physics.TIME_STEP);
+//            float force = forceVec.len();
+//            sb.append("[");
+//            sb.append(force);
+//            sb.append("]");
+//        }
+        if(beams.size > 0 && beams.get(0).body != null){
+            Vector2 pos = beams.get(0).body.getPosition();
+            sb.append(pos);
         }
+
         gui.setStatus(sb.toString());
         gui.draw();
     }
 
-    private void testBeam(Beam beam){
+    private void testBeamStress(Beam beam){
 
         float force;
 
@@ -293,7 +322,8 @@ public class GameScreen extends ScreenAdapter {
                     beam.joint2 = null;
                 }
             }
-            force /= (float)denom;  // use average force on joints for colouring
+            if(denom > 0)
+                force /= (float)denom;  // use average force on joints for colouring
         } else {
             if(beam.joint == null)
                 return;
@@ -307,6 +337,7 @@ public class GameScreen extends ScreenAdapter {
         float nForce = force / BREAK_FORCE;
         if (nForce > 1f)
             nForce = 1f;
+
         stressColor.set(nForce, 1f-nForce, 0, 1.0f);
         beam.setColor(stressColor);
     }
@@ -316,6 +347,8 @@ public class GameScreen extends ScreenAdapter {
         // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
         // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
         if(width <= 0 || height <= 0) return;
+
+        gui.resize(width, height);
 
         // Resize your screen here. The parameters represent the new window size.
     }
@@ -351,6 +384,8 @@ public class GameScreen extends ScreenAdapter {
             physics.destroyPin(pin);
         }
         pins.clear();
+        for(Beam beam : beams)
+            physics.destroyBeam(beam);
         beams.clear();
         if(vehicle != null)
             destroyVehicle();
@@ -359,6 +394,25 @@ public class GameScreen extends ScreenAdapter {
     public void reset(){
         clear();
         populate();
+    }
+
+    public void renderGrid() {
+
+        renderer.begin(camera.combined, GL20.GL_LINES);
+
+        for (int x = -20; x <= 20; x++) {
+            renderer.color(Color.GREEN);
+            renderer.vertex(x, -10, 0);
+            renderer.color(Color.LIGHT_GRAY);
+            renderer.vertex(x, 10, 0);
+        }
+        for (int y = -10; y <= 10; y++) {
+            renderer.color(Color.GREEN);
+            renderer.vertex(-20, y, 0);
+            renderer.color(Color.GREEN);
+            renderer.vertex(20, y, 0);
+        }
+        renderer.end();
     }
 
     @Override
