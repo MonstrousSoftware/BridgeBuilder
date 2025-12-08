@@ -2,6 +2,7 @@ package com.monstrous.bridgebuilder.teavm;
 
 import com.github.xpenatan.gdx.backends.teavm.config.AssetFileHandle;
 import com.github.xpenatan.gdx.backends.teavm.config.TeaBuildConfiguration;
+import com.github.xpenatan.gdx.backends.teavm.config.TeaBuildReflectionListener;
 import com.github.xpenatan.gdx.backends.teavm.config.TeaBuilder;
 import com.github.xpenatan.gdx.backends.teavm.config.plugins.TeaReflectionSupplier;
 import java.io.File;
@@ -43,6 +44,17 @@ public class TeaVMBuilder {
 
         // You can also register any classes or packages that require reflection here:
         // TeaReflectionSupplier.addReflectionClass("com.monstrous.bridgebuilder.reflect");
+
+        teaBuildConfiguration.reflectionListener = new TeaBuildReflectionListener() {
+            @Override
+            public boolean shouldEnableReflection(String fullClassName) {
+                // loading a level from a Json file requires reflection
+                if(fullClassName.contains("com.badlogic.gdx.math.Vector2")) {
+                    return true;
+                }
+                return false;
+            }
+        };
 
         // Used by older TeaVM versions.
 //        TeaVMTool tool = TeaBuilder.config(teaBuildConfiguration);

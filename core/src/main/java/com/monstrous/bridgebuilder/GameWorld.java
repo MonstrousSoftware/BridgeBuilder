@@ -2,6 +2,7 @@ package com.monstrous.bridgebuilder;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -38,22 +39,22 @@ public class GameWorld implements Json.Serializable {
         // save array
         String s = json.prettyPrint(this);
         file.writeString(s,  true);	// append
+        //System.out.println("saved: "+s);
     }
 
     public void load( final String fileName, Physics physics )
     {
-        //clear();
-
         Json json = new Json();
         FileHandle file;
         String string;
 
         file = Gdx.files.local(fileName);	// save file
         string = file.readString();
+        //System.out.println("loaded: "+string);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
 
-        GameWorld loaded = json.fromJson(GameWorld.class, file);
+        GameWorld loaded = json.fromJson(GameWorld.class, string);
         this.pins = loaded.pins;
         this.beams = loaded.beams;
 
@@ -64,8 +65,10 @@ public class GameWorld implements Json.Serializable {
             beam.setStartPin( findPinById(beam.startId) );
             beam.setEndPin( findPinById(beam.endId) );
             beam.updatePosition();
+            //System.out.println("beam: "+beam.position1+" to "+beam.position2+" len: "+beam.length+" "+beam.isDeck);
             physics.addBeam(beam);
         }
+        //System.out.println("Loaded "+pins.size+" pins and "+beams.size+" beams.");
     }
 
     private Pin findPinById(int id){

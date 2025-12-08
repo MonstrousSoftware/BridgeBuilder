@@ -65,7 +65,12 @@ public class Pin implements Json.Serializable {
     public void read(Json json, JsonValue jsonData) {
         id = json.readValue("id", Integer.class, jsonData);
         isAnchor = json.readValue("isAnchor", Boolean.class, jsonData);
+
+        // note: for teavm, Vector2 has to be added as reflection class
         Vector2 pos = json.readValue("position", Vector2.class, jsonData);
+        //System.out.println("read pin " + id+ " pos: "+pos);
+
+
         setPosition(pos.x, pos.y);
     }
 }

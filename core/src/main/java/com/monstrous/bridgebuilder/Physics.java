@@ -165,7 +165,7 @@ public class Physics {
 
         DistanceJointDef defJoint = new DistanceJointDef ();
         defJoint.length = beam.length;
-        defJoint.frequencyHz = 10f;
+        defJoint.frequencyHz = 30f;
         defJoint.dampingRatio = 1f;
 
         defJoint.initialize(a.body, b.body, a.position, b.position); // anchor points
@@ -253,17 +253,19 @@ public class Physics {
     public void updateBeamPositions(Array<Beam> beams){
         for(Beam beam: beams) {
             if(beam.isDeck) {
-                Body b = beam.body;
+                if(beam.body != null) {
+                    Body b = beam.body;
 
-                float halfLen = beam.length / 2f;
-                p1.set(-halfLen, 0);
-                p1.set(b.getWorldVector(p1));
-                p2.set(halfLen, 0);
-                p2.set(b.getWorldVector(p2));
-                Vector2 centre = b.getWorldCenter();
-                p1.add(centre);
-                p2.add(centre);
-                beam.setPositions(p1, p2);
+                    float halfLen = beam.length / 2f;
+                    p1.set(-halfLen, 0);
+                    p1.set(b.getWorldVector(p1));
+                    p2.set(halfLen, 0);
+                    p2.set(b.getWorldVector(p2));
+                    Vector2 centre = b.getWorldCenter();
+                    p1.add(centre);
+                    p2.add(centre);
+                    beam.setPositions(p1, p2);
+                }
             } else if( beam.joint != null ){
                 p1.set(beam.joint.getAnchorA());
                 p2.set(beam.joint.getAnchorB());

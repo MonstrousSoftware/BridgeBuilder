@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
 
 
@@ -36,6 +38,7 @@ public class GameScreen extends ScreenAdapter {
     private Vector2 correctedPos = new Vector2();
     public boolean runPhysics = false;
     public boolean deckMode = true; // are beams decks? otherwise they are supports
+    public float zoom = 1;
 
 
     @Override
@@ -64,6 +67,8 @@ public class GameScreen extends ScreenAdapter {
             }
 
             public boolean touchDragged(int x, int y, int pointer) {
+                if(runPhysics)
+                    return false;
                 screenToWorldUnits(x,y, worldPos);
                 checkOverPin(worldPos);
                 if(currentPin == null)
@@ -91,7 +96,8 @@ public class GameScreen extends ScreenAdapter {
             }
 
             public boolean touchDown(int x, int y, int pointer, int button) {
-
+                if(runPhysics)
+                    return false;
                 if(button == Input.Buttons.RIGHT){  // RMB to delete
                     if(overPin != null) {
                         deletePin(overPin);
@@ -124,6 +130,8 @@ public class GameScreen extends ScreenAdapter {
             }
 
             public boolean touchUp(int x, int y, int pointer, int button) {
+                if(runPhysics)
+                    return false;
                 if(button == Input.Buttons.RIGHT)
                     return false;
 
@@ -147,6 +155,14 @@ public class GameScreen extends ScreenAdapter {
                 currentBeam = null;
                 return false;
             }
+
+            @Override
+            public boolean scrolled(float amountX, float amountY) {
+                zoom += amountY;
+                zoom = MathUtils.clamp(zoom, 1.0f, 3.0f);
+                setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                return true;
+            }
         };
         InputMultiplexer im = new InputMultiplexer();
         im.addProcessor(gui.stage);
@@ -156,8 +172,12 @@ public class GameScreen extends ScreenAdapter {
     }
 
 
+    private final Vector3 tmpVec3 = new Vector3();
+
     public void screenToWorldUnits(int x, int y, Vector2 worldPos){
-        worldPos.set((x-Gdx.graphics.getWidth()/2)/32f, (Gdx.graphics.getHeight()/2-y)/32f);
+        tmpVec3.set(x,y,0);
+        camera.unproject(tmpVec3);
+        worldPos.set(tmpVec3.x, tmpVec3.y);
     }
 
     /** check if the mouse is over a pin and if so highlight it and assign it to 'overPin' */
@@ -189,7 +209,8 @@ public class GameScreen extends ScreenAdapter {
         beamsToDelete.clear();
         for(Beam beam : beams){
             if(beam.attachedToPin(pinToDelete)) {
-                physics.destroyBeam(beam);
+                if(beam.isDeck)
+                    physics.destroyBeam(beam);
                 beamsToDelete.add(beam);
             }
         }
@@ -204,6 +225,8 @@ public class GameScreen extends ScreenAdapter {
     Color stressColor = new Color();
 
     public void startSimulation(){
+        if(runPhysics)
+            return;
         world.save("attempt.json");
         runPhysics = true;
         addVehicle();
@@ -281,15 +304,21 @@ public class GameScreen extends ScreenAdapter {
         physics.debugRender(camera);
 
         StringBuilder sb = new StringBuilder();
+        sb.append("Zoom: ");
+        sb.append(zoom);
+        if(beams.size > 0 && beams.get(0).joint != null){
+            sb.append(" Force:");
+            Vector2 forceVec = beams.get(0).joint.getReactionForce(1f / Physics.TIME_STEP);
+            float force = forceVec.len();
+            sb.append((int)force);
+        }
 
         gui.setStatus(sb.toString());
         gui.draw();
     }
 
     private void testBeamStress(Beam beam){
-
         float force;
-
 
         if(beam.isDeck){
             force = 0;
@@ -299,6 +328,7 @@ public class GameScreen extends ScreenAdapter {
                 force += forceVec.len();
                 denom++;
                 if (forceVec.len()  > BREAK_FORCE) {
+                    System.out.println("break joint at "+forceVec.len());
                     physics.destroyJoint(beam.joint);
                     beam.joint = null;
                 }
@@ -308,6 +338,7 @@ public class GameScreen extends ScreenAdapter {
                 force += forceVec2.len();
                 denom++;
                 if (forceVec2.len()  > BREAK_FORCE) {
+                    System.out.println("break joint2 at "+forceVec2.len());
                     physics.destroyJoint(beam.joint2);
                     beam.joint2 = null;
                 }
@@ -337,11 +368,15 @@ public class GameScreen extends ScreenAdapter {
         if(width <= 0 || height <= 0) return;
 
         // todo think about viewport behaviour
-        camera.viewportWidth = width/32f;
-        camera.viewportHeight = height/32f;
-        camera.update();
+        setCameraView(width, height);
 
         gui.resize(width, height);
+    }
+
+    private void setCameraView(int width, int height){
+        camera.viewportWidth = zoom * width/32f;
+        camera.viewportHeight = zoom * height/32f;
+        camera.update();
     }
 
     public void addVehicle(){
