@@ -13,6 +13,12 @@ import com.badlogic.gdx.utils.Array;
 public class Physics {
     public static final float TIME_STEP = 1/200f;
 
+    // collision bits
+    public static final int DECK_FLAG = 1;
+    public static final int STRUCTURE_FLAG = 2;
+    public static final int PIN_FLAG = 4;
+    public static final int VEHICLE_FLAG = 8;
+
     private final World world;
     public Box2DDebugRenderer debugRenderer;
     private float accumulator = 0;
@@ -69,6 +75,7 @@ public class Physics {
         bodyDef.type = pin.isAnchor? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(pin.position.x, pin.position.y);
 
+
         Body body = world.createBody(bodyDef);
         body.setUserData(pin);
 
@@ -86,6 +93,7 @@ public class Physics {
             fixtureDef.density = 5.5f;
             fixtureDef.friction = 0.4f;
             fixtureDef.restitution = 0.6f; // Make it bounce a little bit
+            fixtureDef.filter.categoryBits = PIN_FLAG;
 
             // Create our fixture and attach it to the body
             Fixture fixture = body.createFixture(fixtureDef);
@@ -110,7 +118,7 @@ public class Physics {
         Body body = world.createBody(bodyDef);
         body.setUserData(vehicle);
 
-        body.setAngularVelocity(-3);
+        //body.setAngularVelocity(-3);
 
         CircleShape circle = new CircleShape();
         circle.setRadius(vehicle.W/2f);
@@ -119,8 +127,10 @@ public class Physics {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circle;
         fixtureDef.density = 15.5f;
-        fixtureDef.friction = 0.04f;
+        fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0.1f; // Make it bounce a little bit
+        fixtureDef.filter.categoryBits = VEHICLE_FLAG;
+        fixtureDef.filter.maskBits = DECK_FLAG;
 
         // Create our fixture and attach it to the body
         Fixture fixture = body.createFixture(fixtureDef);
@@ -133,6 +143,8 @@ public class Physics {
      public void updateVehiclePosition(Vehicle vehicle){
          Body b = vehicle.body;
          vehicle.setPosition(b.getPosition().x, b.getPosition().y);
+
+         b.applyTorque(-450f, true);        // force wheel to turn
      }
 
 
@@ -183,6 +195,7 @@ public class Physics {
         fixtureDef.density = 5.5f;
         fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0.1f; // Make it bounce a little bit
+        fixtureDef.filter.categoryBits = DECK_FLAG;
 
         // Create our fixture and attach it to the body
         Fixture fixture = deckBody.createFixture(fixtureDef);
@@ -239,19 +252,23 @@ public class Physics {
 
     public void updateBeamPositions(Array<Beam> beams){
         for(Beam beam: beams) {
-            Body b = beam.body;
+            if(beam.isDeck) {
+                Body b = beam.body;
 
-            float halfLen = beam.length/2f;
-            p1.set(-halfLen, 0);
-            p1.set(b.getWorldVector(p1));
-            p2.set(halfLen, 0);
-            p2.set(b.getWorldVector(p2));
-
-            Vector2 centre = b.getWorldCenter();
-            p1.add(centre);
-            p2.add(centre);
-
-            beam.setPositions(p1, p2);
+                float halfLen = beam.length / 2f;
+                p1.set(-halfLen, 0);
+                p1.set(b.getWorldVector(p1));
+                p2.set(halfLen, 0);
+                p2.set(b.getWorldVector(p2));
+                Vector2 centre = b.getWorldCenter();
+                p1.add(centre);
+                p2.add(centre);
+                beam.setPositions(p1, p2);
+            } else if( beam.joint != null ){
+                p1.set(beam.joint.getAnchorA());
+                p2.set(beam.joint.getAnchorB());
+                beam.setPositions(p1, p2);
+            }
         }
     }
 

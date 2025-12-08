@@ -10,7 +10,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class Beam implements Json.Serializable {
-    public static float MAX_LENGTH = 5f;
+    public static float MAX_DECK_LENGTH = 5f;
+    public static float MAX_STRUCTURE_LENGTH = 8f;
 
     public static Texture beamTexture;
     public static Texture deckTexture;
@@ -40,8 +41,8 @@ public class Beam implements Json.Serializable {
         if(deckTexture == null)
             deckTexture = new Texture("textures/deck.png");
         sprite = new Sprite(beamTexture);
-        W = beamTexture.getWidth()/32f;
-        H = beamTexture.getHeight()/32f;
+        W = beamTexture.getWidth()/16f;
+        H = beamTexture.getHeight()/16f;
         // have a repeating texture, not a stretched texture
         deckTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         beamTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
@@ -79,11 +80,17 @@ public class Beam implements Json.Serializable {
         sprite.setRegion(0,0,length, 1);
     }
 
+    /** max length depending on beam type */
+    public float getMaxLength(){
+        return isDeck? MAX_DECK_LENGTH : MAX_STRUCTURE_LENGTH;
+    }
+
     /** adjust position2 so that length does not exceed MAX_LENGTH */
     public void truncateLength(){
-        if(length <= MAX_LENGTH)
+        float max = getMaxLength();
+        if(length <= max)
             return;
-        float fraction = MAX_LENGTH/length;
+        float fraction = max/length;
         float dx = position2.x - position1.x;
         float dy = position2.y - position1.y;
         position2.x = position1.x + fraction * dx;

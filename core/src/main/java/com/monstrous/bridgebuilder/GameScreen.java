@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 
-import static java.lang.Float.isNaN;
 
 
 public class GameScreen extends ScreenAdapter {
@@ -73,7 +72,7 @@ public class GameScreen extends ScreenAdapter {
                 currentPin.setPosition(worldPos.x, worldPos.y);
                 currentBeam.setEndPosition(worldPos.x, worldPos.y);
                 // if the beam gets too long, place a pin and create a new beam
-                if(currentBeam.length > Beam.MAX_LENGTH){
+                if(currentBeam.length > currentBeam.getMaxLength()){
                     // we might have overshot the max, so truncate the beam length and get adjusted end position
                     currentBeam.truncateLength();
                     correctedPos.set(currentBeam.position2.x, currentBeam.position2.y);
@@ -189,8 +188,10 @@ public class GameScreen extends ScreenAdapter {
         // remove all attached beams
         beamsToDelete.clear();
         for(Beam beam : beams){
-            if(beam.attachedToPin(pinToDelete))
+            if(beam.attachedToPin(pinToDelete)) {
+                physics.destroyBeam(beam);
                 beamsToDelete.add(beam);
+            }
         }
         beams.removeAll(beamsToDelete, true);
     }
@@ -219,13 +220,12 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.G)){
-            runPhysics = !runPhysics;
-            if(runPhysics)
-                addVehicle();
-            else
-                destroyVehicle();
+            startSimulation();
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.R)){
+            retry();
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.C)){
             runPhysics = false;
             reset();
         }
@@ -254,8 +254,9 @@ public class GameScreen extends ScreenAdapter {
                 //beam.updatePosition();
                 testBeamStress(beam);
             }
-            if(vehicle != null)
+            if(vehicle != null) {
                 physics.updateVehiclePosition(vehicle);
+            }
         }
 
         ScreenUtils.clear(Color.TEAL);
@@ -264,30 +265,22 @@ public class GameScreen extends ScreenAdapter {
 
         spriteBatch.begin();
 
+        if(vehicle != null)
+            vehicle.sprite.draw(spriteBatch);
+
         for(Beam beam : beams){
             beam.sprite.draw(spriteBatch);
         }
         for(Pin pin : pins){
             pin.sprite.draw(spriteBatch);
         }
-        if(vehicle != null)
-            vehicle.sprite.draw(spriteBatch);
+
 
         spriteBatch.end();
 
         physics.debugRender(camera);
 
         StringBuilder sb = new StringBuilder();
-//        for(Beam beam : beams) {
-//            if(beam.joint == null)
-//                continue;
-//            Vector2 forceVec = beam.joint.getReactionForce(1f/Physics.TIME_STEP);
-//            float force = forceVec.len();
-//            sb.append("[");
-//            sb.append(force);
-//            sb.append("]");
-//        }
-
 
         gui.setStatus(sb.toString());
         gui.draw();
@@ -353,7 +346,8 @@ public class GameScreen extends ScreenAdapter {
 
     public void addVehicle(){
         Pin startAnchor = pins.get(0);
-        vehicle = new Vehicle(startAnchor.position.x-3, startAnchor.position.y+2);
+        vehicle = new Vehicle();
+        vehicle.setPosition(startAnchor.position.x-3, startAnchor.position.y+vehicle.H/2);
         physics.addVehicle(vehicle);
     }
 
@@ -378,13 +372,15 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void clear(){
+        for(Beam beam : beams)
+            physics.destroyBeam(beam);
+        beams.clear();
+
         for(Pin pin : pins){
             physics.destroyPin(pin);
         }
         pins.clear();
-        for(Beam beam : beams)
-            physics.destroyBeam(beam);
-        beams.clear();
+
         if(vehicle != null)
             destroyVehicle();
     }

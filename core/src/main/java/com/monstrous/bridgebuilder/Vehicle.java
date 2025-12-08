@@ -27,11 +27,8 @@ public class Vehicle implements Json.Serializable {
         sprite.setSize(W, H);
     }
 
-    public Vehicle(float x, float y) {
-        this(x, y, false);
-    }
 
-    public Vehicle(float x, float y, boolean isAnchor) {
+    public Vehicle(float x, float y) {
         this();
         setPosition(x,y);
     }

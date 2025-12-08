@@ -1,0 +1,95 @@
+{
+"pins": [
+	{
+		"class": "Pin",
+		"id": 1,
+		"isAnchor": true,
+		"position": {
+			"x": -8
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 2,
+		"isAnchor": true,
+		"position": {
+			"x": 9,
+			"y": 3
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 3,
+		"isAnchor": false,
+		"position": {
+			"x": -3.0390925,
+			"y": 0.62401354
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 4,
+		"isAnchor": false,
+		"position": {
+			"x": 1.7792463,
+			"y": 1.959533
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 5,
+		"isAnchor": false,
+		"position": {
+			"x": 6.7010107,
+			"y": 2.8405745
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 7,
+		"isAnchor": false,
+		"position": {
+			"x": -6.5625,
+			"y": 5.125
+		}
+	}
+],
+"beams": [
+	{
+		"class": "Beam",
+		"startPin": 1,
+		"endPin": 3,
+		"isDeck": true
+	},
+	{
+		"class": "Beam",
+		"startPin": 3,
+		"endPin": 4,
+		"isDeck": true
+	},
+	{
+		"class": "Beam",
+		"startPin": 4,
+		"endPin": 5,
+		"isDeck": true
+	},
+	{
+		"class": "Beam",
+		"startPin": 5,
+		"endPin": 2,
+		"isDeck": true
+	},
+	{
+		"class": "Beam",
+		"startPin": 1,
+		"endPin": 7,
+		"isDeck": false
+	},
+	{
+		"class": "Beam",
+		"startPin": 7,
+		"endPin": 3,
+		"isDeck": false
+	}
+]
+}
