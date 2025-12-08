@@ -287,10 +287,7 @@ public class GameScreen extends ScreenAdapter {
 //            sb.append(force);
 //            sb.append("]");
 //        }
-        if(beams.size > 0 && beams.get(0).body != null){
-            Vector2 pos = beams.get(0).body.getPosition();
-            sb.append(pos);
-        }
+
 
         gui.setStatus(sb.toString());
         gui.draw();
@@ -344,13 +341,14 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void resize(int width, int height) {
-        // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
-        // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
         if(width <= 0 || height <= 0) return;
 
-        gui.resize(width, height);
+        // todo think about viewport behaviour
+        camera.viewportWidth = width/32f;
+        camera.viewportHeight = height/32f;
+        camera.update();
 
-        // Resize your screen here. The parameters represent the new window size.
+        gui.resize(width, height);
     }
 
     public void addVehicle(){

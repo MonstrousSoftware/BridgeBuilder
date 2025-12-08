@@ -119,7 +119,7 @@ public class Physics {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circle;
         fixtureDef.density = 15.5f;
-        fixtureDef.friction = 0.4f;
+        fixtureDef.friction = 0.04f;
         fixtureDef.restitution = 0.1f; // Make it bounce a little bit
 
         // Create our fixture and attach it to the body
@@ -198,12 +198,10 @@ public class Physics {
     }
 
     public void destroyBeam(Beam beam){
-        if(beam.joint != null)
+        if(beam.body != null)   // deck
+            world.destroyBody(beam.body);   // this will also destroy the joints
+        else if(beam.joint != null) // structure
             world.destroyJoint(beam.joint);
-        if(beam.joint2 != null)
-            world.destroyJoint(beam.joint2);
-        if(beam.body != null)
-            world.destroyBody(beam.body);
         beam.joint = null;
         beam.joint2 = null;
         beam.body = null;
