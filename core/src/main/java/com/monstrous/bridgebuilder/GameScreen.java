@@ -15,8 +15,11 @@ import com.badlogic.gdx.utils.*;
 
 
 public class GameScreen extends ScreenAdapter {
-    public static float COLOR_SCALE = 10000;
-    public static float BREAK_FORCE = 150000f;
+    public static float COLOR_SCALE = 15000f;
+    public static float BREAK_FORCE = 15000f;
+
+
+    public enum BuildMaterial { DECK, STRUCTURE };
 
     public Array<Pin> pins;
     public Array<Beam> beams;
@@ -38,7 +41,7 @@ public class GameScreen extends ScreenAdapter {
     private Vector2 startPos = new Vector2();
     private Vector2 correctedPos = new Vector2();
     public boolean runPhysics = false;
-    public boolean deckMode = true; // are beams decks? otherwise they are supports
+    private BuildMaterial buildMaterial = BuildMaterial.DECK;
     public float zoom = 1;
 
 
@@ -46,7 +49,7 @@ public class GameScreen extends ScreenAdapter {
     public void show() {
         gui = new GUI(this);
         spriteBatch = new SpriteBatch();
-        physics = new Physics();
+        physics = new Physics(this);
 
         // for debug renderer
         camera = new OrthographicCamera(Gdx.graphics.getWidth()/32f, Gdx.graphics.getHeight()/32f);
@@ -88,7 +91,7 @@ public class GameScreen extends ScreenAdapter {
                     currentBeam.setEndPin(currentPin);
                     physics.addBeam(currentBeam);
                     currentBeam = new Beam(correctedPos.x, correctedPos.y, correctedPos.x, correctedPos.y);
-                    currentBeam.setDeck(deckMode);
+                    currentBeam.setDeck(buildMaterial == BuildMaterial.DECK);
                     currentBeam.setStartPin(currentPin);
                     currentPin = new Pin(correctedPos.x, correctedPos.y);
                     beams.add(currentBeam);
@@ -122,7 +125,7 @@ public class GameScreen extends ScreenAdapter {
                     pins.add(startPin);
                 }
                 currentBeam = new Beam(startPos.x, startPos.y, worldPos.x, worldPos.y);
-                currentBeam.setDeck(deckMode);
+                currentBeam.setDeck(buildMaterial == BuildMaterial.DECK);
                 currentBeam.setStartPin(startPin);
                 beams.add(currentBeam);
                 currentPin = new Pin(worldPos.x, worldPos.y);
@@ -235,11 +238,16 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void retry(){
+        gui.clearEndMessage();
         runPhysics = false;
         clear();
         world.load("attempt.json", physics);
         pins = world.pins;
         beams = world.beams;
+    }
+
+    public void setBuildMaterial( BuildMaterial mat ){
+        buildMaterial = mat;
     }
 
     @Override
@@ -265,10 +273,10 @@ public class GameScreen extends ScreenAdapter {
             beams = world.beams;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
-            deckMode = true;
+            setBuildMaterial(BuildMaterial.DECK);
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
-            deckMode = false;
+            setBuildMaterial(BuildMaterial.STRUCTURE);
         }
 
         if(runPhysics) {
@@ -281,9 +289,6 @@ public class GameScreen extends ScreenAdapter {
             }
             if(vehicle != null) {
                 physics.updateVehiclePosition(vehicle);
-            }
-            if(physics.isTouching(flag)){
-                System.out.println("Flag reached!");
             }
         }
 
@@ -390,6 +395,7 @@ public class GameScreen extends ScreenAdapter {
         setCameraView(width, height);
 
         gui.resize(width, height);
+        //gui.showLoss();
     }
 
     private void setCameraView(int width, int height){
@@ -446,6 +452,16 @@ public class GameScreen extends ScreenAdapter {
     public void reset(){
         clear();
         populate();
+    }
+
+    public void flagReached(){
+        System.out.println("Flag reached");
+        gui.showWin();
+    }
+
+    public void floorReached(){
+        System.out.println("Floor reached");
+        gui.showLoss();
     }
 
     public void renderGrid() {

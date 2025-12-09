@@ -25,12 +25,13 @@ public class Physics {
     private float accumulator = 0;
     Array<Body> tmpBodies = new Array<Body>();
 
-    public Physics() {
+    public Physics(GameScreen screen) {
         Vector2 gravity = new Vector2(0,-10);
         world = new World(gravity, true);
+        world.setContactListener(new MyContactListener(screen));
         debugRenderer = new Box2DDebugRenderer();
 
-        world.setAutoClearForces(true); // useful?
+        //world.setAutoClearForces(true); // useful?
 
 
         // define ground
@@ -43,15 +44,10 @@ public class Physics {
 
         // Create a body from the definition and add it to the world
         Body groundBody = world.createBody(groundBodyDef);
-
-        // Create a polygon shape
+        groundBody.setUserData(new Floor());
         PolygonShape groundBox = new PolygonShape();
-        // Set the polygon shape as a box which is twice the size of our view port and 20 high
-        // (setAsBox takes half-width and half-height as arguments)
-        groundBox.setAsBox(20, 0.5f);
-        // Create a fixture from our polygon shape and add it to our ground body
+        groundBox.setAsBox(40, 0.5f);
         groundBody.createFixture(groundBox, 0.0f);
-        // Clean up after ourselves
         groundBox.dispose();
     }
 
@@ -59,6 +55,7 @@ public class Physics {
         BodyDef rampBodyDef = new BodyDef();
         rampBodyDef.position.set(pin.position.x-10, pin.position.y);
         Body rampBody = world.createBody(rampBodyDef);
+        rampBody.setUserData(new Ramp());
         PolygonShape rampBox = new PolygonShape();
         rampBox.setAsBox(10, 0.5f);
         rampBody.createFixture(rampBox, 0.0f);
@@ -68,6 +65,7 @@ public class Physics {
         BodyDef rampBodyDef = new BodyDef();
         rampBodyDef.position.set(pin.position.x+10, pin.position.y);
         Body rampBody = world.createBody(rampBodyDef);
+        rampBody.setUserData(new Ramp());
         PolygonShape rampBox = new PolygonShape();
         rampBox.setAsBox(10, 0.5f);
         rampBody.createFixture(rampBox, 0.0f);
@@ -78,6 +76,7 @@ public class Physics {
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(flag.position.x, flag.position.y+1);
         Body body = world.createBody(bodyDef);
+        body.setUserData(flag);
         PolygonShape box = new PolygonShape();
         box.setAsBox(0.5f, 1f);
         Fixture fixture = body.createFixture(box, 0.0f);
@@ -86,10 +85,7 @@ public class Physics {
         box.dispose();
     }
 
-    public boolean isTouching(Flag flag){
-        //Array<Contact> contacts = world.getContactList();
-        return false;
-    }
+
 
     public Body addPin(Pin pin){
         BodyDef bodyDef = new BodyDef();

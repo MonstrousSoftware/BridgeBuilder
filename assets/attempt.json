@@ -21,8 +21,8 @@
 		"id": 3,
 		"isAnchor": false,
 		"position": {
-			"x": -2.00238,
-			"y": 0.15424737
+			"x": -2.0000978,
+			"y": -0.03124936
 		}
 	},
 	{
@@ -30,8 +30,35 @@
 		"id": 4,
 		"isAnchor": false,
 		"position": {
-			"x": 2.9972043,
-			"y": 0.21871375
+			"x": 2.9886932,
+			"y": 0.30335736
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 6,
+		"isAnchor": false,
+		"position": {
+			"x": -3.6875002,
+			"y": 4.3750005
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 24,
+		"isAnchor": false,
+		"position": {
+			"x": 2.46875,
+			"y": 4.5625
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 25,
+		"isAnchor": false,
+		"position": {
+			"x": 6.1875,
+			"y": 4.46875
 		}
 	}
 ],
@@ -53,6 +80,54 @@
 		"startPin": 4,
 		"endPin": 2,
 		"isDeck": true
+	},
+	{
+		"class": "Beam",
+		"startPin": 1,
+		"endPin": 6,
+		"isDeck": false
+	},
+	{
+		"class": "Beam",
+		"startPin": 6,
+		"endPin": 3,
+		"isDeck": false
+	},
+	{
+		"class": "Beam",
+		"startPin": 6,
+		"endPin": 24,
+		"isDeck": false
+	},
+	{
+		"class": "Beam",
+		"startPin": 24,
+		"endPin": 25,
+		"isDeck": false
+	},
+	{
+		"class": "Beam",
+		"startPin": 25,
+		"endPin": 2,
+		"isDeck": false
+	},
+	{
+		"class": "Beam",
+		"startPin": 25,
+		"endPin": 4,
+		"isDeck": false
+	},
+	{
+		"class": "Beam",
+		"startPin": 24,
+		"endPin": 4,
+		"isDeck": false
+	},
+	{
+		"class": "Beam",
+		"startPin": 3,
+		"endPin": 24,
+		"isDeck": false
 	}
 ]
 }
