@@ -20,6 +20,9 @@ public class GUI implements Disposable {
     private Label status;
     private Image winImage;
     private Image lossImage;
+    TextButton deckButton;
+    TextButton structureButton;
+    TextButton modeButton;
     private boolean runMode;    // we are either in Edit mode or Run mode
 
     public GUI(GameScreen gameScreen) {
@@ -34,6 +37,19 @@ public class GUI implements Disposable {
         runMode = false;
     }
 
+    public void setRunMode(boolean mode){
+        runMode = mode;
+        if(runMode) {
+            modeButton.setText("Retry");
+            deckButton.setVisible(false);
+            structureButton.setVisible(false);
+        } else {
+            modeButton.setText("Go!");
+            deckButton.setVisible(true);
+            structureButton.setVisible(true);
+        }
+    }
+
     private void fillStage(){
         stage.clear();
         //stage.setDebugAll(true);
@@ -42,14 +58,14 @@ public class GUI implements Disposable {
 
         // Material buttons (these should act as radio buttons and highlight the selected one)
         //
-        TextButton deckButton = new TextButton("Deck", skin);
+        deckButton = new TextButton("Deck", skin);
         deckButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(GameScreen.BuildMaterial.DECK);
             }
         });
 
-        TextButton structureButton = new TextButton("Structure", skin);
+        structureButton = new TextButton("Structure", skin);
         structureButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(GameScreen.BuildMaterial.STRUCTURE);
@@ -58,21 +74,16 @@ public class GUI implements Disposable {
 
 
         // button toggles between Edit mode and Run mode
-        TextButton modeButton = new TextButton("Go!", skin);
+        modeButton = new TextButton("Go!", skin);
         modeButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 if(runMode) {
                     gameScreen.retry();
-                    modeButton.setText("Go!");
-                    deckButton.setVisible(true);
-                    structureButton.setVisible(true);
                 } else {
                     gameScreen.startSimulation();
-                    modeButton.setText("Retry");
-                    deckButton.setVisible(false);
-                    structureButton.setVisible(false);
                 }
                 runMode = !runMode;
+                setRunMode(runMode);
             }
         });
 

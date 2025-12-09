@@ -41,6 +41,7 @@ public class GameScreen extends ScreenAdapter {
     private Vector2 startPos = new Vector2();
     private Vector2 correctedPos = new Vector2();
     public boolean runPhysics = false;
+    public boolean gameOver = false;
     private BuildMaterial buildMaterial = BuildMaterial.DECK;
     public float zoom = 1;
 
@@ -232,9 +233,12 @@ public class GameScreen extends ScreenAdapter {
     public void startSimulation(){
         if(runPhysics)
             return;
+
+        gameOver = false;
         world.save("attempt.json");
         runPhysics = true;
         addVehicle();
+
     }
 
     public void retry(){
@@ -244,6 +248,7 @@ public class GameScreen extends ScreenAdapter {
         world.load("attempt.json", physics);
         pins = world.pins;
         beams = world.beams;
+
     }
 
     public void setBuildMaterial( BuildMaterial mat ){
@@ -253,9 +258,11 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.G)){
+            gui.setRunMode(true);
             startSimulation();
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.R)){
+            gui.setRunMode(false);
             retry();
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.C)){
@@ -288,7 +295,7 @@ public class GameScreen extends ScreenAdapter {
                 testBeamStress(beam);
             }
             if(vehicle != null) {
-                physics.updateVehiclePosition(vehicle);
+                physics.updateVehiclePosition(vehicle, !gameOver);
             }
         }
 
@@ -456,11 +463,13 @@ public class GameScreen extends ScreenAdapter {
 
     public void flagReached(){
         System.out.println("Flag reached");
+        gameOver = true;
         gui.showWin();
     }
 
     public void floorReached(){
         System.out.println("Floor reached");
+        gameOver = true;
         gui.showLoss();
     }
 

@@ -158,12 +158,18 @@ public class Physics {
         vehicle.body = body;
      }
 
-     public void updateVehiclePosition(Vehicle vehicle){
+     public void updateVehiclePosition(Vehicle vehicle, boolean keepMoving){
          Body b = vehicle.body;
          vehicle.setPosition(b.getPosition().x, b.getPosition().y);
          vehicle.setRotation(b.getAngle());
 
-         b.applyTorque(-VEHICLE_TORQUE, true);        // force wheel to turn
+         if(keepMoving) {
+             b.applyTorque(-VEHICLE_TORQUE, true);        // force wheel to turn
+             b.setAngularDamping(0f);
+         }
+         else
+             b.setAngularDamping(2f);     // stop rolling
+
      }
 
 
