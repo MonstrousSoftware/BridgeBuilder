@@ -14,14 +14,16 @@ public class GameWorld implements Json.Serializable {
 
     public Array<Pin> pins;
     public Array<Beam> beams;
+    public Flag flag;
     public Vehicle vehicle;
 
     public GameWorld() {
     }
 
-    public void set(Array<Pin> pins, Array<Beam> beams){
+    public void set(Array<Pin> pins, Array<Beam> beams, Flag flag){
         this.pins = pins;
         this.beams = beams;
+        this.flag = flag;
     }
 
     public void save( String fileName)
@@ -31,15 +33,14 @@ public class GameWorld implements Json.Serializable {
         json.setWriter(writer);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
+        json.addClassTag("Flag", Beam.class);
         json.addClassTag("Vehicle", Vehicle.class);
 
         FileHandle file = Gdx.files.local(fileName);	// save file
         file.writeString("",  false);	// overwrite
 
-        // save array
         String s = json.prettyPrint(this);
         file.writeString(s,  true);	// append
-        //System.out.println("saved: "+s);
     }
 
     public void load( final String fileName, Physics physics )
@@ -53,10 +54,13 @@ public class GameWorld implements Json.Serializable {
         //System.out.println("loaded: "+string);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
+        json.addClassTag("Flag", Beam.class);
+        json.addClassTag("Vehicle", Vehicle.class);
 
         GameWorld loaded = json.fromJson(GameWorld.class, string);
         this.pins = loaded.pins;
         this.beams = loaded.beams;
+        this.flag = loaded.flag;
 
         for(Pin pin: pins){
             physics.addPin(pin);
@@ -83,6 +87,7 @@ public class GameWorld implements Json.Serializable {
     public void write(Json json) {
         json.writeValue("pins", pins);
         json.writeValue("beams", beams);
+        json.writeValue("flag", flag);
         //json.writeValue("vehicle", vehicle);
     }
 
@@ -90,6 +95,7 @@ public class GameWorld implements Json.Serializable {
     public void read(Json json, JsonValue jsonData) {
         pins= json.readValue("pins", Array.class, Integer.class, jsonData);
         beams = json.readValue("beams", Array.class, Beam.class, jsonData);
+        flag = json.readValue("flag", Flag.class, jsonData);
         //vehicle = json.readValue("vehicle", Vehicle.class, jsonData);
         System.out.println("read pins: "+pins.size);
     }

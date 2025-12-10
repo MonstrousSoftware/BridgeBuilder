@@ -18,5 +18,10 @@
 	}
 ],
 "beams": [],
-"flag": null
+"flag": {
+	"position": {
+		"x": 10,
+		"y": 0.5
+	}
+}
 }

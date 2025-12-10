@@ -44,6 +44,7 @@ public class GameScreen extends ScreenAdapter {
     public boolean gameOver = false;
     private BuildMaterial buildMaterial = BuildMaterial.DECK;
     public float zoom = 1;
+    public int levelNumber;
 
 
     @Override
@@ -59,9 +60,15 @@ public class GameScreen extends ScreenAdapter {
 
         pins = new Array<>();
         beams = new Array<>();
-        populate();
+
+
         world = new GameWorld();
-        world.set(pins, beams);
+        //populate();
+        world.set(pins, beams, flag);
+        levelNumber = 1;
+        //world.save("level1.json");
+        loadLevel(levelNumber);
+
         InputAdapter inputProcessor = new InputAdapter() {
 
             @Override
@@ -248,7 +255,6 @@ public class GameScreen extends ScreenAdapter {
         world.load("attempt.json", physics);
         pins = world.pins;
         beams = world.beams;
-
     }
 
     public void setBuildMaterial( BuildMaterial mat ){
@@ -281,6 +287,7 @@ public class GameScreen extends ScreenAdapter {
             world.load("savefile.json", physics);
             pins = world.pins;
             beams = world.beams;
+            flag = world.flag;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
             setBuildMaterial(BuildMaterial.DECK);
@@ -428,6 +435,18 @@ public class GameScreen extends ScreenAdapter {
         vehicle = null;
     }
 
+    public void loadLevel(int levelNumber){
+        gui.clearEndMessage();
+        runPhysics = false;
+        clear();
+        world.load("level"+levelNumber+".json", physics);
+        pins = world.pins;
+        beams = world.beams;
+        flag = world.flag;
+
+        physics.addStartRamp(pins.get(0));
+        physics.addEndRamp(pins.get(1));
+    }
 
     public void populate(){
         Pin anchor1 = new Pin(-7, 0, true);
@@ -442,9 +461,6 @@ public class GameScreen extends ScreenAdapter {
 
         flag = new Flag(10, 0.5f);
         physics.addFlag(flag);
-
-
-        //addVehicle();
     }
 
     public void clear(){
@@ -463,7 +479,8 @@ public class GameScreen extends ScreenAdapter {
 
     public void reset(){
         clear();
-        populate();
+        loadLevel(levelNumber);
+        //populate();
     }
 
     public void flagReached(){
