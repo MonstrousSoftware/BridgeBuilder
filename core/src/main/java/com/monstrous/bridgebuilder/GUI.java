@@ -22,6 +22,7 @@ public class GUI implements Disposable {
     private Image lossImage;
     TextButton deckButton;
     TextButton structureButton;
+    TextButton cableButton;
     TextButton modeButton;
     private boolean runMode;    // we are either in Edit mode or Run mode
 
@@ -43,10 +44,12 @@ public class GUI implements Disposable {
             modeButton.setText("Retry");
             deckButton.setVisible(false);
             structureButton.setVisible(false);
+            cableButton.setVisible(false);
         } else {
             modeButton.setText("Go!");
             deckButton.setVisible(true);
             structureButton.setVisible(true);
+            cableButton.setVisible(true);
         }
     }
 
@@ -61,14 +64,21 @@ public class GUI implements Disposable {
         deckButton = new TextButton("Deck", skin);
         deckButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
-                gameScreen.setBuildMaterial(GameScreen.BuildMaterial.DECK);
+                gameScreen.setBuildMaterial(BuildMaterial.DECK);
             }
         });
 
         structureButton = new TextButton("Structure", skin);
         structureButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
-                gameScreen.setBuildMaterial(GameScreen.BuildMaterial.STRUCTURE);
+                gameScreen.setBuildMaterial(BuildMaterial.STRUCTURE);
+            }
+        });
+
+        cableButton = new TextButton("Cable", skin);
+        cableButton.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                gameScreen.setBuildMaterial(BuildMaterial.CABLE);
             }
         });
 
@@ -93,6 +103,7 @@ public class GUI implements Disposable {
         Table materials = new Table();
         materials.add(deckButton).width(100).pad(10);
         materials.add(structureButton).width(100).pad(10);
+        materials.add(cableButton).width(100).pad(10);
 
         Table buttonLine = new Table();
         buttonLine.add(materials);

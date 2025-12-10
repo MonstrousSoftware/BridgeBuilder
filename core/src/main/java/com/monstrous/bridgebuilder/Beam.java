@@ -12,16 +12,19 @@ import com.badlogic.gdx.utils.JsonValue;
 public class Beam implements Json.Serializable {
     public static float MAX_DECK_LENGTH = 5f;
     public static float MAX_STRUCTURE_LENGTH = 8f;
+    public static float MAX_CABLE_LENGTH = 20f;
 
     public static Texture beamTexture;
     public static Texture deckTexture;
+    public static Texture cableTexture;
 
     public final Vector2 position1;
     public final Vector2 position2;
-    public boolean isDeck;
+    public BuildMaterial material;
+    //public boolean isDeck;
     public final Sprite sprite;
-    public final float W;
-    public final float H;
+    public float W;
+    public float H;
     public float length;
     public float angle;
     public Pin startPin;
@@ -36,18 +39,29 @@ public class Beam implements Json.Serializable {
     public Beam(){
         this.position1 = new Vector2();
         this.position2 = new Vector2();
+        loadTextures();
+
+        material = BuildMaterial.DECK;  // default
+
+        sprite = new Sprite(beamTexture);
+        W = beamTexture.getWidth()/16f;
+        H = beamTexture.getHeight()/16f;
+
+        sprite.setOrigin(0, H/2f);
+        tint = new Color(Color.WHITE);
+    }
+
+    private void loadTextures(){
         if(beamTexture == null)
             beamTexture = new Texture("textures/beam.png");
         if(deckTexture == null)
             deckTexture = new Texture("textures/deck.png");
-        sprite = new Sprite(beamTexture);
-        W = beamTexture.getWidth()/16f;
-        H = beamTexture.getHeight()/16f;
+        if(cableTexture == null)
+            cableTexture = new Texture("textures/cable.png");
         // have a repeating texture, not a stretched texture
         deckTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         beamTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        sprite.setOrigin(0, H/2f);
-        tint = new Color(Color.WHITE);
+        cableTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
     }
 
 
@@ -82,7 +96,12 @@ public class Beam implements Json.Serializable {
 
     /** max length depending on beam type */
     public float getMaxLength(){
-        return isDeck? MAX_DECK_LENGTH : MAX_STRUCTURE_LENGTH;
+        switch(material){
+            case DECK: return MAX_DECK_LENGTH;
+            case STRUCTURE: return MAX_STRUCTURE_LENGTH;
+            case CABLE: return MAX_CABLE_LENGTH;
+        }
+        return MAX_DECK_LENGTH;
     }
 
     /** adjust position2 so that length does not exceed MAX_LENGTH */
@@ -103,9 +122,14 @@ public class Beam implements Json.Serializable {
         sprite.setColor(tint);
     }
 
-    public void setDeck(boolean deck){
-        this.isDeck = deck;
-        sprite.setTexture( deck? deckTexture : beamTexture);
+    public void setMaterial(BuildMaterial material){
+        this.material = material;
+        Texture texture = material == BuildMaterial.DECK ? deckTexture :  (material == BuildMaterial.STRUCTURE ? beamTexture : cableTexture);
+        sprite.setTexture( texture );
+
+        W = texture.getWidth()/16f;
+        H = texture.getHeight()/16f;
+        sprite.setOrigin(0, H/2f);
     }
 
     public void setEndPosition(float x, float y){
@@ -138,14 +162,14 @@ public class Beam implements Json.Serializable {
     public void write(Json json) {
         json.writeValue("startPin", startPin.id);
         json.writeValue("endPin", endPin.id);
-        json.writeValue("isDeck", isDeck);
+        json.writeValue("material", material);
     }
 
     @Override
     public void read(Json json, JsonValue jsonData) {
         startId = json.readValue("startPin", Integer.class, jsonData);
         endId = json.readValue("endPin", Integer.class, jsonData);
-        boolean deck = json.readValue("isDeck", Boolean.class, jsonData);
-        setDeck(deck);
+        BuildMaterial mat = json.readValue("material", BuildMaterial.class, jsonData);
+        setMaterial(mat);
     }
 }

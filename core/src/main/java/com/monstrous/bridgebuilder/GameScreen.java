@@ -19,8 +19,6 @@ public class GameScreen extends ScreenAdapter {
     public static float BREAK_FORCE = 20000f;
 
 
-    public enum BuildMaterial { DECK, STRUCTURE };
-
     public GameWorld world;
 
     public Physics physics;
@@ -33,9 +31,9 @@ public class GameScreen extends ScreenAdapter {
     private Pin currentPin;             // is not in pins, non-null during dragging
     private Beam currentBeam;           // is in beams
     private Pin overPin;                // highlighted pin, or null
-    private Vector2 worldPos = new Vector2();
-    private Vector2 startPos = new Vector2();
-    private Vector2 correctedPos = new Vector2();
+    private final Vector2 worldPos = new Vector2();
+    private final Vector2 startPos = new Vector2();
+    private final Vector2 correctedPos = new Vector2();
     public boolean runPhysics = false;
     public boolean gameOver = false;
     private BuildMaterial buildMaterial = BuildMaterial.DECK;
@@ -57,7 +55,7 @@ public class GameScreen extends ScreenAdapter {
 
         world = new GameWorld();
         //populate();
-        levelNumber = 3;
+        levelNumber = 4;
 
         loadLevel(levelNumber);
 
@@ -91,7 +89,7 @@ public class GameScreen extends ScreenAdapter {
                     currentBeam.setEndPin(currentPin);
                     physics.addBeam(currentBeam);
                     currentBeam = new Beam(correctedPos.x, correctedPos.y, correctedPos.x, correctedPos.y);
-                    currentBeam.setDeck(buildMaterial == BuildMaterial.DECK);
+                    currentBeam.setMaterial(buildMaterial);
                     currentBeam.setStartPin(currentPin);
                     currentPin = new Pin(correctedPos.x, correctedPos.y);
                     world.beams.add(currentBeam);
@@ -125,7 +123,7 @@ public class GameScreen extends ScreenAdapter {
                     world.pins.add(startPin);
                 }
                 currentBeam = new Beam(startPos.x, startPos.y, worldPos.x, worldPos.y);
-                currentBeam.setDeck(buildMaterial == BuildMaterial.DECK);
+                currentBeam.setMaterial(buildMaterial);
                 currentBeam.setStartPin(startPin);
                 world.beams.add(currentBeam);
                 currentPin = new Pin(worldPos.x, worldPos.y);
@@ -287,6 +285,34 @@ public class GameScreen extends ScreenAdapter {
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
             setBuildMaterial(BuildMaterial.STRUCTURE);
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
+            setBuildMaterial(BuildMaterial.CABLE);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Zoom: ");
+        sb.append(zoom);
+        sb.append(" Beam forces:");
+        for(Beam beam : world.beams){
+            if(beam.material != BuildMaterial.DECK)
+                continue;
+            if(beam.joint != null) {
+                Vector2 forceVec = beam.joint.getReactionForce(1f / Physics.TIME_STEP);
+                float force = forceVec.len();
+                sb.append((int) force);
+                sb.append("+");
+            } else
+                sb.append("- +");
+            if(beam.joint2 != null) {
+                Vector2 forceVec = beam.joint2.getReactionForce(1f / Physics.TIME_STEP);
+                float force = forceVec.len();
+                sb.append((int) force);
+                sb.append("   ");
+            } else
+                sb.append("-   ");
+        }
+
+        gui.setStatus(sb.toString());
 
         if(runPhysics) {
             physics.update(delta);
@@ -300,6 +326,10 @@ public class GameScreen extends ScreenAdapter {
                 physics.updateVehiclePosition(world.vehicle, !gameOver);
             }
         }
+
+
+
+
 
         ScreenUtils.clear(Color.TEAL);
         //renderGrid();
@@ -323,37 +353,14 @@ public class GameScreen extends ScreenAdapter {
 
         physics.debugRender(camera);
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Zoom: ");
-        sb.append(zoom);
-        sb.append(" Beam forces:");
-        for(Beam beam : world.beams){
-            if(!beam.isDeck)
-                continue;
-            if(beam.joint != null) {
-                Vector2 forceVec = beam.joint.getReactionForce(1f / Physics.TIME_STEP);
-                float force = forceVec.len();
-                sb.append((int) force);
-                sb.append("+");
-            } else
-                sb.append("- +");
-            if(beam.joint2 != null) {
-                Vector2 forceVec = beam.joint2.getReactionForce(1f / Physics.TIME_STEP);
-                float force = forceVec.len();
-                sb.append((int) force);
-                sb.append("   ");
-            } else
-                sb.append("-   ");
-        }
 
-        gui.setStatus(sb.toString());
         gui.draw();
     }
 
     private void testBeamStress(Beam beam){
         float force;
 
-        if(beam.isDeck){
+        if(beam.material == BuildMaterial.DECK){
             // take average force of the two revoluteJoints
             force = 0;
             int denom = 0;
@@ -379,13 +386,15 @@ public class GameScreen extends ScreenAdapter {
                 }
                 force += force2;
             }
-//            if(denom > 0)
-//                force /= (float)denom;  // use average force on joints for colouring
+            if(denom > 0)
+                force /= (float)denom;  // use average force on joints for colouring
         } else {
             if(beam.joint == null)
                 return;
             force = beam.joint.getReactionForce(1f / Physics.TIME_STEP).len();
             if (force > BREAK_FORCE) {
+                System.out.println("break joint at "+force);
+                //runPhysics = false;
                 deleteBeam(beam);
                 return;
             }

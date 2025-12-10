@@ -33,7 +33,7 @@ public class GameWorld implements Json.Serializable {
         json.setWriter(writer);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
-        json.addClassTag("Flag", Beam.class);
+        json.addClassTag("Flag", Flag.class);
         json.addClassTag("Vehicle", Vehicle.class);
 
         FileHandle file = Gdx.files.local(fileName);	// save file
@@ -54,7 +54,7 @@ public class GameWorld implements Json.Serializable {
         //System.out.println("loaded: "+string);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
-        json.addClassTag("Flag", Beam.class);
+        json.addClassTag("Flag", Flag.class);
         json.addClassTag("Vehicle", Vehicle.class);
 
         GameWorld loaded = json.fromJson(GameWorld.class, string);

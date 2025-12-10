@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 import com.badlogic.gdx.utils.Array;
 
 public class Physics {
@@ -52,6 +53,8 @@ public class Physics {
     }
 
     public void addRamp(Pin pin){
+        if(pin.anchorDirection == 0)
+            return;
         BodyDef rampBodyDef = new BodyDef();
         if(pin.anchorDirection == 1)
             rampBodyDef.position.set(pin.position.x-10, pin.position.y);
@@ -187,10 +190,31 @@ public class Physics {
     }
 
     public void addBeam(Beam beam){
-        if(beam.isDeck)
-            addDeck(beam);
-        else
-            addSupport(beam);
+        switch(beam.material) {
+            case DECK:
+                addDeck(beam);
+                break;
+            case STRUCTURE:
+                addSupport(beam);
+                break;
+            case CABLE:
+                addRope(beam);
+                break;
+        }
+    }
+
+    public void addRope(Beam beam){
+        Pin a = beam.startPin;
+        Pin b = beam.endPin;
+
+        RopeJointDef defJoint = new RopeJointDef ();
+        defJoint.bodyA = a.body;
+        defJoint.localAnchorA.set(a.body.getLocalPoint(a.position));
+        defJoint.bodyB = b.body;
+        defJoint.localAnchorB.set(b.body.getLocalPoint(b.position));
+        defJoint.maxLength = beam.length;
+
+        beam.joint = world.createJoint(defJoint); // Returns subclass Joint.
     }
 
     public void addSupport(Beam beam){
@@ -203,13 +227,16 @@ public class Physics {
         defJoint.dampingRatio = 1f;
 
         defJoint.initialize(a.body, b.body, a.position, b.position); // anchor points
-        beam.joint = (DistanceJoint) world.createJoint(defJoint); // Returns subclass Joint.
+        beam.joint = world.createJoint(defJoint); // Returns subclass Joint.
     }
 
     /** a deck is modeled as a dynamic body with a box shape with revolute joints to both pins */
     public void addDeck(Beam beam){
         Pin a = beam.startPin;
         Pin b = beam.endPin;
+
+        if(beam.length/2 <= 0.5f)
+            return;
 
         BodyDef deckBodyDef = new BodyDef();
         deckBodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -222,7 +249,8 @@ public class Physics {
 
         // shorten the body a bit (-0.5f) compared to the visual deck so that the body has room to move wrt its neighbours
         // otherwise it will collide and wedge itself
-        deckBox.setAsBox(beam.length/2 - 0.4f, beam.H/2f, Vector2.Zero, 0);
+
+        deckBox.setAsBox(beam.length/2 - 0.5f, beam.H/2f, Vector2.Zero, 0);
         deckBody.setTransform(centre, beam.angle);
 
         // Create a fixture definition to apply our shape to
@@ -256,7 +284,7 @@ public class Physics {
         if(beam.joint2 != null) // deck
             world.destroyJoint(beam.joint2);
         if(beam.body != null)   // deck
-            world.destroyBody(beam.body);   // this will also destroy the joints
+            world.destroyBody(beam.body);
         beam.joint = null;
         beam.joint2 = null;
         beam.body = null;
@@ -295,7 +323,8 @@ public class Physics {
 
     public void updateBeamPositions(Array<Beam> beams){
         for(Beam beam: beams) {
-            if(beam.isDeck) {
+            if(beam.material == BuildMaterial.DECK) {
+                // a deck has a body and may collide
                 if(beam.body != null) {
                     Body b = beam.body;
 
@@ -310,6 +339,7 @@ public class Physics {
                     beam.setPositions(p1, p2);
                 }
             } else if( beam.joint != null ){
+                // a structure or cable is just a joint
                 p1.set(beam.joint.getAnchorA());
                 p2.set(beam.joint.getAnchorB());
                 beam.setPositions(p1, p2);
