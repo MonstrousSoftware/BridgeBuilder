@@ -21,10 +21,10 @@ public class GameScreen extends ScreenAdapter {
 
     public enum BuildMaterial { DECK, STRUCTURE };
 
-    public Array<Pin> pins;
-    public Array<Beam> beams;
-    public Vehicle vehicle;
-    public Flag flag;
+//    public Array<Pin> pins;
+//    public Array<Beam> beams;
+//    public Vehicle vehicle;
+//    public Flag flag;
     public GameWorld world;
 
     public Physics physics;
@@ -58,13 +58,13 @@ public class GameScreen extends ScreenAdapter {
 
         renderer = new ImmediateModeRenderer20(false, true, 0);
 
-        pins = new Array<>();
-        beams = new Array<>();
+//        pins = new Array<>();
+//        beams = new Array<>();
 
 
         world = new GameWorld();
         //populate();
-        world.set(pins, beams, flag);
+        //world.set(pins, beams, flag);
         levelNumber = 1;
         //world.save("level1.json");
         loadLevel(levelNumber);
@@ -95,14 +95,14 @@ public class GameScreen extends ScreenAdapter {
                     correctedPos.set(currentBeam.position2.x, currentBeam.position2.y);
                     currentPin.setPosition(correctedPos.x, correctedPos.y);
                     physics.addPin(currentPin);
-                    pins.add(currentPin);
+                    world.pins.add(currentPin);
                     currentBeam.setEndPin(currentPin);
                     physics.addBeam(currentBeam);
                     currentBeam = new Beam(correctedPos.x, correctedPos.y, correctedPos.x, correctedPos.y);
                     currentBeam.setDeck(buildMaterial == BuildMaterial.DECK);
                     currentBeam.setStartPin(currentPin);
                     currentPin = new Pin(correctedPos.x, correctedPos.y);
-                    beams.add(currentBeam);
+                    world.beams.add(currentBeam);
                 }
                 return false;
             }
@@ -130,12 +130,12 @@ public class GameScreen extends ScreenAdapter {
                 } else {
                     startPin = new Pin(startPos.x, startPos.y);
                     physics.addPin(startPin);
-                    pins.add(startPin);
+                    world.pins.add(startPin);
                 }
                 currentBeam = new Beam(startPos.x, startPos.y, worldPos.x, worldPos.y);
                 currentBeam.setDeck(buildMaterial == BuildMaterial.DECK);
                 currentBeam.setStartPin(startPin);
-                beams.add(currentBeam);
+                world.beams.add(currentBeam);
                 currentPin = new Pin(worldPos.x, worldPos.y);
 
                 return false;
@@ -149,7 +149,7 @@ public class GameScreen extends ScreenAdapter {
 
                 screenToWorldUnits(x,y, worldPos);
                 if(currentBeam.startPin.isOver(worldPos)){   // we didn't move from start position, remove beam
-                    beams.removeValue(currentBeam, true);
+                    world.beams.removeValue(currentBeam, true);
                 } else {
                     // if the dragging ends at an existing pin, snap to that instead of making a new pin
                     if (overPin != null) {
@@ -158,7 +158,7 @@ public class GameScreen extends ScreenAdapter {
                         currentBeam.setEndPin(overPin);
                     } else {
                         physics.addPin(currentPin);
-                        pins.add(currentPin);
+                        world.pins.add(currentPin);
                         currentBeam.setEndPin(currentPin);
                     }
                     physics.addBeam(currentBeam);
@@ -198,7 +198,7 @@ public class GameScreen extends ScreenAdapter {
             overPin.sprite.setColor(Color.WHITE);
         // check if the mouse is over a pin and if so highlight it
         overPin = null;
-        for (Pin pin : pins) {
+        for (Pin pin : world.pins) {
             if (pin.isOver(mousePosition)) {
                 overPin = pin;
                 overPin.sprite.setColor(Color.RED);
@@ -218,21 +218,21 @@ public class GameScreen extends ScreenAdapter {
         // remove all attached beams
         // since beams have joints they need to be destroyed before the body they are attached to.
         beamsToDelete.clear();
-        for(Beam beam : beams){
+        for(Beam beam : world.beams){
             if(beam.attachedToPin(pinToDelete)) {
                 physics.destroyBeam(beam);
                 beamsToDelete.add(beam);
             }
         }
-        beams.removeAll(beamsToDelete, true);
+        world.beams.removeAll(beamsToDelete, true);
 
-        pins.removeValue(pinToDelete, true);
+        world.pins.removeValue(pinToDelete, true);
         physics.destroyPin(pinToDelete);
     }
 
     private void deleteBeam(Beam beam){
         physics.destroyBeam(beam);
-        beams.removeValue(beam, true);
+        world.beams.removeValue(beam, true);
     }
 
     Color stressColor = new Color();
@@ -253,8 +253,8 @@ public class GameScreen extends ScreenAdapter {
         runPhysics = false;
         clear();
         world.load("attempt.json", physics);
-        pins = world.pins;
-        beams = world.beams;
+//        pins = world.pins;
+//        beams = world.beams;
     }
 
     public void setBuildMaterial( BuildMaterial mat ){
@@ -285,9 +285,9 @@ public class GameScreen extends ScreenAdapter {
             runPhysics = false;
             clear();
             world.load("savefile.json", physics);
-            pins = world.pins;
-            beams = world.beams;
-            flag = world.flag;
+//            pins = world.pins;
+//            beams = world.beams;
+//            flag = world.flag;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
             setBuildMaterial(BuildMaterial.DECK);
@@ -298,14 +298,14 @@ public class GameScreen extends ScreenAdapter {
 
         if(runPhysics) {
             physics.update(delta);
-            physics.updatePinPositions(pins);
-            physics.updateBeamPositions(beams);
-            for(Beam beam : beams){
+            physics.updatePinPositions(world.pins);
+            physics.updateBeamPositions(world.beams);
+            for(Beam beam : world.beams){
                 //beam.updatePosition();
                 testBeamStress(beam);
             }
-            if(vehicle != null) {
-                physics.updateVehiclePosition(vehicle, !gameOver);
+            if(world.vehicle != null) {
+                physics.updateVehiclePosition(world.vehicle, !gameOver);
             }
         }
 
@@ -315,16 +315,16 @@ public class GameScreen extends ScreenAdapter {
 
         spriteBatch.begin();
 
-        if(vehicle != null)
-            vehicle.sprite.draw(spriteBatch);
+        if(world.vehicle != null)
+            world.vehicle.sprite.draw(spriteBatch);
 
-        for(Beam beam : beams){
+        for(Beam beam : world.beams){
             beam.sprite.draw(spriteBatch);
         }
-        for(Pin pin : pins){
+        for(Pin pin : world.pins){
             pin.sprite.draw(spriteBatch);
         }
-        flag.sprite.draw(spriteBatch);
+        world.flag.sprite.draw(spriteBatch);
 
 
         spriteBatch.end();
@@ -335,7 +335,7 @@ public class GameScreen extends ScreenAdapter {
         sb.append("Zoom: ");
         sb.append(zoom);
         sb.append(" Beam forces:");
-        for(Beam beam : beams){
+        for(Beam beam : world.beams){
             if(!beam.isDeck)
                 continue;
             if(beam.joint != null) {
@@ -424,15 +424,15 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void addVehicle(){
-        Pin startAnchor = pins.get(0);
-        vehicle = new Vehicle();
-        vehicle.setPosition(startAnchor.position.x-3, startAnchor.position.y+vehicle.H/2);
-        physics.addVehicle(vehicle);
+        Pin startAnchor = world.pins.get(0);
+        world.vehicle = new Vehicle();
+        world.vehicle.setPosition(startAnchor.position.x-3, startAnchor.position.y+world.vehicle.H/2);
+        physics.addVehicle(world.vehicle);
     }
 
     public void destroyVehicle(){
-        physics.destroyVehicle(vehicle);
-        vehicle = null;
+        physics.destroyVehicle(world.vehicle);
+        world.vehicle = null;
     }
 
     public void loadLevel(int levelNumber){
@@ -440,40 +440,40 @@ public class GameScreen extends ScreenAdapter {
         runPhysics = false;
         clear();
         world.load("level"+levelNumber+".json", physics);
-        pins = world.pins;
-        beams = world.beams;
-        flag = world.flag;
+//        pins = world.pins;
+//        beams = world.beams;
+//        flag = world.flag;
 
-        physics.addStartRamp(pins.get(0));
-        physics.addEndRamp(pins.get(1));
+        physics.addStartRamp(world.pins.get(0));
+        physics.addEndRamp(world.pins.get(1));
     }
 
     public void populate(){
         Pin anchor1 = new Pin(-7, 0, true);
         physics.addPin(anchor1);
-        pins.add(anchor1);
+        world.pins.add(anchor1);
         physics.addStartRamp(anchor1);
 
         Pin anchor2 = new Pin(7, 0, true);
         physics.addPin(anchor2);
-        pins.add(anchor2);
+        world.pins.add(anchor2);
         physics.addEndRamp(anchor2);
 
-        flag = new Flag(10, 0.5f);
-        physics.addFlag(flag);
+        world.flag = new Flag(10, 0.5f);
+        physics.addFlag(world.flag);
     }
 
     public void clear(){
-        for(Beam beam : beams)
+        for(Beam beam : world.beams)
             physics.destroyBeam(beam);
-        beams.clear();
+        world.beams.clear();
 
-        for(Pin pin : pins){
+        for(Pin pin : world.pins){
             physics.destroyPin(pin);
         }
-        pins.clear();
+        world.pins.clear();
 
-        if(vehicle != null)
+        if(world.vehicle != null)
             destroyVehicle();
     }
 

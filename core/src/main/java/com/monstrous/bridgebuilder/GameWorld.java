@@ -18,13 +18,15 @@ public class GameWorld implements Json.Serializable {
     public Vehicle vehicle;
 
     public GameWorld() {
+        pins = new Array<>();
+        beams = new Array<>();
     }
 
-    public void set(Array<Pin> pins, Array<Beam> beams, Flag flag){
-        this.pins = pins;
-        this.beams = beams;
-        this.flag = flag;
-    }
+//    public void set(Array<Pin> pins, Array<Beam> beams, Flag flag){
+//        this.pins = pins;
+//        this.beams = beams;
+//        this.flag = flag;
+//    }
 
     public void save( String fileName)
     {
