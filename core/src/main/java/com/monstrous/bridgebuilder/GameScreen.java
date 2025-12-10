@@ -15,8 +15,8 @@ import com.badlogic.gdx.utils.*;
 
 
 public class GameScreen extends ScreenAdapter {
-    public static float COLOR_SCALE = 15000f;
-    public static float BREAK_FORCE = 15000f;
+    public static float COLOR_SCALE = 20000f;
+    public static float BREAK_FORCE = 20000f;
 
 
     public enum BuildMaterial { DECK, STRUCTURE };
@@ -261,6 +261,9 @@ public class GameScreen extends ScreenAdapter {
             gui.setRunMode(true);
             startSimulation();
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.H)){   // halt
+            runPhysics = !runPhysics;
+        }
         if(Gdx.input.isKeyJustPressed(Input.Keys.R)){
             gui.setRunMode(false);
             retry();
@@ -359,8 +362,9 @@ public class GameScreen extends ScreenAdapter {
                 force += beam.joint.getReactionForce(1f / Physics.TIME_STEP).len();
                 denom++;
                 if (force  > BREAK_FORCE) {
-                    System.out.println("break joint at "+force);
+                    System.out.println("break deck joint at "+force);
                     physics.destroyJoint(beam.joint);
+                    //runPhysics = false;
                     beam.joint = null;
                 }
             }
@@ -369,14 +373,15 @@ public class GameScreen extends ScreenAdapter {
                 force += force2;
                 denom++;
                 if (force2  > BREAK_FORCE) {
-                    System.out.println("break joint2 at "+force2);
+                    System.out.println("break deck joint2 at "+force2);
                     physics.destroyJoint(beam.joint2);
+                    //runPhysics = false;
                     beam.joint2 = null;
                 }
                 force += force2;
             }
-            if(denom > 0)
-                force /= (float)denom;  // use average force on joints for colouring
+//            if(denom > 0)
+//                force /= (float)denom;  // use average force on joints for colouring
         } else {
             if(beam.joint == null)
                 return;

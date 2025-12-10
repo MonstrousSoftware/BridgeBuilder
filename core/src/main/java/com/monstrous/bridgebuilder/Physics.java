@@ -211,7 +211,9 @@ public class Physics {
 
         PolygonShape deckBox = new PolygonShape();
 
-        deckBox.setAsBox(beam.length/2, beam.H/2f, Vector2.Zero, 0);
+        // shorten the body a bit (-0.5f) compared to the visual deck so that the body has room to move wrt its neighbours
+        // otherwise it will collide and wedge itself
+        deckBox.setAsBox(beam.length/2 - 0.4f, beam.H/2f, Vector2.Zero, 0);
         deckBody.setTransform(centre, beam.angle);
 
         // Create a fixture definition to apply our shape to

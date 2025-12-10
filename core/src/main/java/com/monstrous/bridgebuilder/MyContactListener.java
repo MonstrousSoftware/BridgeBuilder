@@ -23,7 +23,7 @@ public class MyContactListener implements ContactListener {
         if(isFloorReached(a,b)){
             gameScreen.floorReached();
         }
-        System.out.println("Begin contact "+describe(a)+" vs "+describe(b));
+        //System.out.println("Begin contact "+describe(a)+" vs "+describe(b));
 
     }
 
@@ -67,7 +67,7 @@ public class MyContactListener implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
-        System.out.println("End contact");
+        //System.out.println("End contact");
     }
 
     @Override
