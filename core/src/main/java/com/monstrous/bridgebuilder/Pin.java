@@ -13,10 +13,11 @@ public class Pin implements Json.Serializable {
 
     public int id;
     public boolean isAnchor;
-    public final Vector2 position;
-    public final Sprite sprite;
-    public final float W;
-    public final float H;
+    public int anchorDirection;     // 1 left, 2 right, 3 bottom
+    public Vector2 position;
+    public Sprite sprite;
+    public float W;
+    public float H;
     public Body body;
 
     public Pin(){
@@ -29,16 +30,18 @@ public class Pin implements Json.Serializable {
         sprite = new Sprite(pinTexture);
         sprite.setOrigin(W/2f, H/2f);;
         sprite.setSize(W, H);
+        anchorDirection = 0;
     }
 
     public Pin(float x, float y) {
-        this(x, y, false);
+        this(x, y, false, 0);
     }
 
-    public Pin(float x, float y, boolean isAnchor) {
+    public Pin(float x, float y, boolean isAnchor, int direction) {
         this();
         setPosition(x,y);
         this.isAnchor = isAnchor;
+        this.anchorDirection = direction;
     }
 
     public void setPosition(float x, float y){
@@ -58,6 +61,7 @@ public class Pin implements Json.Serializable {
     public void write(Json json) {
         json.writeValue("id", id);
         json.writeValue("isAnchor", isAnchor);
+        json.writeValue("anchorDirection", anchorDirection);
         json.writeValue("position", position);
     }
 
@@ -65,6 +69,7 @@ public class Pin implements Json.Serializable {
     public void read(Json json, JsonValue jsonData) {
         id = json.readValue("id", Integer.class, jsonData);
         isAnchor = json.readValue("isAnchor", Boolean.class, jsonData);
+        anchorDirection = json.readValue("anchorDirection", Integer.class, jsonData);
 
         // note: for teavm, Vector2 has to be added as reflection class
         Vector2 pos = json.readValue("position", Vector2.class, jsonData);

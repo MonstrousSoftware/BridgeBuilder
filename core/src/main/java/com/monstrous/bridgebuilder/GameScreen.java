@@ -21,10 +21,6 @@ public class GameScreen extends ScreenAdapter {
 
     public enum BuildMaterial { DECK, STRUCTURE };
 
-//    public Array<Pin> pins;
-//    public Array<Beam> beams;
-//    public Vehicle vehicle;
-//    public Flag flag;
     public GameWorld world;
 
     public Physics physics;
@@ -58,15 +54,11 @@ public class GameScreen extends ScreenAdapter {
 
         renderer = new ImmediateModeRenderer20(false, true, 0);
 
-//        pins = new Array<>();
-//        beams = new Array<>();
-
 
         world = new GameWorld();
         //populate();
-        //world.set(pins, beams, flag);
-        levelNumber = 1;
-        //world.save("level1.json");
+        levelNumber = 3;
+
         loadLevel(levelNumber);
 
         InputAdapter inputProcessor = new InputAdapter() {
@@ -170,7 +162,7 @@ public class GameScreen extends ScreenAdapter {
 
             @Override
             public boolean scrolled(float amountX, float amountY) {
-                zoom += amountY;
+                zoom += 0.1f*amountY;
                 zoom = MathUtils.clamp(zoom, 1.0f, 3.0f);
                 setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
                 return true;
@@ -440,24 +432,26 @@ public class GameScreen extends ScreenAdapter {
         runPhysics = false;
         clear();
         world.load("level"+levelNumber+".json", physics);
-//        pins = world.pins;
-//        beams = world.beams;
-//        flag = world.flag;
 
-        physics.addStartRamp(world.pins.get(0));
-        physics.addEndRamp(world.pins.get(1));
+        zoom = world.zoom;
+        physics.addFlag(world.flag);
+        for(Pin pin : world.pins){
+            if(pin.isAnchor){
+                physics.addRamp(pin);
+            }
+        }
     }
 
     public void populate(){
-        Pin anchor1 = new Pin(-7, 0, true);
+        Pin anchor1 = new Pin(-7, 0, true, 1);
         physics.addPin(anchor1);
         world.pins.add(anchor1);
-        physics.addStartRamp(anchor1);
+        physics.addRamp(anchor1);
 
-        Pin anchor2 = new Pin(7, 0, true);
+        Pin anchor2 = new Pin(7, 0, true, 2);
         physics.addPin(anchor2);
         world.pins.add(anchor2);
-        physics.addEndRamp(anchor2);
+        physics.addRamp(anchor2);
 
         world.flag = new Flag(10, 0.5f);
         physics.addFlag(world.flag);

@@ -51,26 +51,35 @@ public class Physics {
         groundBox.dispose();
     }
 
-    public void addStartRamp(Pin pin){
+    public void addRamp(Pin pin){
         BodyDef rampBodyDef = new BodyDef();
-        rampBodyDef.position.set(pin.position.x-10, pin.position.y);
+        if(pin.anchorDirection == 1)
+            rampBodyDef.position.set(pin.position.x-10, pin.position.y);
+        else if(pin.anchorDirection == 2)
+            rampBodyDef.position.set(pin.position.x+10, pin.position.y);
+        else if(pin.anchorDirection == 3)
+            rampBodyDef.position.set(pin.position.x, pin.position.y-5);
         Body rampBody = world.createBody(rampBodyDef);
         rampBody.setUserData(new Ramp());
         PolygonShape rampBox = new PolygonShape();
-        rampBox.setAsBox(10, 0.5f);
+        if(pin.anchorDirection == 3)
+            rampBox.setAsBox(0.5f, 5f);
+        else
+            rampBox.setAsBox(10, 0.5f);
+
         rampBody.createFixture(rampBox, 0.0f);
         rampBox.dispose();
     }
-    public void addEndRamp(Pin pin){
-        BodyDef rampBodyDef = new BodyDef();
-        rampBodyDef.position.set(pin.position.x+10, pin.position.y);
-        Body rampBody = world.createBody(rampBodyDef);
-        rampBody.setUserData(new Ramp());
-        PolygonShape rampBox = new PolygonShape();
-        rampBox.setAsBox(10, 0.5f);
-        rampBody.createFixture(rampBox, 0.0f);
-        rampBox.dispose();
-    }
+//    public void addEndRamp(Pin pin){
+//        BodyDef rampBodyDef = new BodyDef();
+//        rampBodyDef.position.set(pin.position.x+10, pin.position.y);
+//        Body rampBody = world.createBody(rampBodyDef);
+//        rampBody.setUserData(new Ramp());
+//        PolygonShape rampBox = new PolygonShape();
+//        rampBox.setAsBox(10, 0.5f);
+//        rampBody.createFixture(rampBox, 0.0f);
+//        rampBox.dispose();
+//    }
 
     public void addFlag(Flag flag){
         BodyDef bodyDef = new BodyDef();

@@ -4,24 +4,198 @@
 		"class": "Pin",
 		"id": 1,
 		"isAnchor": true,
+		"anchorDirection": 1,
 		"position": {
-			"x": -7
+			"x": -14
 		}
 	},
 	{
 		"class": "Pin",
 		"id": 2,
 		"isAnchor": true,
+		"anchorDirection": 2,
 		"position": {
-			"x": 7
+			"x": 14
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 3,
+		"isAnchor": true,
+		"anchorDirection": 3,
+		"position": {
+			"y": -4
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 4,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": -9.005383,
+			"y": -0.23194794
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 5,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": -4.0071735,
+			"y": -0.09812543
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 6,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": 0.9909029,
+			"y": 0.04055299
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 7,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": 5.9906406,
+			"y": 0.09173468
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 24,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": -9.28125,
+			"y": 4.6875005
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 39,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": 10.988735,
+			"y": 0.2297491
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 41,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": 9.5625,
+			"y": 4.8750005
 		}
 	}
 ],
-"beams": [],
+"beams": [
+	{
+		"class": "Flag",
+		"startPin": 1,
+		"endPin": 4,
+		"isDeck": true
+	},
+	{
+		"class": "Flag",
+		"startPin": 4,
+		"endPin": 5,
+		"isDeck": true
+	},
+	{
+		"class": "Flag",
+		"startPin": 5,
+		"endPin": 6,
+		"isDeck": true
+	},
+	{
+		"class": "Flag",
+		"startPin": 6,
+		"endPin": 7,
+		"isDeck": true
+	},
+	{
+		"class": "Flag",
+		"startPin": 3,
+		"endPin": 5,
+		"isDeck": false
+	},
+	{
+		"class": "Flag",
+		"startPin": 3,
+		"endPin": 6,
+		"isDeck": false
+	},
+	{
+		"class": "Flag",
+		"startPin": 3,
+		"endPin": 7,
+		"isDeck": false
+	},
+	{
+		"class": "Flag",
+		"startPin": 1,
+		"endPin": 24,
+		"isDeck": false
+	},
+	{
+		"class": "Flag",
+		"startPin": 24,
+		"endPin": 4,
+		"isDeck": false
+	},
+	{
+		"class": "Flag",
+		"startPin": 24,
+		"endPin": 5,
+		"isDeck": false
+	},
+	{
+		"class": "Flag",
+		"startPin": 7,
+		"endPin": 39,
+		"isDeck": true
+	},
+	{
+		"class": "Flag",
+		"startPin": 39,
+		"endPin": 2,
+		"isDeck": true
+	},
+	{
+		"class": "Flag",
+		"startPin": 7,
+		"endPin": 41,
+		"isDeck": false
+	},
+	{
+		"class": "Flag",
+		"startPin": 41,
+		"endPin": 39,
+		"isDeck": false
+	},
+	{
+		"class": "Flag",
+		"startPin": 41,
+		"endPin": 2,
+		"isDeck": false
+	}
+],
 "flag": {
 	"position": {
-		"x": 10,
+		"x": 16,
 		"y": 0.5
 	}
-}
+},
+"zoom": 1.5,
+"levelName": "level 3: captain on the bridge"
 }

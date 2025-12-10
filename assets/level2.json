@@ -6,26 +6,26 @@
 		"isAnchor": true,
       "anchorDirection": 1,
 		"position": {
-			"x": -7
+			"x": -12
 		}
 	},
 	{
 		"class": "Pin",
 		"id": 2,
 		"isAnchor": true,
-         "anchorDirection": 2,
+       "anchorDirection": 2,
 		"position": {
-			"x": 7
+			"x": 12
 		}
 	}
 ],
 "beams": [],
 "flag": {
 	"position": {
-		"x": 10,
+		"x": 14,
 		"y": 0.5
 	}
 },
-  "zoom": 1.0,
-  "levelName": "level 1: troll bridge"
+  "zoom": 1.3,
+  "levelName": "level 2: cross that bridge"
 }
