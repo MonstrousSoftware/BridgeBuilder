@@ -26,6 +26,7 @@ public class GUI implements Disposable {
     TextButton modeButton;
     TextButton nextButton;
     Label costLabel;
+    Label pbLabel;
     private boolean runMode;    // we are either in Edit mode or Run mode
 
     public GUI(GameScreen gameScreen) {
@@ -37,6 +38,7 @@ public class GUI implements Disposable {
         winImage = new Image(new Texture(Gdx.files.internal("textures/hooray.png")));
         lossImage = new Image(new Texture(Gdx.files.internal("textures/ohno.png")));
         costLabel = new Label("0", skin);
+        pbLabel = new Label("N/A", skin);
         fillStage();
         runMode = false;
     }
@@ -75,7 +77,7 @@ public class GUI implements Disposable {
         structureButton = new TextButton("Structure", skin);
         structureButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
-                gameScreen.setBuildMaterial(BuildMaterial.STRUCTURE);
+                gameScreen.setBuildMaterial(BuildMaterial.STEEL);
             }
         });
 
@@ -124,10 +126,18 @@ public class GUI implements Disposable {
         buttonLine.add(modeButton).width(100).pad(10);
 
         Table costTable = new Table();
-        costTable.add(new Label("$ ", skin)).pad(10);
-        costTable.add(costLabel).pad(10).width(100);
+        costTable.add(new Label("$", skin)).pad(5);
+        costTable.add(costLabel).pad(5).width(100);
 
-        screenTable.add(costTable).left().row();
+        Table pbTable = new Table();
+        pbTable.add(new Label("Personal Best: $", skin)).pad(5);
+        pbTable.add(pbLabel).pad(5).width(100);
+
+        Table topLine = new Table();
+        topLine.add(costTable).left().expandX();
+        topLine.add(pbTable).right();
+
+        screenTable.add(topLine).top().row();
 
 
         screenTable.add(buttonLine).fillX().pad(10).bottom().expandY();
@@ -142,6 +152,10 @@ public class GUI implements Disposable {
 
     public void draw(){
         costLabel.setText(gameScreen.world.cost);
+        if(gameScreen.personalBest == GameScreen.NO_PB)
+            pbLabel.setText("----");
+        else
+            pbLabel.setText(gameScreen.personalBest);
 
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();

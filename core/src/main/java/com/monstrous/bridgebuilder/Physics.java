@@ -199,7 +199,8 @@ public class Physics {
             case DECK:
                 addDeck(beam);
                 break;
-            case STRUCTURE:
+            case STEEL:
+            case WOOD:
                 addSupport(beam);
                 break;
             case CABLE:

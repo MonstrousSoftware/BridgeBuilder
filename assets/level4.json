@@ -37,16 +37,6 @@
       "x": 14,
       "y": 10
     }
-  },
-  {
-    "class": "Pin",
-    "id": 5,
-    "isAnchor": true,
-    "anchorDirection": 3,
-    "position": {
-      "x": 0,
-      "y": -4
-    }
   }
 ],
 "beams": [],

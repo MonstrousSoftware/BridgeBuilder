@@ -10,13 +10,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class Beam implements Json.Serializable {
-//    public static float MAX_DECK_LENGTH = 5f;
-//    public static float MAX_STRUCTURE_LENGTH = 8f;
-//    public static float MAX_CABLE_LENGTH = 20f;
 
-    public static Texture beamTexture;
-    public static Texture deckTexture;
-    public static Texture cableTexture;
+    public static Texture[] textures;
 
     public final Vector2 position1;
     public final Vector2 position2;
@@ -32,7 +27,7 @@ public class Beam implements Json.Serializable {
     public int endId;
     public Joint joint;
     public Joint joint2;    // only for deck
-    public Body body;   // only for deck
+    public Body body;       // only for deck
     public Color tint;
 
     public Beam(){
@@ -41,7 +36,7 @@ public class Beam implements Json.Serializable {
         loadTextures();
 
         material = BuildMaterial.DECK;  // default
-
+        Texture beamTexture = textures[material.index];
         sprite = new Sprite(beamTexture);
         W = beamTexture.getWidth()/16f;
         H = beamTexture.getHeight()/16f;
@@ -51,16 +46,15 @@ public class Beam implements Json.Serializable {
     }
 
     private void loadTextures(){
-        if(beamTexture == null)
-            beamTexture = new Texture("textures/beam.png");
-        if(deckTexture == null)
-            deckTexture = new Texture("textures/deck.png");
-        if(cableTexture == null)
-            cableTexture = new Texture("textures/cable.png");
+        textures = new Texture[4];
+        textures[BuildMaterial.STEEL.index] = new Texture("textures/beam.png");
+        textures[BuildMaterial.DECK.index] = new Texture("textures/deck.png");
+        textures[BuildMaterial.CABLE.index] = new Texture("textures/cable.png");
+        textures[BuildMaterial.WOOD.index] = new Texture("textures/wood.png");
+
         // have a repeating texture, not a stretched texture
-        deckTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        beamTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        cableTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        for(int i = 0; i < 4; i++)
+            textures[i].setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
     }
 
 
@@ -122,7 +116,7 @@ public class Beam implements Json.Serializable {
 
     public void setMaterial(BuildMaterial material){
         this.material = material;
-        Texture texture = material == BuildMaterial.DECK ? deckTexture :  (material == BuildMaterial.STRUCTURE ? beamTexture : cableTexture);
+        Texture texture = textures[material.index];
         sprite.setTexture( texture );
 
         W = texture.getWidth()/16f;

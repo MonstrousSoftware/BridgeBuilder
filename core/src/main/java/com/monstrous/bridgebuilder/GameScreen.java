@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.*;
 public class GameScreen extends ScreenAdapter {
     public static float COLOR_SCALE = 20000f;
     public static float BREAK_FORCE = 20000f;
+    public static int NO_PB = 999999;
     public static int maxLevelNumber = 4;
 
 
@@ -40,12 +41,15 @@ public class GameScreen extends ScreenAdapter {
     private BuildMaterial buildMaterial = BuildMaterial.DECK;
     public float zoom = 1;
     public int levelNumber;
+    private Preferences preferences;
+    public int personalBest;
 
     @Override
     public void show() {
         gui = new GUI(this);
         spriteBatch = new SpriteBatch();
         physics = new Physics(this);
+        preferences = Gdx.app.getPreferences("BridgeBuilder");
 
         // for debug renderer
         camera = new OrthographicCamera(Gdx.graphics.getWidth()/32f, Gdx.graphics.getHeight()/32f);
@@ -267,6 +271,18 @@ public class GameScreen extends ScreenAdapter {
         gui.showNextLevel(false);
     }
 
+    public void previousLevel(){
+        if(levelNumber > 1)
+            levelNumber--;
+        gui.clearEndMessage();
+        runPhysics = false;
+
+        clear();
+        physics.clearStaticBodies();
+        loadLevel(levelNumber);
+        gui.showNextLevel(true);
+    }
+
     public void setBuildMaterial( BuildMaterial mat ){
         buildMaterial = mat;
     }
@@ -288,6 +304,12 @@ public class GameScreen extends ScreenAdapter {
             runPhysics = false;
             reset();
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.N)){
+            nextLevel();
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.P)){
+            previousLevel();
+        }
         if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
             world.save("savefile"+levelNumber+".json");
         }
@@ -301,9 +323,12 @@ public class GameScreen extends ScreenAdapter {
             setBuildMaterial(BuildMaterial.DECK);
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
-            setBuildMaterial(BuildMaterial.STRUCTURE);
+            setBuildMaterial(BuildMaterial.WOOD);
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
+            setBuildMaterial(BuildMaterial.STEEL);
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){
             setBuildMaterial(BuildMaterial.CABLE);
         }
 
@@ -385,7 +410,7 @@ public class GameScreen extends ScreenAdapter {
             if(beam.joint != null) {
                 force += beam.joint.getReactionForce(1f / Physics.TIME_STEP).len();
                 denom++;
-                if (force  > BREAK_FORCE) {
+                if (force  > beam.material.strength) {
                     System.out.println("break deck joint at "+force);
                     physics.destroyJoint(beam.joint);
                     //runPhysics = false;
@@ -396,7 +421,7 @@ public class GameScreen extends ScreenAdapter {
                 float force2 = beam.joint2.getReactionForce(1f / Physics.TIME_STEP).len();
                 force += force2;
                 denom++;
-                if (force2  > BREAK_FORCE) {
+                if (force2  > beam.material.strength) {
                     System.out.println("break deck joint2 at "+force2);
                     physics.destroyJoint(beam.joint2);
                     //runPhysics = false;
@@ -410,14 +435,14 @@ public class GameScreen extends ScreenAdapter {
             if(beam.joint == null)
                 return;
             force = beam.joint.getReactionForce(1f / Physics.TIME_STEP).len();
-            if (force > BREAK_FORCE) {
+            if (force > beam.material.strength) {
                 System.out.println("break joint at "+force);
                 //runPhysics = false;
                 destroyBeam(beam);
                 return;
             }
         }
-        float nForce = force / COLOR_SCALE;
+        float nForce = force / beam.material.strength;
         if (nForce > 1f)
             nForce = 1f;
 
@@ -469,6 +494,9 @@ public class GameScreen extends ScreenAdapter {
                 physics.addRamp(pin);
             }
         }
+
+        personalBest = preferences.getInteger("bestScore"+levelNumber, NO_PB);
+        setBuildMaterial(BuildMaterial.DECK);
     }
 
     public void populate(){
@@ -504,7 +532,6 @@ public class GameScreen extends ScreenAdapter {
     public void reset(){
         clear();
         loadLevel(levelNumber);
-        //populate();
     }
 
     public void flagReached(){
@@ -512,6 +539,13 @@ public class GameScreen extends ScreenAdapter {
         gameOver = true;
         gui.showWin();
         gui.showNextLevel(true);
+
+        if(world.cost < personalBest) {
+            personalBest = world.cost;
+            System.out.println("New personal best! $"+personalBest);
+            preferences.putInteger("bestScore" + levelNumber, personalBest);
+            preferences.flush();
+        }
     }
 
     public void floorReached(){
