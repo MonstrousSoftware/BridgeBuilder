@@ -467,6 +467,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void clear(){
+        gui.clearEndMessage();
         for(Beam beam : world.beams)
             physics.destroyBeam(beam);
         world.beams.clear();

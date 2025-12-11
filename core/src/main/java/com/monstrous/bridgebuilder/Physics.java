@@ -256,7 +256,7 @@ public class Physics {
         // Create a fixture definition to apply our shape to
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = deckBox;
-        fixtureDef.density = 5.5f;
+        fixtureDef.density = 0.5f;  // use a low density so the mass is comparable to the pin's mass (joint bodies should have similar mass)
         fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0.1f; // Make it bounce a little bit
         fixtureDef.filter.categoryBits = DECK_FLAG;

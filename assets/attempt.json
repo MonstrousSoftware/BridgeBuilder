@@ -49,115 +49,141 @@
 	},
 	{
 		"class": "Pin",
-		"id": 6,
+		"id": 10,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": -9.000748,
-			"y": -0.08644232
+			"x": -0.42187458,
+			"y": 9.843751
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 7,
+		"id": 14,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": -4.000752,
-			"y": -0.09293709
+			"x": -9.00483,
+			"y": 0.21972866
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 8,
+		"id": 15,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": 0.9830575,
-			"y": 0.30911112
+			"x": -4.004852,
+			"y": 0.23431504
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 9,
+		"id": 16,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": 2.7656257,
-			"y": 0.5156245
+			"x": 0.9901252,
+			"y": 0.010255456
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 22,
+		"id": 17,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": -10.828125,
-			"y": -3.8437498
+			"x": 5.9824185,
+			"y": -0.26724458
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 18,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": 10.982402,
+			"y": -0.27997196
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 21,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": -4.2187505,
+			"y": 1.0312507
 		}
 	}
 ],
 "beams": [
 	{
 		"class": "Beam",
-		"startPin": 1,
-		"endPin": 6,
-		"material": "DECK"
-	},
-	{
-		"class": "Beam",
-		"startPin": 6,
-		"endPin": 7,
-		"material": "DECK"
-	},
-	{
-		"class": "Beam",
-		"startPin": 7,
-		"endPin": 8,
-		"material": "DECK"
-	},
-	{
-		"class": "Beam",
-		"startPin": 8,
-		"endPin": 9,
-		"material": "DECK"
-	},
-	{
-		"class": "Beam",
 		"startPin": 3,
-		"endPin": 6,
+		"endPin": 10,
 		"material": "CABLE"
 	},
 	{
 		"class": "Beam",
-		"startPin": 3,
-		"endPin": 7,
-		"material": "CABLE"
-	},
-	{
-		"class": "Beam",
-		"startPin": 3,
-		"endPin": 8,
+		"startPin": 10,
+		"endPin": 4,
 		"material": "CABLE"
 	},
 	{
 		"class": "Beam",
 		"startPin": 1,
-		"endPin": 22,
-		"material": "STRUCTURE"
+		"endPin": 14,
+		"material": "DECK"
 	},
 	{
 		"class": "Beam",
-		"startPin": 22,
-		"endPin": 6,
-		"material": "STRUCTURE"
+		"startPin": 14,
+		"endPin": 15,
+		"material": "DECK"
 	},
 	{
 		"class": "Beam",
-		"startPin": 22,
-		"endPin": 7,
-		"material": "STRUCTURE"
+		"startPin": 15,
+		"endPin": 16,
+		"material": "DECK"
+	},
+	{
+		"class": "Beam",
+		"startPin": 16,
+		"endPin": 17,
+		"material": "DECK"
+	},
+	{
+		"class": "Beam",
+		"startPin": 17,
+		"endPin": 18,
+		"material": "DECK"
+	},
+	{
+		"class": "Beam",
+		"startPin": 18,
+		"endPin": 2,
+		"material": "DECK"
+	},
+	{
+		"class": "Beam",
+		"startPin": 10,
+		"endPin": 15,
+		"material": "CABLE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 10,
+		"endPin": 16,
+		"material": "CABLE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 10,
+		"endPin": 17,
+		"material": "CABLE"
 	}
 ],
 "flag": {
