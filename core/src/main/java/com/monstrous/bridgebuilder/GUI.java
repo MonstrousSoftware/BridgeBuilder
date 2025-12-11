@@ -25,6 +25,7 @@ public class GUI implements Disposable {
     TextButton cableButton;
     TextButton modeButton;
     TextButton nextButton;
+    Label costLabel;
     private boolean runMode;    // we are either in Edit mode or Run mode
 
     public GUI(GameScreen gameScreen) {
@@ -35,10 +36,12 @@ public class GUI implements Disposable {
         status = new Label("...", skin);
         winImage = new Image(new Texture(Gdx.files.internal("textures/hooray.png")));
         lossImage = new Image(new Texture(Gdx.files.internal("textures/ohno.png")));
+        costLabel = new Label("0", skin);
         fillStage();
         runMode = false;
     }
 
+    /** adapt gui to mode */
     public void setRunMode(boolean mode){
         runMode = mode;
         if(runMode) {
@@ -101,6 +104,7 @@ public class GUI implements Disposable {
         nextButton = new TextButton("Next Level", skin);
         nextButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
+                setRunMode(false);
                 gameScreen.nextLevel();
             }
         });
@@ -119,6 +123,12 @@ public class GUI implements Disposable {
         buttonLine.add(nextButton).width(100).pad(10);
         buttonLine.add(modeButton).width(100).pad(10);
 
+        Table costTable = new Table();
+        costTable.add(new Label("$ ", skin)).pad(10);
+        costTable.add(costLabel).pad(10).width(100);
+
+        screenTable.add(costTable).left().row();
+
 
         screenTable.add(buttonLine).fillX().pad(10).bottom().expandY();
         screenTable.row();
@@ -131,6 +141,8 @@ public class GUI implements Disposable {
 
 
     public void draw(){
+        costLabel.setText(gameScreen.world.cost);
+
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }

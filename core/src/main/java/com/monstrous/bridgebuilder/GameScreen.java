@@ -88,7 +88,8 @@ public class GameScreen extends ScreenAdapter {
                     physics.addPin(currentPin);
                     world.pins.add(currentPin);
                     currentBeam.setEndPin(currentPin);
-                    physics.addBeam(currentBeam);
+                    addBeam(currentBeam);
+                    //physics.addBeam(currentBeam);
                     currentBeam = new Beam(correctedPos.x, correctedPos.y, correctedPos.x, correctedPos.y);
                     currentBeam.setMaterial(buildMaterial);
                     currentBeam.setStartPin(currentPin);
@@ -152,7 +153,8 @@ public class GameScreen extends ScreenAdapter {
                         world.pins.add(currentPin);
                         currentBeam.setEndPin(currentPin);
                     }
-                    physics.addBeam(currentBeam);
+                    addBeam(currentBeam);
+                    //physics.addBeam(currentBeam);
                 }
                 currentPin = null;
                 currentBeam = null;
@@ -213,6 +215,7 @@ public class GameScreen extends ScreenAdapter {
             if(beam.attachedToPin(pinToDelete)) {
                 physics.destroyBeam(beam);
                 beamsToDelete.add(beam);
+                world.cost -= beam.getCost();
             }
         }
         world.beams.removeAll(beamsToDelete, true);
@@ -221,7 +224,12 @@ public class GameScreen extends ScreenAdapter {
         physics.destroyPin(pinToDelete);
     }
 
-    private void deleteBeam(Beam beam){
+    private void addBeam(Beam beam){
+        physics.addBeam(beam);
+        world.cost += beam.getCost();
+    }
+
+    private void destroyBeam(Beam beam){
         physics.destroyBeam(beam);
         world.beams.removeValue(beam, true);
     }
@@ -245,8 +253,6 @@ public class GameScreen extends ScreenAdapter {
         runPhysics = false;
         clear();
         world.load("attempt"+levelNumber+".json", physics);
-//        pins = world.pins;
-//        beams = world.beams;
     }
 
     public void nextLevel(){
@@ -254,6 +260,7 @@ public class GameScreen extends ScreenAdapter {
             levelNumber++;
         gui.clearEndMessage();
         runPhysics = false;
+
         clear();
         physics.clearStaticBodies();
         loadLevel(levelNumber);
@@ -406,7 +413,7 @@ public class GameScreen extends ScreenAdapter {
             if (force > BREAK_FORCE) {
                 System.out.println("break joint at "+force);
                 //runPhysics = false;
-                deleteBeam(beam);
+                destroyBeam(beam);
                 return;
             }
         }

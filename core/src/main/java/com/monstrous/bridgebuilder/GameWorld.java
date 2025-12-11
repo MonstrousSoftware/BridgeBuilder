@@ -18,12 +18,14 @@ public class GameWorld implements Json.Serializable {
     public Vehicle vehicle;
     public float zoom;
     public String levelName;
+    public int cost;
 
     public GameWorld() {
         pins = new Array<>();
         beams = new Array<>();
         levelName = "level name";
         zoom = 1.0f;
+        cost = 0;
     }
 
     public void save( String fileName)
@@ -68,6 +70,7 @@ public class GameWorld implements Json.Serializable {
         this.flag = loaded.flag;
         this.zoom = loaded.zoom;
         this.levelName = loaded.levelName;
+        this.cost = loaded.cost;
 
         for(Pin pin: pins){
             physics.addPin(pin);
@@ -98,6 +101,7 @@ public class GameWorld implements Json.Serializable {
         json.writeValue("flag", flag);
         json.writeValue("zoom", zoom);
         json.writeValue("levelName", levelName);
+        json.writeValue("cost", cost);
         //json.writeValue("vehicle", vehicle);
     }
 
@@ -107,8 +111,9 @@ public class GameWorld implements Json.Serializable {
         beams = json.readValue("beams", Array.class, Beam.class, jsonData);
         flag = json.readValue("flag", Flag.class, jsonData);
         //vehicle = json.readValue("vehicle", Vehicle.class, jsonData);
-        zoom = json.readValue("zoom", Float.class, jsonData);
-        levelName = json.readValue("levelName", String.class, jsonData);
+        zoom = json.readValue("zoom", Float.class, 1.0f, jsonData);
+        levelName = json.readValue("levelName", String.class, "level name", jsonData);
+        cost = json.readValue("cost", Integer.class, 0, jsonData);
         System.out.println("read pins: "+pins.size);
     }
 

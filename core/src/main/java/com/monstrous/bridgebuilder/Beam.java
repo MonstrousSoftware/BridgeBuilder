@@ -98,6 +98,10 @@ public class Beam implements Json.Serializable {
         return material.maxLength;
     }
 
+    public int getCost(){
+        return (int)(material.costPerMeter * length);
+    }
+
     /** adjust position2 so that length does not exceed MAX_LENGTH */
     public void truncateLength(){
         float max = getMaxLength();
