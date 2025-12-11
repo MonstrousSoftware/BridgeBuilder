@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.*;
 public class GameScreen extends ScreenAdapter {
     public static float COLOR_SCALE = 20000f;
     public static float BREAK_FORCE = 20000f;
+    public static int maxLevelNumber = 4;
 
 
     public GameWorld world;
@@ -40,7 +41,6 @@ public class GameScreen extends ScreenAdapter {
     public float zoom = 1;
     public int levelNumber;
 
-
     @Override
     public void show() {
         gui = new GUI(this);
@@ -55,9 +55,10 @@ public class GameScreen extends ScreenAdapter {
 
         world = new GameWorld();
         //populate();
-        levelNumber = 4;
+        levelNumber = 1;
 
         loadLevel(levelNumber);
+        gui.showNextLevel(false);   // unlocked on level completion
 
         InputAdapter inputProcessor = new InputAdapter() {
 
@@ -232,7 +233,8 @@ public class GameScreen extends ScreenAdapter {
             return;
 
         gameOver = false;
-        world.save("attempt.json");
+        // save construction before running physics
+        world.save("attempt"+levelNumber+".json");
         runPhysics = true;
         addVehicle();
 
@@ -242,9 +244,20 @@ public class GameScreen extends ScreenAdapter {
         gui.clearEndMessage();
         runPhysics = false;
         clear();
-        world.load("attempt.json", physics);
+        world.load("attempt"+levelNumber+".json", physics);
 //        pins = world.pins;
 //        beams = world.beams;
+    }
+
+    public void nextLevel(){
+        if(levelNumber < maxLevelNumber)
+            levelNumber++;
+        gui.clearEndMessage();
+        runPhysics = false;
+        clear();
+        physics.clearStaticBodies();
+        loadLevel(levelNumber);
+        gui.showNextLevel(false);
     }
 
     public void setBuildMaterial( BuildMaterial mat ){
@@ -269,15 +282,13 @@ public class GameScreen extends ScreenAdapter {
             reset();
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
-            world.save("savefile.json");
+            world.save("savefile"+levelNumber+".json");
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
             runPhysics = false;
             clear();
-            world.load("savefile.json", physics);
-//            pins = world.pins;
-//            beams = world.beams;
-//            flag = world.flag;
+            if(!world.load("savefile"+levelNumber+".json", physics))
+                loadLevel(levelNumber);
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
             setBuildMaterial(BuildMaterial.DECK);
@@ -443,6 +454,8 @@ public class GameScreen extends ScreenAdapter {
         world.load("level"+levelNumber+".json", physics);
 
         zoom = world.zoom;
+        setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
         physics.addFlag(world.flag);
         for(Pin pin : world.pins){
             if(pin.isAnchor){
@@ -491,6 +504,7 @@ public class GameScreen extends ScreenAdapter {
         System.out.println("Flag reached");
         gameOver = true;
         gui.showWin();
+        gui.showNextLevel(true);
     }
 
     public void floorReached(){

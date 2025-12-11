@@ -6,7 +6,7 @@
 		"isAnchor": true,
 		"anchorDirection": 1,
 		"position": {
-			"x": -14
+			"x": -12
 		}
 	},
 	{
@@ -15,183 +15,222 @@
 		"isAnchor": true,
 		"anchorDirection": 2,
 		"position": {
-			"x": 14
+			"x": 12
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 3,
-		"isAnchor": true,
-		"anchorDirection": 0,
-		"position": {
-			"x": -14,
-			"y": 10
-		}
-	},
-	{
-		"class": "Pin",
-		"id": 4,
-		"isAnchor": true,
-		"anchorDirection": 2,
-		"position": {
-			"x": 14,
-			"y": 10
-		}
-	},
-	{
-		"class": "Pin",
-		"id": 5,
-		"isAnchor": true,
-		"anchorDirection": 3,
-		"position": {
-			"y": -4
-		}
-	},
-	{
-		"class": "Pin",
-		"id": 10,
+		"id": 45,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": -0.42187458,
-			"y": 9.843751
+			"x": -7.00098,
+			"y": 0.098990396
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 14,
+		"id": 46,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": -9.00483,
-			"y": 0.21972866
+			"x": -2.0030704,
+			"y": -0.04557243
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 15,
+		"id": 47,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": -4.004852,
-			"y": 0.23431504
+			"x": 2.9960175,
+			"y": 0.04992389
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 16,
+		"id": 48,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": 0.9901252,
-			"y": 0.010255456
+			"x": 7.9957814,
+			"y": 0.09850152
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 17,
+		"id": 56,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": 5.9824185,
-			"y": -0.26724458
+			"x": -9.45,
+			"y": 3.3000002
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 18,
+		"id": 58,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": 10.982402,
-			"y": -0.27997196
+			"x": -4.349999,
+			"y": 3.2500002
 		}
 	},
 	{
 		"class": "Pin",
-		"id": 21,
+		"id": 60,
 		"isAnchor": false,
 		"anchorDirection": 0,
 		"position": {
-			"x": -4.2187505,
-			"y": 1.0312507
+			"x": 0.35000083,
+			"y": 3.1500003
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 62,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": 5.2500005,
+			"y": 3.4
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 64,
+		"isAnchor": false,
+		"anchorDirection": 0,
+		"position": {
+			"x": 9.549998,
+			"y": 3.2000003
 		}
 	}
 ],
 "beams": [
 	{
 		"class": "Beam",
-		"startPin": 3,
-		"endPin": 10,
-		"material": "CABLE"
-	},
-	{
-		"class": "Beam",
-		"startPin": 10,
-		"endPin": 4,
-		"material": "CABLE"
-	},
-	{
-		"class": "Beam",
 		"startPin": 1,
-		"endPin": 14,
+		"endPin": 45,
 		"material": "DECK"
 	},
 	{
 		"class": "Beam",
-		"startPin": 14,
-		"endPin": 15,
+		"startPin": 45,
+		"endPin": 46,
 		"material": "DECK"
 	},
 	{
 		"class": "Beam",
-		"startPin": 15,
-		"endPin": 16,
+		"startPin": 46,
+		"endPin": 47,
 		"material": "DECK"
 	},
 	{
 		"class": "Beam",
-		"startPin": 16,
-		"endPin": 17,
+		"startPin": 47,
+		"endPin": 48,
 		"material": "DECK"
 	},
 	{
 		"class": "Beam",
-		"startPin": 17,
-		"endPin": 18,
-		"material": "DECK"
-	},
-	{
-		"class": "Beam",
-		"startPin": 18,
+		"startPin": 48,
 		"endPin": 2,
 		"material": "DECK"
 	},
 	{
 		"class": "Beam",
-		"startPin": 10,
-		"endPin": 15,
-		"material": "CABLE"
+		"startPin": 56,
+		"endPin": 45,
+		"material": "STRUCTURE"
 	},
 	{
 		"class": "Beam",
-		"startPin": 10,
-		"endPin": 16,
-		"material": "CABLE"
+		"startPin": 58,
+		"endPin": 46,
+		"material": "STRUCTURE"
 	},
 	{
 		"class": "Beam",
-		"startPin": 10,
-		"endPin": 17,
-		"material": "CABLE"
+		"startPin": 60,
+		"endPin": 47,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 62,
+		"endPin": 48,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 64,
+		"endPin": 2,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 62,
+		"endPin": 47,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 60,
+		"endPin": 46,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 58,
+		"endPin": 45,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 56,
+		"endPin": 1,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 56,
+		"endPin": 58,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 58,
+		"endPin": 60,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 60,
+		"endPin": 62,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 62,
+		"endPin": 64,
+		"material": "STRUCTURE"
+	},
+	{
+		"class": "Beam",
+		"startPin": 64,
+		"endPin": 48,
+		"material": "STRUCTURE"
 	}
 ],
 "flag": {
 	"position": {
-		"x": 16,
+		"x": 14,
 		"y": 0.5
 	}
 },
-"zoom": 1.5,
-"levelName": "level 4: bridge of suspension"
+"zoom": 1.3,
+"levelName": "level 2: cross that bridge"
 }

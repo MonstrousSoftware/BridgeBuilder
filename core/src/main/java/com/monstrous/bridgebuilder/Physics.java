@@ -1,10 +1,8 @@
 package com.monstrous.bridgebuilder;
 
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
@@ -24,6 +22,7 @@ public class Physics {
     private final World world;
     public Box2DDebugRenderer debugRenderer;
     private float accumulator = 0;
+    Array<Body> staticBodies = new Array<Body>();
     Array<Body> tmpBodies = new Array<Body>();
 
     public Physics(GameScreen screen) {
@@ -45,6 +44,7 @@ public class Physics {
 
         // Create a body from the definition and add it to the world
         Body groundBody = world.createBody(groundBodyDef);
+        //staticBodies.add(groundBody);
         groundBody.setUserData(new Floor());
         PolygonShape groundBox = new PolygonShape();
         groundBox.setAsBox(40, 0.5f);
@@ -63,6 +63,7 @@ public class Physics {
         else if(pin.anchorDirection == 3)
             rampBodyDef.position.set(pin.position.x, pin.position.y-5);
         Body rampBody = world.createBody(rampBodyDef);
+        staticBodies.add(rampBody);
         rampBody.setUserData(new Ramp());
         PolygonShape rampBox = new PolygonShape();
         if(pin.anchorDirection == 3)
@@ -73,29 +74,33 @@ public class Physics {
         rampBody.createFixture(rampBox, 0.0f);
         rampBox.dispose();
     }
-//    public void addEndRamp(Pin pin){
-//        BodyDef rampBodyDef = new BodyDef();
-//        rampBodyDef.position.set(pin.position.x+10, pin.position.y);
-//        Body rampBody = world.createBody(rampBodyDef);
-//        rampBody.setUserData(new Ramp());
-//        PolygonShape rampBox = new PolygonShape();
-//        rampBox.setAsBox(10, 0.5f);
-//        rampBody.createFixture(rampBox, 0.0f);
-//        rampBox.dispose();
-//    }
+
+    public void clearStaticBodies(){
+        for(Body body : staticBodies)
+            world.destroyBody(body);
+        staticBodies.clear();
+    }
+
 
     public void addFlag(Flag flag){
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(flag.position.x, flag.position.y+1);
         Body body = world.createBody(bodyDef);
+        staticBodies.add(body);
         body.setUserData(flag);
         PolygonShape box = new PolygonShape();
         box.setAsBox(0.5f, 1f);
         Fixture fixture = body.createFixture(box, 0.0f);
         fixture.setSensor(true);
-
         box.dispose();
     }
+
+//    public void destroyFlag(Flag flag){
+//        if(flag == null || flag.body == null)
+//            return;
+//        world.destroyBody(flag.body);
+//        flag.body = null;
+//    }
 
 
 

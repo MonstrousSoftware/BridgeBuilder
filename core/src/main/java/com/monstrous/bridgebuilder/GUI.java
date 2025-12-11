@@ -24,6 +24,7 @@ public class GUI implements Disposable {
     TextButton structureButton;
     TextButton cableButton;
     TextButton modeButton;
+    TextButton nextButton;
     private boolean runMode;    // we are either in Edit mode or Run mode
 
     public GUI(GameScreen gameScreen) {
@@ -97,6 +98,13 @@ public class GUI implements Disposable {
             }
         });
 
+        nextButton = new TextButton("Next Level", skin);
+        nextButton.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                gameScreen.nextLevel();
+            }
+        });
+
 
 
 
@@ -108,7 +116,8 @@ public class GUI implements Disposable {
         Table buttonLine = new Table();
         buttonLine.add(materials);
         buttonLine.add().expandX();
-        buttonLine.add(modeButton).width(100);
+        buttonLine.add(nextButton).width(100).pad(10);
+        buttonLine.add(modeButton).width(100).pad(10);
 
 
         screenTable.add(buttonLine).fillX().pad(10).bottom().expandY();
@@ -156,6 +165,10 @@ public class GUI implements Disposable {
     public void clearEndMessage(){
         winImage.remove();
         lossImage.remove();
+    }
+
+    public void showNextLevel(boolean show){
+        nextButton.setVisible(show);
     }
 
     @Override

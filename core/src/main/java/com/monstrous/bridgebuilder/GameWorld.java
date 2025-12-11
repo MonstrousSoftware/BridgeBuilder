@@ -43,14 +43,19 @@ public class GameWorld implements Json.Serializable {
         file.writeString(s,  true);	// append
     }
 
-    public void load( final String fileName, Physics physics )
+    public boolean load( final String fileName, Physics physics )
     {
         Json json = new Json();
         FileHandle file;
         String string;
 
-        file = Gdx.files.local(fileName);	// save file
-        string = file.readString();
+        file = Gdx.files.local(fileName);
+        try { // save file
+            string = file.readString();
+        } catch(Exception e) {
+            System.out.println("Could not read file: "+fileName);
+            return false;
+        }
         //System.out.println("loaded: "+string);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
@@ -74,6 +79,7 @@ public class GameWorld implements Json.Serializable {
             //System.out.println("beam: "+beam.position1+" to "+beam.position2+" len: "+beam.length+" "+beam.isDeck);
             physics.addBeam(beam);
         }
+        return true;
         //System.out.println("Loaded "+pins.size+" pins and "+beams.size+" beams.");
     }
 
