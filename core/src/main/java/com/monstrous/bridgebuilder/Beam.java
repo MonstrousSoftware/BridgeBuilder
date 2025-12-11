@@ -10,9 +10,9 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class Beam implements Json.Serializable {
-    public static float MAX_DECK_LENGTH = 5f;
-    public static float MAX_STRUCTURE_LENGTH = 8f;
-    public static float MAX_CABLE_LENGTH = 20f;
+//    public static float MAX_DECK_LENGTH = 5f;
+//    public static float MAX_STRUCTURE_LENGTH = 8f;
+//    public static float MAX_CABLE_LENGTH = 20f;
 
     public static Texture beamTexture;
     public static Texture deckTexture;
@@ -21,7 +21,6 @@ public class Beam implements Json.Serializable {
     public final Vector2 position1;
     public final Vector2 position2;
     public BuildMaterial material;
-    //public boolean isDeck;
     public final Sprite sprite;
     public float W;
     public float H;
@@ -96,12 +95,7 @@ public class Beam implements Json.Serializable {
 
     /** max length depending on beam type */
     public float getMaxLength(){
-        switch(material){
-            case DECK: return MAX_DECK_LENGTH;
-            case STRUCTURE: return MAX_STRUCTURE_LENGTH;
-            case CABLE: return MAX_CABLE_LENGTH;
-        }
-        return MAX_DECK_LENGTH;
+        return material.maxLength;
     }
 
     /** adjust position2 so that length does not exceed MAX_LENGTH */
