@@ -24,6 +24,7 @@ public class GUI implements Disposable {
     TextButton structureButton;
     TextButton cableButton;
     TextButton modeButton;
+    TextButton prevButton;
     TextButton nextButton;
     Label costLabel;
     Label pbLabel;
@@ -111,6 +112,14 @@ public class GUI implements Disposable {
             }
         });
 
+        prevButton = new TextButton("Previous Level", skin);
+        prevButton.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                setRunMode(false);
+                gameScreen.previousLevel();
+            }
+        });
+
 
 
 
@@ -122,6 +131,7 @@ public class GUI implements Disposable {
         Table buttonLine = new Table();
         buttonLine.add(materials);
         buttonLine.add().expandX();
+        buttonLine.add(prevButton).width(100).pad(10);
         buttonLine.add(nextButton).width(100).pad(10);
         buttonLine.add(modeButton).width(100).pad(10);
 
@@ -156,6 +166,7 @@ public class GUI implements Disposable {
             pbLabel.setText("----");
         else
             pbLabel.setText(gameScreen.personalBest);
+        prevButton.setVisible(gameScreen.levelNumber > 1);
 
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
