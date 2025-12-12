@@ -609,18 +609,23 @@ public class GameScreen extends StdScreenAdapter {
 
         renderer.begin(camera.combined, GL20.GL_LINES);
         Color lineColor = Color.OLIVE;
-        for (int x = -20; x <= 20; x++) {
-
+        float ww = viewport.getWorldWidth();
+        float wh = viewport.getWorldHeight();
+        int hw = (int)ww/2;
+        int hh = (int)wh/2;
+        for (int x = -hw; x <= hw; x++) {
+            //Color lineColor = x % 4 == 0 ? Color.GREEN : Color.OLIVE;
             renderer.color(lineColor);
-            renderer.vertex(x, -10, 0);
+            renderer.vertex(x, -hh, 0);
             renderer.color(lineColor);
-            renderer.vertex(x, 10, 0);
+            renderer.vertex(x, hh, 0);
         }
-        for (int y = -10; y <= 10; y++) {
+        for (int y = -hh; y <= hh; y++) {
+            //Color lineColor = y % 4 == 0 ? Color.GREEN : Color.OLIVE;
             renderer.color(lineColor);
-            renderer.vertex(-20, y, 0);
+            renderer.vertex(-hw, y, 0);
             renderer.color(lineColor);
-            renderer.vertex(20, y, 0);
+            renderer.vertex(hw, y, 0);
         }
         renderer.end();
     }
