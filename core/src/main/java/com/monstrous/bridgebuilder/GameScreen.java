@@ -7,30 +7,33 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.monstrous.bridgebuilder.physics.Physics;
 import com.monstrous.bridgebuilder.world.*;
 
 
 public class GameScreen extends ScreenAdapter {
-    public static float COLOR_SCALE = 20000f;
-    public static float BREAK_FORCE = 20000f;
     public static int NO_PB = 999999;
-    public static int maxLevelNumber = 4;
+    public static int maxLevelNumber = 5;
 
 
     public GameWorld world;
 
     public Physics physics;
     private OrthographicCamera camera;
+    private Viewport viewport;
     private GUI gui;
-
-
     private SpriteBatch spriteBatch;
+    private SpriteBatch pfxSpriteBatch;
     private ImmediateModeRenderer renderer;
+    private ShapeRenderer shapeRenderer;
     private Pin currentPin;             // is not in pins, non-null during dragging
     private Beam currentBeam;           // is in beams
     private Pin overPin;                // highlighted pin, or null
@@ -44,19 +47,23 @@ public class GameScreen extends ScreenAdapter {
     public int levelNumber;
     private Preferences preferences;
     public int personalBest;
+    public ParticleEffects particleEffects;
 
     @Override
     public void show() {
         gui = new GUI(this);
         spriteBatch = new SpriteBatch();
+        pfxSpriteBatch = new SpriteBatch();
         physics = new Physics(this);
         new Sounds();
         preferences = Gdx.app.getPreferences("BridgeBuilder");
+        particleEffects = new ParticleEffects();
+        shapeRenderer = new ShapeRenderer();
+        //particleEffects.start();
 
 
-
-        // for debug renderer
-        camera = new OrthographicCamera(Gdx.graphics.getWidth()/32f, Gdx.graphics.getHeight()/32f);
+        camera = new OrthographicCamera(); //Gdx.graphics.getWidth()/32f, Gdx.graphics.getHeight()/32f);
+        viewport = new ExtendViewport(30, 20, camera);
 
         renderer = new ImmediateModeRenderer20(false, true, 0);
 
@@ -172,7 +179,7 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public boolean scrolled(float amountX, float amountY) {
                 zoom += 0.1f*amountY;
-                zoom = MathUtils.clamp(zoom, 1.0f, 3.0f);
+                zoom = MathUtils.clamp(zoom, 0.3f, 5.0f);
                 setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
                 return true;
             }
@@ -253,14 +260,19 @@ public class GameScreen extends ScreenAdapter {
         world.save("attempt"+levelNumber+".json");
         runPhysics = true;
         addVehicle();
+        particleEffects.start();
         Sounds.playJingle();
-
     }
 
-    public void retry(){
+    public void stopSimulation(){
         gui.clearEndMessage();
         Sounds.stopJingle();
         runPhysics = false;
+        particleEffects.stop();
+    }
+
+    public void retry(){
+        stopSimulation();
         clear();
         world.load("attempt"+levelNumber+".json", physics);
     }
@@ -268,10 +280,7 @@ public class GameScreen extends ScreenAdapter {
     public void nextLevel(){
         if(levelNumber < maxLevelNumber)
             levelNumber++;
-        gui.clearEndMessage();
-        Sounds.stopJingle();
-        runPhysics = false;
-
+        stopSimulation();
 
         clear();
         physics.clearStaticBodies();
@@ -282,9 +291,7 @@ public class GameScreen extends ScreenAdapter {
     public void previousLevel(){
         if(levelNumber > 1)
             levelNumber--;
-        gui.clearEndMessage();
-        Sounds.stopJingle();
-        runPhysics = false;
+        stopSimulation();
 
         clear();
         physics.clearStaticBodies();
@@ -383,8 +390,16 @@ public class GameScreen extends ScreenAdapter {
 
 
 
+        if(runPhysics){
+            Color lightBlue = Color.BLUE;
+            Color darkBlue = Color.NAVY;
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), lightBlue, lightBlue, darkBlue, darkBlue);
+            shapeRenderer.end();
+        } else
+            ScreenUtils.clear(Color.TEAL);
 
-        ScreenUtils.clear(Color.TEAL);
+
         //renderGrid();
         spriteBatch.setProjectionMatrix(camera.combined);
 
@@ -400,9 +415,13 @@ public class GameScreen extends ScreenAdapter {
             pin.sprite.draw(spriteBatch);
         }
         world.flag.sprite.draw(spriteBatch);
-
-
         spriteBatch.end();
+
+        pfxSpriteBatch.begin();
+        particleEffects.draw(pfxSpriteBatch, delta);
+        pfxSpriteBatch.end();
+
+
 
         physics.debugRender(camera);
 
@@ -467,8 +486,11 @@ public class GameScreen extends ScreenAdapter {
     public void resize(int width, int height) {
         if(width <= 0 || height <= 0) return;
 
-        // todo think about viewport behaviour
-        setCameraView(width, height);
+
+        viewport.update(width, height);
+        particleEffects.resize(width, height);
+        pfxSpriteBatch.getProjectionMatrix().setToOrtho2D(0,0, width, height);
+        //setCameraView(width, height);
 
         gui.resize(width, height);
         //gui.showLoss();

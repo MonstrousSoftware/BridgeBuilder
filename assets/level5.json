@@ -1,0 +1,53 @@
+{
+"pins": [
+	{
+		"class": "Pin",
+		"id": 1,
+		"isAnchor": true,
+      "anchorDirection": 1,
+		"position": {
+			"x": -20,
+            "y": 0
+		}
+	},
+	{
+		"class": "Pin",
+		"id": 2,
+		"isAnchor": true,
+       "anchorDirection": 2,
+		"position": {
+			"x": 19,
+            "y": -6
+		}
+	},
+  {
+    "class": "Pin",
+    "id": 3,
+    "isAnchor": true,
+    "anchorDirection": 0,
+    "position": {
+      "x": -20,
+      "y": 10
+    }
+  },
+  {
+    "class": "Pin",
+    "id": 4,
+    "isAnchor": true,
+    "anchorDirection": 0,
+    "position": {
+      "x": 19,
+      "y": 4
+    }
+  }
+],
+"beams": [],
+"flag": {
+	"position": {
+		"x": 23,
+		"y": -5.5
+	}
+},
+  "zoom": 2.0,
+  "levelName": "level 5: a bridge too far"
+}

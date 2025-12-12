@@ -1,0 +1,7 @@
+snow.png
+size:256,256
+repeat:none
+particle
+bounds:2,2,32,32
+snowflake1
+bounds:2,36,128,128

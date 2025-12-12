@@ -42,7 +42,7 @@ public class Physics {
         // Create our body definition
         BodyDef groundBodyDef = new BodyDef();
         // Set its world position
-        groundBodyDef.position.set(new Vector2(0, -7));
+        groundBodyDef.position.set(new Vector2(0, -12));
 
         // Create a body from the definition and add it to the world
         Body groundBody = world.createBody(groundBodyDef);
