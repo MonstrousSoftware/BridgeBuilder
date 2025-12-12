@@ -11,7 +11,12 @@ C to clear
 S to save
 L to load
 1 for deck mode
-2 for beam mode
+2 for wooden beam mode
+3 for steel beam mode
+4 for cable mode
+N next level
+P previous level
+F11 toggle full screen
 
 ## Platforms
 

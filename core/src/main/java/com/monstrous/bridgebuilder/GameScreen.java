@@ -4,7 +4,9 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -29,6 +31,7 @@ public class GameScreen extends StdScreenAdapter {
     public Physics physics;
     private OrthographicCamera camera;
     private Viewport viewport;
+    private FrameBuffer fbo;
     private GUI gui;
     private SpriteBatch spriteBatch;
     private SpriteBatch pfxSpriteBatch;
@@ -48,6 +51,7 @@ public class GameScreen extends StdScreenAdapter {
     private Preferences preferences;
     public int personalBest;
     public ParticleEffects particleEffects;
+    private PostFilter postFilter;
 
     @Override
     public void show() {
@@ -59,6 +63,7 @@ public class GameScreen extends StdScreenAdapter {
         preferences = Gdx.app.getPreferences("BridgeBuilder");
         particleEffects = new ParticleEffects();
         shapeRenderer = new ShapeRenderer();
+        postFilter = new PostFilter();
         //particleEffects.start();
 
 
@@ -392,6 +397,7 @@ public class GameScreen extends StdScreenAdapter {
 
 
         if(runPhysics){
+            fbo.begin();
             Color lightBlue = Color.BLUE;
             Color darkBlue = Color.NAVY;
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -427,6 +433,11 @@ public class GameScreen extends StdScreenAdapter {
 
 
         gui.draw();
+
+        if(runPhysics){
+            fbo.end();
+            postFilter.render(fbo);
+        }
     }
 
     private void testBeamStress(Beam beam){
@@ -485,7 +496,10 @@ public class GameScreen extends StdScreenAdapter {
     @Override
     public void resize(int width, int height) {
         if(width <= 0 || height <= 0) return;
-
+        if(fbo != null)
+            fbo.dispose();
+        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, true);
+        postFilter.resize(width, height);
 
         viewport.update(width, height);
         particleEffects.resize(width, height);
