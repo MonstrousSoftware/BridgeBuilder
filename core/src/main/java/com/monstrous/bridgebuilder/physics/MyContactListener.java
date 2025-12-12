@@ -1,6 +1,9 @@
-package com.monstrous.bridgebuilder;
+package com.monstrous.bridgebuilder.physics;
 
 import com.badlogic.gdx.physics.box2d.*;
+import com.monstrous.bridgebuilder.GameScreen;
+import com.monstrous.bridgebuilder.Sounds;
+import com.monstrous.bridgebuilder.world.*;
 
 public class MyContactListener implements ContactListener {
     private final GameScreen gameScreen;
@@ -19,10 +22,16 @@ public class MyContactListener implements ContactListener {
         Object b = bb.getUserData();
         if(isFlagReached(a,b)){
             gameScreen.flagReached();
+            return;
         }
         if(isFloorReached(a,b)){
+            Sounds.playDrop();
             gameScreen.floorReached();
+            return;
         }
+        if(a.getClass() == Floor.class || b.getClass() == Floor.class)
+            Sounds.playDrop();
+
         //System.out.println("Begin contact "+describe(a)+" vs "+describe(b));
 
     }

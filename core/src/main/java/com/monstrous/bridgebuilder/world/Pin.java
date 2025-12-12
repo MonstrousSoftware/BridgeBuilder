@@ -1,4 +1,4 @@
-package com.monstrous.bridgebuilder;
+package com.monstrous.bridgebuilder.world;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;

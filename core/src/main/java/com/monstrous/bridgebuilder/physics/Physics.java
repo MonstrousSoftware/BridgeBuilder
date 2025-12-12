@@ -1,4 +1,4 @@
-package com.monstrous.bridgebuilder;
+package com.monstrous.bridgebuilder.physics;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
@@ -7,6 +7,8 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 import com.badlogic.gdx.utils.Array;
+import com.monstrous.bridgebuilder.GameScreen;
+import com.monstrous.bridgebuilder.world.*;
 
 public class Physics {
     public static final float TIME_STEP = 1/200f;

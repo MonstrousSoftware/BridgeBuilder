@@ -11,7 +11,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
-
+import com.monstrous.bridgebuilder.physics.Physics;
+import com.monstrous.bridgebuilder.world.*;
 
 
 public class GameScreen extends ScreenAdapter {
@@ -49,7 +50,10 @@ public class GameScreen extends ScreenAdapter {
         gui = new GUI(this);
         spriteBatch = new SpriteBatch();
         physics = new Physics(this);
+        new Sounds();
         preferences = Gdx.app.getPreferences("BridgeBuilder");
+
+
 
         // for debug renderer
         camera = new OrthographicCamera(Gdx.graphics.getWidth()/32f, Gdx.graphics.getHeight()/32f);
@@ -249,11 +253,13 @@ public class GameScreen extends ScreenAdapter {
         world.save("attempt"+levelNumber+".json");
         runPhysics = true;
         addVehicle();
+        Sounds.playJingle();
 
     }
 
     public void retry(){
         gui.clearEndMessage();
+        Sounds.stopJingle();
         runPhysics = false;
         clear();
         world.load("attempt"+levelNumber+".json", physics);
@@ -263,7 +269,9 @@ public class GameScreen extends ScreenAdapter {
         if(levelNumber < maxLevelNumber)
             levelNumber++;
         gui.clearEndMessage();
+        Sounds.stopJingle();
         runPhysics = false;
+
 
         clear();
         physics.clearStaticBodies();
@@ -275,6 +283,7 @@ public class GameScreen extends ScreenAdapter {
         if(levelNumber > 1)
             levelNumber--;
         gui.clearEndMessage();
+        Sounds.stopJingle();
         runPhysics = false;
 
         clear();
@@ -301,6 +310,7 @@ public class GameScreen extends ScreenAdapter {
             retry();
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.C)){
+            Sounds.stopJingle();
             runPhysics = false;
             reset();
         }
@@ -413,6 +423,7 @@ public class GameScreen extends ScreenAdapter {
                 if (force  > beam.material.strength) {
                     System.out.println("break deck joint at "+force);
                     physics.destroyJoint(beam.joint);
+                    Sounds.playBreak();
                     //runPhysics = false;
                     beam.joint = null;
                 }
@@ -424,6 +435,7 @@ public class GameScreen extends ScreenAdapter {
                 if (force2  > beam.material.strength) {
                     System.out.println("break deck joint2 at "+force2);
                     physics.destroyJoint(beam.joint2);
+                    Sounds.playBreak();
                     //runPhysics = false;
                     beam.joint2 = null;
                 }
@@ -439,6 +451,7 @@ public class GameScreen extends ScreenAdapter {
                 System.out.println("break joint at "+force);
                 //runPhysics = false;
                 destroyBeam(beam);
+                Sounds.playBreak();
                 return;
             }
         }
@@ -481,6 +494,7 @@ public class GameScreen extends ScreenAdapter {
 
     public void loadLevel(int levelNumber){
         gui.clearEndMessage();
+        Sounds.stopJingle();
         runPhysics = false;
         clear();
         world.load("level"+levelNumber+".json", physics);
@@ -538,6 +552,7 @@ public class GameScreen extends ScreenAdapter {
         System.out.println("Flag reached");
         gameOver = true;
         gui.showWin();
+        Sounds.playFanfare();
         gui.showNextLevel(true);
 
         if(world.cost < personalBest) {

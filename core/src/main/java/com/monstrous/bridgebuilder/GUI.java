@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.monstrous.bridgebuilder.world.BuildMaterial;
 
 import static com.badlogic.gdx.math.Interpolation.bounceOut;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;

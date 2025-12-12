@@ -1,4 +1,4 @@
-package com.monstrous.bridgebuilder;
+package com.monstrous.bridgebuilder.world;
 
 public enum BuildMaterial {
 

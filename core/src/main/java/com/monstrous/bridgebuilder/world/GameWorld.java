@@ -1,12 +1,12 @@
-package com.monstrous.bridgebuilder;
+package com.monstrous.bridgebuilder.world;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
+import com.monstrous.bridgebuilder.physics.Physics;
 
 import java.io.StringWriter;
 
