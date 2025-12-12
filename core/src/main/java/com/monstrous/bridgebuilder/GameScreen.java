@@ -420,7 +420,7 @@ public class GameScreen extends StdScreenAdapter {
         for(Pin pin : world.pins){
             pin.sprite.draw(spriteBatch);
         }
-        world.flag.sprite.draw(spriteBatch);
+        world.flag.draw(spriteBatch);
         spriteBatch.end();
 
         pfxSpriteBatch.begin();
