@@ -19,7 +19,7 @@ import com.monstrous.bridgebuilder.physics.Physics;
 import com.monstrous.bridgebuilder.world.*;
 
 
-public class GameScreen extends ScreenAdapter {
+public class GameScreen extends StdScreenAdapter {
     public static int NO_PB = 999999;
     public static int maxLevelNumber = 5;
 
@@ -305,6 +305,7 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        super.render(delta);
         if(Gdx.input.isKeyJustPressed(Input.Keys.G)){
             gui.setRunMode(true);
             startSimulation();
@@ -396,11 +397,10 @@ public class GameScreen extends ScreenAdapter {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), lightBlue, lightBlue, darkBlue, darkBlue);
             shapeRenderer.end();
-        } else
+        } else {
             ScreenUtils.clear(Color.TEAL);
-
-
-        //renderGrid();
+            renderGrid();
+        }
         spriteBatch.setProjectionMatrix(camera.combined);
 
         spriteBatch.begin();
@@ -594,17 +594,18 @@ public class GameScreen extends ScreenAdapter {
     public void renderGrid() {
 
         renderer.begin(camera.combined, GL20.GL_LINES);
-
+        Color lineColor = Color.OLIVE;
         for (int x = -20; x <= 20; x++) {
-            renderer.color(Color.GREEN);
+
+            renderer.color(lineColor);
             renderer.vertex(x, -10, 0);
-            renderer.color(Color.LIGHT_GRAY);
+            renderer.color(lineColor);
             renderer.vertex(x, 10, 0);
         }
         for (int y = -10; y <= 10; y++) {
-            renderer.color(Color.GREEN);
+            renderer.color(lineColor);
             renderer.vertex(-20, y, 0);
-            renderer.color(Color.GREEN);
+            renderer.color(lineColor);
             renderer.vertex(20, y, 0);
         }
         renderer.end();
