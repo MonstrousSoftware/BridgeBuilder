@@ -35,7 +35,7 @@ public class GUI implements Disposable {
     public GUI(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         stage = new Stage(new ScreenViewport());
-        skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        skin = new Skin(Gdx.files.internal("ui/bridge.json"));
 
         status = new Label("...", skin);
         winImage = new Image(new Texture(Gdx.files.internal("textures/hooray.png")));
@@ -79,14 +79,14 @@ public class GUI implements Disposable {
             }
         });
 
-        woodButton = new TextButton("Wooden Beam", skin);
+        woodButton = new TextButton("Wood", skin);
         woodButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.WOOD);
             }
         });
 
-        steelButton = new TextButton("Steel Beam", skin);
+        steelButton = new TextButton("Steel", skin);
         steelButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.STEEL);
@@ -102,7 +102,7 @@ public class GUI implements Disposable {
 
 
         // button toggles between Edit mode and Run mode
-        modeButton = new TextButton("Go!", skin);
+        modeButton = new TextButton("Go!", skin, "big");
         modeButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 if(runMode) {
@@ -135,17 +135,17 @@ public class GUI implements Disposable {
 
 
         Table materials = new Table();
-        materials.add(deckButton).width(100).pad(10);
-        materials.add(woodButton).width(100).pad(10);
-        materials.add(steelButton).width(100).pad(10);
-        materials.add(cableButton).width(100).pad(10);
+        materials.add(deckButton).width(120).height(80);
+        materials.add(woodButton).width(120).height(80);
+        materials.add(steelButton).width(120).height(80);
+        materials.add(cableButton).width(120).height(80);
 
         Table buttonLine = new Table();
         buttonLine.add(materials);
         buttonLine.add().expandX();
-        buttonLine.add(prevButton).width(100).pad(10);
-        buttonLine.add(nextButton).width(100).pad(10);
-        buttonLine.add(modeButton).width(100).pad(10);
+        buttonLine.add(prevButton).width(200).height(80).pad(10);
+        buttonLine.add(nextButton).width(200).height(80).pad(10);
+        buttonLine.add(modeButton).width(200).height(80).pad(10);
 
         Table costTable = new Table();
         costTable.add(new Label("$", skin)).pad(5);
@@ -161,11 +161,12 @@ public class GUI implements Disposable {
 
         screenTable.add(topLine).top().row();
 
-
-        screenTable.add(buttonLine).fillX().pad(10).bottom().expandY();
-        screenTable.row();
-//
         screenTable.add(status).pad(10).left().expandX();
+        screenTable.row();
+        screenTable.add(buttonLine).fillX().pad(10).bottom().expandY();
+
+//
+
 
         stage.addActor(screenTable);
 

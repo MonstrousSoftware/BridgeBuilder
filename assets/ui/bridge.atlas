@@ -1,0 +1,29 @@
+
+bridge.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+button
+  rotate: false
+  xy: 1, 143
+  size: 372, 109
+  split: 26, 23, 32, 33
+  pad: 26, 28, 24, 21
+  orig: 372, 109
+  offset: 0, 0
+  index: -1
+opensans-light32
+  rotate: false
+  xy: 1, 340
+  size: 506, 165
+  orig: 506, 165
+  offset: 0, 0
+  index: -1
+opensans-lightSmall
+  rotate: false
+  xy: 1, 254
+  size: 506, 84
+  orig: 506, 84
+  offset: 0, 0
+  index: -1

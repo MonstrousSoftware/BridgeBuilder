@@ -1,0 +1,69 @@
+{
+"BitmapFont": {
+	"opensans-light32": {
+		"file": "opensans-light32.fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	},
+	"opensans-lightSmall": {
+		"file": "opensans-lightSmall.fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	}
+},
+"Color": {
+	"LBLUE": {
+		"r": 0.8666667,
+		"g": 0.9764706,
+		"b": 0.99215686,
+		"a": 1
+	},
+	"WHITE": {
+		"r": 1,
+		"g": 1,
+		"b": 1,
+		"a": 1
+	},
+	"YELLOW": {
+		"r": 1,
+		"g": 0.8764045,
+		"b": 0,
+		"a": 1
+	}
+},
+"ButtonStyle": {
+	"default": {
+		"up": "button"
+	}
+},
+"LabelStyle": {
+	"default": {
+		"font": "opensans-light32",
+		"fontColor": "LBLUE"
+	}
+},
+"TextButtonStyle": {
+	"default": {
+		"parent": "default",
+		"font": "opensans-lightSmall",
+		"fontColor": "LBLUE",
+		"overFontColor": "WHITE"
+	},
+	"big": {
+		"parent": "default",
+		"font": "opensans-light32",
+		"fontColor": "LBLUE",
+		"overFontColor": "WHITE",
+		"checkedFontColor": "YELLOW",
+		"pressedOffsetY": -2,
+		"checkedOffsetY": -5
+	}
+},
+"TextTooltipStyle": {
+	"default": {
+		"label": "default"
+	}
+}
+}
