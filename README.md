@@ -20,8 +20,6 @@ F11 toggle full screen
 
 
 to do
-- web
-- snap to grid
 - skin
 
 ## Platforms

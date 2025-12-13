@@ -96,7 +96,6 @@ public class GameScreen extends StdScreenAdapter {
                 checkOverPin(worldPos);
                 if(currentPin == null)
                     return false;
-                //float sy = Gdx.graphics.getHeight() - y;
                 currentPin.setPosition(worldPos.x, worldPos.y);
                 currentBeam.setEndPosition(worldPos.x, worldPos.y);
                 // if the beam gets too long, place a pin and create a new beam
@@ -105,11 +104,12 @@ public class GameScreen extends StdScreenAdapter {
                     currentBeam.truncateLength();
                     correctedPos.set(currentBeam.position2.x, currentBeam.position2.y);
                     currentPin.setPosition(correctedPos.x, correctedPos.y);
+                    snapPinToGrid(currentPin);
                     physics.addPin(currentPin);
                     world.pins.add(currentPin);
                     currentBeam.setEndPin(currentPin);
                     addBeam(currentBeam);
-                    //physics.addBeam(currentBeam);
+
                     currentBeam = new Beam(correctedPos.x, correctedPos.y, correctedPos.x, correctedPos.y);
                     currentBeam.setMaterial(buildMaterial);
                     currentBeam.setStartPin(currentPin);
@@ -130,10 +130,10 @@ public class GameScreen extends StdScreenAdapter {
                     return false;
                 }
                 // LMB
-                screenToWorldUnits(x,y, worldPos);
-                System.out.println(worldPos);
                 if (currentPin != null) // already dragging
                     return false;
+                screenToWorldUnits(x,y, worldPos);
+                System.out.println(worldPos);
                 startPos.set(worldPos);
                 Pin startPin;
                 if (overPin != null) {    // if we were over a pin, use that as start
@@ -141,10 +141,12 @@ public class GameScreen extends StdScreenAdapter {
                     startPin = overPin;
                 } else {
                     startPin = new Pin(startPos.x, startPos.y);
+                    snapPinToGrid(startPin);
                     physics.addPin(startPin);
                     world.pins.add(startPin);
                 }
-                currentBeam = new Beam(startPos.x, startPos.y, worldPos.x, worldPos.y);
+                // use snapped position to start beam
+                currentBeam = new Beam(startPin.position.x, startPin.position.y, worldPos.x, worldPos.y);
                 currentBeam.setMaterial(buildMaterial);
                 currentBeam.setStartPin(startPin);
                 world.beams.add(currentBeam);
@@ -169,12 +171,13 @@ public class GameScreen extends StdScreenAdapter {
                         currentBeam.setEndPosition(worldPos.x, worldPos.y);
                         currentBeam.setEndPin(overPin);
                     } else {
+                        snapPinToGrid(currentPin);
                         physics.addPin(currentPin);
                         world.pins.add(currentPin);
+                        currentBeam.setEndPosition(currentPin.position.x, currentPin.position.y);
                         currentBeam.setEndPin(currentPin);
                     }
                     addBeam(currentBeam);
-                    //physics.addBeam(currentBeam);
                 }
                 currentPin = null;
                 currentBeam = null;
@@ -195,6 +198,14 @@ public class GameScreen extends StdScreenAdapter {
         Gdx.input.setInputProcessor(im);
 
     }
+
+    private void snapPinToGrid(Pin pin){
+        float x = Math.round(pin.position.x);
+        float y = Math.round(pin.position.y);
+        pin.setPosition(x,y);
+    }
+
+
 
 
     private final Vector3 tmpVec3 = new Vector3();

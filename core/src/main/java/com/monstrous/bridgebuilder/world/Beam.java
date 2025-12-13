@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
+/** A Beam can be a deck, a wooden beam, a steel beam or a cable */
 public class Beam implements Json.Serializable {
 
     public static Texture[] textures;
