@@ -50,15 +50,15 @@ public class GameWorld implements Json.Serializable {
         Json json = new Json();
         FileHandle file;
         String string;
-
-        file = Gdx.files.local(fileName);
+        System.out.println("loading file: "+fileName);
+        file = Gdx.files.internal(fileName);
         try { // save file
             string = file.readString();
         } catch(Exception e) {
             System.out.println("Could not read file: "+fileName);
             return false;
         }
-        //System.out.println("loaded: "+string);
+        System.out.println("loaded: "+string);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
         json.addClassTag("Flag", Flag.class);

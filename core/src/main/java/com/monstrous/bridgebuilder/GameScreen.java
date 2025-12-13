@@ -636,7 +636,6 @@ public class GameScreen extends StdScreenAdapter {
     public void dispose() {
         // Destroy screen's assets here.
         gui.dispose();
-
     }
 
 

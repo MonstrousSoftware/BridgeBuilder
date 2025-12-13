@@ -18,6 +18,12 @@ N next level
 P previous level
 F11 toggle full screen
 
+
+to do
+- web
+- snap to grid
+- skin
+
 ## Platforms
 
 - `core`: Main module with the application logic shared by all platforms.
