@@ -22,7 +22,8 @@ public class GUI implements Disposable {
     private Image winImage;
     private Image lossImage;
     TextButton deckButton;
-    TextButton structureButton;
+    TextButton steelButton;
+    TextButton woodButton;
     TextButton cableButton;
     TextButton modeButton;
     TextButton prevButton;
@@ -51,12 +52,14 @@ public class GUI implements Disposable {
         if(runMode) {
             modeButton.setText("Retry");
             deckButton.setVisible(false);
-            structureButton.setVisible(false);
+            steelButton.setVisible(false);
+            woodButton.setVisible(false);
             cableButton.setVisible(false);
         } else {
             modeButton.setText("Go!");
             deckButton.setVisible(true);
-            structureButton.setVisible(true);
+            steelButton.setVisible(true);
+            woodButton.setVisible(true);
             cableButton.setVisible(true);
         }
     }
@@ -76,8 +79,15 @@ public class GUI implements Disposable {
             }
         });
 
-        structureButton = new TextButton("Structure", skin);
-        structureButton.addListener(new ChangeListener() {
+        woodButton = new TextButton("Wooden Beam", skin);
+        woodButton.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                gameScreen.setBuildMaterial(BuildMaterial.WOOD);
+            }
+        });
+
+        steelButton = new TextButton("Steel Beam", skin);
+        steelButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.STEEL);
             }
@@ -126,7 +136,8 @@ public class GUI implements Disposable {
 
         Table materials = new Table();
         materials.add(deckButton).width(100).pad(10);
-        materials.add(structureButton).width(100).pad(10);
+        materials.add(woodButton).width(100).pad(10);
+        materials.add(steelButton).width(100).pad(10);
         materials.add(cableButton).width(100).pad(10);
 
         Table buttonLine = new Table();
