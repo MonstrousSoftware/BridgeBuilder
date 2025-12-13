@@ -82,6 +82,7 @@ public class GameWorld implements Json.Serializable {
             //System.out.println("beam: "+beam.position1+" to "+beam.position2+" len: "+beam.length+" "+beam.isDeck);
             physics.addBeam(beam);
         }
+        physics.addFlag(flag);
         return true;
         //System.out.println("Loaded "+pins.size+" pins and "+beams.size+" beams.");
     }

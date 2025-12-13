@@ -391,6 +391,7 @@ public class GameScreen extends StdScreenAdapter {
             if(world.vehicle != null) {
                 physics.updateVehiclePosition(world.vehicle, !gameOver);
             }
+            physics.updateFlagPositions(world.flag);
         }
 
 
@@ -538,7 +539,7 @@ public class GameScreen extends StdScreenAdapter {
         zoom = world.zoom;
         setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        physics.addFlag(world.flag);
+
         for(Pin pin : world.pins){
             if(pin.isAnchor){
                 physics.addRamp(pin);
@@ -574,6 +575,7 @@ public class GameScreen extends StdScreenAdapter {
             physics.destroyPin(pin);
         }
         world.pins.clear();
+        physics.destroyFlag(world.flag);
 
         if(world.vehicle != null)
             destroyVehicle();

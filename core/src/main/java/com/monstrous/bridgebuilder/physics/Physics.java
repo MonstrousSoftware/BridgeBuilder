@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 import com.badlogic.gdx.utils.Array;
@@ -24,6 +25,7 @@ public class Physics {
     private final World world;
     public Box2DDebugRenderer debugRenderer;
     private float accumulator = 0;
+    private float time;
     Array<Body> staticBodies = new Array<Body>();
     Array<Body> tmpBodies = new Array<Body>();
 
@@ -86,23 +88,80 @@ public class Physics {
 
     public void addFlag(Flag flag){
         BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(flag.position.x, flag.position.y+1);
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(flag.position.x, flag.position.y+0.5f);
+
         Body body = world.createBody(bodyDef);
-        staticBodies.add(body);
+        //staticBodies.add(body);
         body.setUserData(flag);
+        flag.body = body;
+
         PolygonShape box = new PolygonShape();
-        box.setAsBox(0.5f, 1f);
-        Fixture fixture = body.createFixture(box, 0.0f);
-        fixture.setSensor(true);
+        box.setAsBox(0.5f, 0.5f);
+
+
+        CircleShape circle = new CircleShape();
+        circle.setRadius(0.5f);
+
+        Fixture fixture = flag.body.createFixture(box, 10.5f);
+        //fixture.setSensor(true);
+
+        bodyDef.position.set(flag.position.x, flag.position.y+1.5f);
+        flag.body2 = world.createBody(bodyDef);
+        flag.body2.setUserData(flag);
+        flag.body2.createFixture(circle, 0.5f);
+
+        bodyDef.position.set(flag.position.x, flag.position.y+3.0f);
+        flag.body3 = world.createBody(bodyDef);
+        flag.body3.setUserData(flag);
+        flag.body3.createFixture(circle, 0.5f);
+
+
+        RevoluteJointDef defJoint = new RevoluteJointDef();
+        defJoint.initialize(flag.body, flag.body2, flag.body.getWorldCenter());
+        defJoint.collideConnected = false;
+        defJoint.enableMotor = true;
+        defJoint.lowerAngle =   -0.05f * (float)Math.PI;
+        defJoint.upperAngle = 0.05f * (float)Math.PI;
+        defJoint.motorSpeed = 0.0f;
+        defJoint.maxMotorTorque = 10.1f;
+        defJoint.enableLimit = true;
+        flag.joint1 = (RevoluteJoint) world.createJoint(defJoint);
+
+        defJoint.initialize(flag.body2, flag.body3, flag.body2.getWorldCenter());
+        defJoint.lowerAngle *= 2f;
+        defJoint.upperAngle *= 2f;
+        flag.joint2 = (RevoluteJoint) world.createJoint(defJoint);
+
+        circle.dispose();
         box.dispose();
     }
 
-//    public void destroyFlag(Flag flag){
-//        if(flag == null || flag.body == null)
-//            return;
-//        world.destroyBody(flag.body);
-//        flag.body = null;
-//    }
+    /** update articulated tree segments */
+    public void updateFlagPositions(Flag flag){
+
+        //System.out.println(time+"cos:"+Math.cos(time));
+        flag.joint1.setMotorSpeed(0.1f*(float) Math.cos(time));
+        flag.joint2.setMotorSpeed(0.1f*(float) Math.cos(time));
+
+        flag.sprites.get(0).setOriginBasedPosition(flag.body.getPosition().x, flag.body.getPosition().y);
+        flag.sprites.get(1).setOriginBasedPosition(flag.body2.getPosition().x, flag.body2.getPosition().y);
+        flag.sprites.get(2).setOriginBasedPosition(flag.body3.getPosition().x, flag.body3.getPosition().y);
+        flag.sprites.get(1).setRotation(flag.body2.getAngle() * 180f/(float)Math.PI);
+        flag.sprites.get(2).setRotation(flag.body3.getAngle() * 180f/(float)Math.PI);
+
+    }
+
+    public void destroyFlag(Flag flag){
+        if(flag == null || flag.body == null)
+            return;
+        world.destroyBody(flag.body);
+        world.destroyBody(flag.body2);
+        world.destroyBody(flag.body3);
+        flag.body = null;
+        flag.body2 = null;
+        flag.body3 = null;
+   }
 
 
 
@@ -126,7 +185,7 @@ public class Physics {
             // Create a fixture definition to apply our shape to
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = circle;
-            fixtureDef.density = 5.5f;
+            fixtureDef.density = 15.5f;
             fixtureDef.friction = 0.4f;
             fixtureDef.restitution = 0.6f; // Make it bounce a little bit
             fixtureDef.filter.categoryBits = PIN_FLAG;
@@ -304,11 +363,13 @@ public class Physics {
 
 
     public void update(float deltaTime) {
+
         // fixed time step
         // max frame time to avoid spiral of death (on slow devices)
         float frameTime = Math.min(deltaTime, 0.25f);
         accumulator += frameTime;
         while (accumulator >= TIME_STEP) {
+            time += TIME_STEP;
             world.step(TIME_STEP, 6, 2);
             accumulator -= TIME_STEP;
         }
