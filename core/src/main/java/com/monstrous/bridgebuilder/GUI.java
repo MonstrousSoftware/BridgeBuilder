@@ -18,7 +18,7 @@ public class GUI implements Disposable {
     public final Stage stage;
     private final Skin skin;
     private GameScreen gameScreen;
-    private Label status;
+    private Label statusLabel;
     private Image winImage;
     private Image lossImage;
     TextButton deckButton;
@@ -37,7 +37,7 @@ public class GUI implements Disposable {
         stage = new Stage(new ScreenViewport());
         skin = new Skin(Gdx.files.internal("ui/bridge.json"));
 
-        status = new Label("...", skin);
+        statusLabel = new Label("...", skin);
         winImage = new Image(new Texture(Gdx.files.internal("textures/hooray.png")));
         lossImage = new Image(new Texture(Gdx.files.internal("textures/ohno.png")));
         costLabel = new Label("0", skin);
@@ -55,12 +55,14 @@ public class GUI implements Disposable {
             steelButton.setVisible(false);
             woodButton.setVisible(false);
             cableButton.setVisible(false);
+            statusLabel.setVisible(false);
         } else {
             modeButton.setText("Go!");
             deckButton.setVisible(true);
             steelButton.setVisible(true);
             woodButton.setVisible(true);
             cableButton.setVisible(true);
+            statusLabel.setVisible(true);
         }
     }
 
@@ -76,6 +78,7 @@ public class GUI implements Disposable {
         deckButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.DECK);
+                deckButton.setChecked(true);
             }
         });
 
@@ -83,6 +86,7 @@ public class GUI implements Disposable {
         woodButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.WOOD);
+                woodButton.setChecked(true);
             }
         });
 
@@ -90,6 +94,7 @@ public class GUI implements Disposable {
         steelButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.STEEL);
+                steelButton.setChecked(true);
             }
         });
 
@@ -161,7 +166,7 @@ public class GUI implements Disposable {
 
         screenTable.add(topLine).top().row();
 
-        screenTable.add(status).pad(10).left().expandX();
+        screenTable.add(statusLabel).pad(10).left().expandX();
         screenTable.row();
         screenTable.add(buttonLine).fillX().pad(10).bottom().expandY();
 
@@ -189,8 +194,8 @@ public class GUI implements Disposable {
         stage.getViewport().update(width, height, true);
     }
 
-    public void setStatus(String stat){
-        status.setText(stat);
+    public void setStatusLabel(String stat){
+        statusLabel.setText(stat);
     }
 
     public void showWin(){

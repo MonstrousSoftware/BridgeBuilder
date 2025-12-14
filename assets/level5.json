@@ -1,4 +1,7 @@
 {
+  "width": 50,
+  "height": 30,
+  "zoom": 1.5,
 "pins": [
 	{
 		"class": "Pin",

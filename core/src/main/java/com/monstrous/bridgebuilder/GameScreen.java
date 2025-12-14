@@ -15,8 +15,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.monstrous.bridgebuilder.physics.Physics;
 import com.monstrous.bridgebuilder.world.*;
 
@@ -30,7 +28,7 @@ public class GameScreen extends StdScreenAdapter {
 
     public Physics physics;
     private OrthographicCamera camera;
-    private Viewport viewport;
+    private ExtendViewport viewport;
     private FrameBuffer fbo;
     private GUI gui;
     private SpriteBatch spriteBatch;
@@ -107,13 +105,14 @@ public class GameScreen extends StdScreenAdapter {
                     snapPinToGrid(currentPin);
                     physics.addPin(currentPin);
                     world.pins.add(currentPin);
+                    currentBeam.setEndPosition(currentPin.position.x, currentPin.position.y);
                     currentBeam.setEndPin(currentPin);
                     addBeam(currentBeam);
 
-                    currentBeam = new Beam(correctedPos.x, correctedPos.y, correctedPos.x, correctedPos.y);
+                    currentBeam = new Beam(currentPin.position.x, currentPin.position.y, currentPin.position.x, currentPin.position.y);
                     currentBeam.setMaterial(buildMaterial);
                     currentBeam.setStartPin(currentPin);
-                    currentPin = new Pin(correctedPos.x, correctedPos.y);
+                    currentPin = new Pin(currentPin.position.x, currentPin.position.y);
                     world.beams.add(currentBeam);
                 }
                 return false;
@@ -366,30 +365,9 @@ public class GameScreen extends StdScreenAdapter {
             setBuildMaterial(BuildMaterial.CABLE);
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Zoom: ");
-        sb.append(zoom);
-        sb.append(" Beam forces:");
-        for(Beam beam : world.beams){
-            if(beam.material != BuildMaterial.DECK)
-                continue;
-            if(beam.joint != null) {
-                Vector2 forceVec = beam.joint.getReactionForce(1f / Physics.TIME_STEP);
-                float force = forceVec.len();
-                sb.append((int) force);
-                sb.append("+");
-            } else
-                sb.append("- +");
-            if(beam.joint2 != null) {
-                Vector2 forceVec = beam.joint2.getReactionForce(1f / Physics.TIME_STEP);
-                float force = forceVec.len();
-                sb.append((int) force);
-                sb.append("   ");
-            } else
-                sb.append("-   ");
-        }
-
-        gui.setStatus(sb.toString());
+//        CharArray sb = new CharArray();
+//        sb.append(world.levelName);
+        gui.setStatusLabel(world.levelName);
 
         if(runPhysics) {
             physics.update(delta);
@@ -547,8 +525,11 @@ public class GameScreen extends StdScreenAdapter {
         clear();
         world.load("level"+levelNumber+".json", physics);
 
-        zoom = world.zoom;
-        setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        viewport.setMinWorldWidth(world.width);
+        viewport.setMinWorldHeight(world.height);
+        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //zoom = world.zoom;
+        //setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
         for(Pin pin : world.pins){
@@ -624,8 +605,9 @@ public class GameScreen extends StdScreenAdapter {
         Color lineColor = Color.OLIVE;
         float ww = viewport.getWorldWidth();
         float wh = viewport.getWorldHeight();
-        int hw = (int)ww/2;
-        int hh = (int)wh/2;
+        //System.out.println("World size "+ww+"x "+wh);
+        int hw = 1 + (int)ww/2;
+        int hh = 1 + (int)wh/2;
         for (int x = -hw; x <= hw; x++) {
             //Color lineColor = x % 4 == 0 ? Color.GREEN : Color.OLIVE;
             renderer.color(lineColor);

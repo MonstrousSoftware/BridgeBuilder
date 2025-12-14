@@ -17,8 +17,11 @@ public class GameWorld implements Json.Serializable {
     public Flag flag;
     public Vehicle vehicle;
     public float zoom;
+    public int width;
+    public int height;
     public String levelName;
     public int cost;
+
 
     public GameWorld() {
         pins = new Array<>();
@@ -65,6 +68,8 @@ public class GameWorld implements Json.Serializable {
         json.addClassTag("Vehicle", Vehicle.class);
 
         GameWorld loaded = json.fromJson(GameWorld.class, string);
+        this.width = loaded.width;
+        this.height = loaded.height;
         this.pins = loaded.pins;
         this.beams = loaded.beams;
         this.flag = loaded.flag;
@@ -97,17 +102,20 @@ public class GameWorld implements Json.Serializable {
 
     @Override
     public void write(Json json) {
+        json.writeValue("width", width);
+        json.writeValue("height", height);
+        json.writeValue("zoom", zoom);
         json.writeValue("pins", pins);
         json.writeValue("beams", beams);
         json.writeValue("flag", flag);
-        json.writeValue("zoom", zoom);
         json.writeValue("levelName", levelName);
         json.writeValue("cost", cost);
-        //json.writeValue("vehicle", vehicle);
     }
 
     @Override
     public void read(Json json, JsonValue jsonData) {
+        width = json.readValue("width", Integer.class, 30, jsonData);
+        height = json.readValue("height", Integer.class, 20, jsonData);
         pins= json.readValue("pins", Array.class, Integer.class, jsonData);
         beams = json.readValue("beams", Array.class, Beam.class, jsonData);
         flag = json.readValue("flag", Flag.class, jsonData);

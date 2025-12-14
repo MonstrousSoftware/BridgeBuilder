@@ -1,4 +1,7 @@
 {
+  "width": 50,
+  "height": 30,
+  "zoom": 1.5,
 "pins": [
 	{
 		"class": "Pin",
@@ -46,6 +49,5 @@
 		"y": 0.5
 	}
 },
-  "zoom": 1.5,
   "levelName": "level 4: bridge of suspension"
 }
