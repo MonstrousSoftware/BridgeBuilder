@@ -29,5 +29,10 @@
 		"y": 0.5
 	}
 },
+  "floor": {
+    "position": {
+      "y": -11
+    }
+  },
   "levelName": "level 2: cross that bridge"
 }

@@ -39,5 +39,10 @@
 		"y": 0.5
 	}
 },
+"floor": {
+  "position": {
+    "y": -11
+  }
+},
   "levelName": "level 3: captain on the bridge"
 }

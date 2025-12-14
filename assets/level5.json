@@ -51,6 +51,11 @@
 		"y": -5.5
 	}
 },
+  "floor": {
+    "position": {
+      "y": -11
+    }
+  },
   "zoom": 2.0,
   "levelName": "level 5: a bridge too far"
 }

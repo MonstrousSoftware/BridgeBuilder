@@ -35,6 +35,8 @@ public class GameWorld implements Json.Serializable {
 
     public void save( FileHandle fileHandle )
     {
+        System.out.println("saving file: "+fileHandle.name());
+
         Json json = new Json(JsonWriter.OutputType.json);
         JsonWriter writer = new JsonWriter(new StringWriter());
         json.setWriter(writer);
@@ -79,11 +81,12 @@ public class GameWorld implements Json.Serializable {
         this.pins = loaded.pins;
         this.beams = loaded.beams;
         this.flag = loaded.flag;
+        this.floor = loaded.floor;
         this.zoom = loaded.zoom;
         this.levelName = loaded.levelName;
         this.cost = loaded.cost;
-        floor = new Floor();
-        floor.setPosition(0,-11f);
+//        floor = new Floor();
+//        floor.setPosition(0,-11f);
 
         for(Pin pin: pins){
             physics.addPin(pin);
@@ -117,6 +120,7 @@ public class GameWorld implements Json.Serializable {
         json.writeValue("pins", pins);
         json.writeValue("beams", beams);
         json.writeValue("flag", flag);
+        json.writeValue("floor", floor);
         json.writeValue("levelName", levelName);
         json.writeValue("cost", cost);
     }
@@ -128,6 +132,7 @@ public class GameWorld implements Json.Serializable {
         pins= json.readValue("pins", Array.class, Integer.class, jsonData);
         beams = json.readValue("beams", Array.class, Beam.class, jsonData);
         flag = json.readValue("flag", Flag.class, jsonData);
+        floor = json.readValue("floor", Floor.class, jsonData);
         //vehicle = json.readValue("vehicle", Vehicle.class, jsonData);
         zoom = json.readValue("zoom", Float.class, 1.0f, jsonData);
         levelName = json.readValue("levelName", String.class, "level name", jsonData);

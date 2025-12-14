@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.monstrous.bridgebuilder.physics.Physics;
 import com.monstrous.bridgebuilder.world.*;
 
@@ -31,7 +32,7 @@ public class GameScreen extends StdScreenAdapter {
 
     public Physics physics;
     private OrthographicCamera camera;
-    private ExtendViewport viewport;
+    private FitViewport viewport;
     private FrameBuffer fbo;
     private GUI gui;
     private SpriteBatch spriteBatch;
@@ -70,7 +71,7 @@ public class GameScreen extends StdScreenAdapter {
 
 
         camera = new OrthographicCamera(); //Gdx.graphics.getWidth()/32f, Gdx.graphics.getHeight()/32f);
-        viewport = new ExtendViewport(30, 20, camera);
+        viewport = new FitViewport(30, 20, camera);
 
         renderer = new ImmediateModeRenderer20(false, true, 0);
 
@@ -187,13 +188,14 @@ public class GameScreen extends StdScreenAdapter {
                 return false;
             }
 
-            @Override
-            public boolean scrolled(float amountX, float amountY) {
-                zoom += 0.1f*amountY;
-                zoom = MathUtils.clamp(zoom, 0.3f, 5.0f);
-                setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                return true;
-            }
+            // don't allow zoom because it screws up the game layout
+//            @Override
+//            public boolean scrolled(float amountX, float amountY) {
+//                zoom += 0.1f*amountY;
+//                zoom = MathUtils.clamp(zoom, 0.3f, 5.0f);
+//                setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//                return true;
+//            }
         };
         InputMultiplexer im = new InputMultiplexer();
         im.addProcessor(gui.stage);
@@ -506,6 +508,8 @@ public class GameScreen extends StdScreenAdapter {
         fbo = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
         postFilter.resize(width, height);
 
+        float aspectRatio = width / (float)height;
+        viewport.setWorldSize(world.width, world.width/ aspectRatio);
         viewport.update(width, height);
         particleEffects.resize(width, height);
         pfxSpriteBatch.getProjectionMatrix().setToOrtho2D(0,0, width, height);
@@ -543,8 +547,10 @@ public class GameScreen extends StdScreenAdapter {
         FileHandle file = Gdx.files.internal("level"+levelNumber+".json");
         world.load(file, physics);
 
-        viewport.setMinWorldWidth(world.width);
-        viewport.setMinWorldHeight(world.height);
+        float aspectRatio = Gdx.graphics.getWidth() / (float)Gdx.graphics.getHeight();
+        viewport.setWorldSize(world.width, world.width/ aspectRatio);
+//        viewport.setMinWorldWidth(world.width);
+//        viewport.setMinWorldHeight(world.height);
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         //zoom = world.zoom;
         //setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

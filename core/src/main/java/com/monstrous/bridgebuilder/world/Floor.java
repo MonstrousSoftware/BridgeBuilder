@@ -5,8 +5,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 
-public class Floor {
+public class Floor implements Json.Serializable {
     private static Texture texture;
     private static Texture texture2;
 
@@ -51,5 +53,16 @@ public class Floor {
         sprite.draw(spriteBatch);
     }
 
+    @Override
+    public void write(Json json) {
+        json.writeValue("position", position);
+    }
+
+    @Override
+    public void read(Json json, JsonValue jsonData) {
+        // note: for teavm, Vector2 has to be added as reflection class
+        Vector2 pos = json.readValue("position", Vector2.class, jsonData);
+        setPosition(pos.x, pos.y);
+    }
 
 }
