@@ -106,7 +106,7 @@ public class Physics {
         CircleShape circle = new CircleShape();
         circle.setRadius(0.5f);
 
-        Fixture fixture = flag.body.createFixture(box, 10.5f);
+        Fixture fixture = flag.body.createFixture(box, 50.5f);
         //fixture.setSensor(true);
 
         bodyDef.position.set(flag.position.x, flag.position.y+1.5f);

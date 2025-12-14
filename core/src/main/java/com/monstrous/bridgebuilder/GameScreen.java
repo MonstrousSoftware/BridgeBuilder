@@ -397,7 +397,7 @@ public class GameScreen extends StdScreenAdapter {
         }
 
 
-
+        viewport.apply();
 
         if(runPhysics){
             fbo.begin();
@@ -508,8 +508,8 @@ public class GameScreen extends StdScreenAdapter {
         fbo = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
         postFilter.resize(width, height);
 
-        float aspectRatio = width / (float)height;
-        viewport.setWorldSize(world.width, world.width/ aspectRatio);
+        //float aspectRatio = width / (float)height;
+        viewport.setWorldSize(world.width, world.height); /// aspectRatio);
         viewport.update(width, height);
         particleEffects.resize(width, height);
         pfxSpriteBatch.getProjectionMatrix().setToOrtho2D(0,0, width, height);
@@ -547,8 +547,8 @@ public class GameScreen extends StdScreenAdapter {
         FileHandle file = Gdx.files.internal("level"+levelNumber+".json");
         world.load(file, physics);
 
-        float aspectRatio = Gdx.graphics.getWidth() / (float)Gdx.graphics.getHeight();
-        viewport.setWorldSize(world.width, world.width/ aspectRatio);
+        //float aspectRatio = Gdx.graphics.getWidth() / (float)Gdx.graphics.getHeight();
+        viewport.setWorldSize(world.width, world.height); //width/ aspectRatio);
 //        viewport.setMinWorldWidth(world.width);
 //        viewport.setMinWorldHeight(world.height);
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
