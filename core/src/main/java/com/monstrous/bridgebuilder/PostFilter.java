@@ -18,7 +18,7 @@ public class PostFilter implements Disposable {
     private SpriteBatch batch;
     private ShaderProgram program;
     private float[] resolution = { 640, 480 };
-    private float reflectionY = 80;
+    private int reflectionY = 80;
 
     public PostFilter() {
         // full screen post processing shader
@@ -39,7 +39,8 @@ public class PostFilter implements Disposable {
 
     }
 
-    public void setReflectionY(float y){
+    public void setReflectionY(int y){
+        System.out.println("reflection Y "+y);
         reflectionY = y;
     }
 
@@ -47,21 +48,23 @@ public class PostFilter implements Disposable {
         Sprite s = new Sprite(fbo.getColorBufferTexture());
         s.flip(false,  true); // coordinate system in buffer differs from screen
 
-        Sprite sMirror = new Sprite(fbo.getColorBufferTexture());
-        sMirror.flip(false,  false); // coordinate system in buffer differs from screen
-
+        Sprite sMirror = new Sprite(fbo.getColorBufferTexture(), 0, reflectionY, (int)s.getWidth(), (int)(s.getHeight()-reflectionY));
+        // keep upside down
 
         batch.begin();
+        batch.disableBlending();
         batch.setShader(program);                        // post-processing shader
-        batch.setColor(Color.RED);
         batch.draw(s, 0, 0, resolution[0], resolution[1]);    // draw frame buffer as screen filling texture
-//        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-//        batch.setColor(0,0,1,0.5f);
+
+
+        batch.setColor(1,1,1,0.25f);
+        batch.enableBlending();
 
         // draw inverse fbo as mirror effect
- //       batch.draw(sMirror, 0, 0, resolution[0], reflectionY);
+        batch.draw(sMirror, 0, 0, resolution[0], reflectionY);
+//        batch.disableBlending();
         batch.end();
-        batch.setShader(null);
+
     }
 
 

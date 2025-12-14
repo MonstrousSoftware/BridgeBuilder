@@ -1,7 +1,5 @@
 // vignette
 //
-
-
 #ifdef GL_ES
 #define LOWP lowp
 #define MED mediump
@@ -23,7 +21,7 @@ varying vec2 v_texCoord0;
 
 void main()
 {
-	vec4 color = texture2D(u_texture, v_texCoord0);
+	vec4 color = v_color * texture2D(u_texture, v_texCoord0);
 
     // vignette effect
     vec2 uv = v_texCoord0;

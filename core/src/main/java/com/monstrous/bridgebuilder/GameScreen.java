@@ -499,19 +499,22 @@ public class GameScreen extends StdScreenAdapter {
 
     @Override
     public void resize(int width, int height) {
+        System.out.println("Resize "+width +" x "+height);
         if(width <= 0 || height <= 0) return;
         if(fbo != null)
             fbo.dispose();
-        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, true);
+        fbo = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
         postFilter.resize(width, height);
 
         viewport.update(width, height);
         particleEffects.resize(width, height);
         pfxSpriteBatch.getProjectionMatrix().setToOrtho2D(0,0, width, height);
-        //setCameraView(width, height);
 
         gui.resize(width, height);
-        //gui.showLoss();
+
+        Vector2 screenPos = new Vector2(world.floor.position);
+        viewport.project(screenPos);
+        postFilter.setReflectionY((int)screenPos.y);
     }
 
     private void setCameraView(int width, int height){
@@ -554,7 +557,7 @@ public class GameScreen extends StdScreenAdapter {
         }
         Vector2 screenPos = new Vector2(world.floor.position);
         viewport.project(screenPos);
-        postFilter.setReflectionY(screenPos.y);
+        postFilter.setReflectionY((int)screenPos.y);
 
         personalBest = preferences.getInteger("bestScore"+levelNumber, NO_PB);
         setBuildMaterial(BuildMaterial.DECK);

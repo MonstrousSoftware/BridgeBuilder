@@ -22,9 +22,10 @@ public class Floor {
             texture = new Texture("textures/ice.png");
         if(texture2 == null)
             texture2 = new Texture("textures/ice2.png");
-        W = 50*texture.getWidth()/64f;
-        H = texture.getHeight()/32f;
+        W = 50*texture.getWidth()/16f;
+        H = texture.getHeight()/16f;
         texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
+        texture2.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
         sprite = new Sprite(texture);
         sprite.setOrigin(W/2f, H);
         sprite.setSize(W, H);
@@ -43,6 +44,7 @@ public class Floor {
             sprite.setTexture(texture2);
         else
             sprite.setTexture(texture);
+        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
     }
 
     public void draw(SpriteBatch spriteBatch){
