@@ -55,14 +55,14 @@ public class GUI implements Disposable {
             steelButton.setVisible(false);
             woodButton.setVisible(false);
             cableButton.setVisible(false);
-            statusLabel.setVisible(false);
+            //statusLabel.setVisible(false);
         } else {
             modeButton.setText("Go!");
             deckButton.setVisible(true);
             steelButton.setVisible(true);
             woodButton.setVisible(true);
             cableButton.setVisible(true);
-            statusLabel.setVisible(true);
+            //statusLabel.setVisible(true);
         }
     }
 
@@ -187,6 +187,7 @@ public class GUI implements Disposable {
         prevButton.setVisible(gameScreen.levelNumber > 1);
 
         stage.act(Gdx.graphics.getDeltaTime());
+        stage.getViewport().apply();
         stage.draw();
     }
 
@@ -207,14 +208,14 @@ public class GUI implements Disposable {
     }
 
     private void showEndMessage(Image image){
-        int x = (int)(0.5f*(stage.getWidth()-image.getWidth()));
-        int y = (int)(0.6*stage.getHeight());
+        int x = (int)(0.4f*(stage.getWidth()-image.getWidth()));
+        int y = (int)(0.55*stage.getHeight());
 
         stage.addActor(image);
         image.addAction(
             parallel(
                 sequence(moveTo(x, 0, 0), moveTo(x, y, 2, bounceOut)),
-                sequence(scaleTo(.2f, .2f), scaleTo(1.5f, 1.5f, 2, bounceOut))));
+                sequence(scaleTo(.2f, .2f), scaleTo(1.2f, 1.2f, 2, bounceOut))));
     }
 
     public void clearEndMessage(){

@@ -210,15 +210,9 @@ public class GameScreen extends StdScreenAdapter {
         pin.setPosition(x,y);
     }
 
-
-
-
-    private final Vector3 tmpVec3 = new Vector3();
-
     public void screenToWorldUnits(int x, int y, Vector2 worldPos){
-        tmpVec3.set(x,y,0);
-        camera.unproject(tmpVec3);
-        worldPos.set(tmpVec3.x, tmpVec3.y);
+        worldPos.set(x,y);
+        viewport.unproject(worldPos);
     }
 
     /** check if the mouse is over a pin and if so highlight it and assign it to 'overPin' */
@@ -285,6 +279,7 @@ public class GameScreen extends StdScreenAdapter {
         particleEffects.start();
         Sounds.playJingle();
         world.floor.setShatter(false);
+        gui.setStatusLabel("Santa is rolling down the hill...");
     }
 
     public void stopSimulation(){
@@ -380,7 +375,7 @@ public class GameScreen extends StdScreenAdapter {
 
 //        CharArray sb = new CharArray();
 //        sb.append(world.levelName);
-        gui.setStatusLabel(world.levelName);
+        //gui.setStatusLabel(world.levelName);
 
         if(runPhysics) {
             physics.update(delta);
@@ -403,6 +398,7 @@ public class GameScreen extends StdScreenAdapter {
             fbo.begin();
             Color lightBlue = Color.BLUE;
             Color darkBlue = Color.NAVY;
+            shapeRenderer.setProjectionMatrix(gui.stage.getViewport().getCamera().combined);    // use screenviewport
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), lightBlue, lightBlue, darkBlue, darkBlue);
             shapeRenderer.end();
@@ -457,6 +453,7 @@ public class GameScreen extends StdScreenAdapter {
                 force += beam.joint.getReactionForce(1f / Physics.TIME_STEP).len();
                 denom++;
                 if (force  > beam.material.strength) {
+                    gui.setStatusLabel("The bridge collapses");
                     System.out.println("break deck joint at "+force);
                     physics.destroyJoint(beam.joint);
                     Sounds.playBreak();
@@ -469,6 +466,7 @@ public class GameScreen extends StdScreenAdapter {
                 force += force2;
                 denom++;
                 if (force2  > beam.material.strength) {
+                    gui.setStatusLabel("The bridge falls apart");
                     System.out.println("break deck joint2 at "+force2);
                     physics.destroyJoint(beam.joint2);
                     Sounds.playBreak();
@@ -484,6 +482,7 @@ public class GameScreen extends StdScreenAdapter {
                 return;
             force = beam.joint.getReactionForce(1f / Physics.TIME_STEP).len();
             if (force > beam.material.strength) {
+                gui.setStatusLabel("The bridge can't take it");
                 System.out.println("break joint at "+force);
                 //runPhysics = false;
                 destroyBeam(beam);
@@ -546,6 +545,7 @@ public class GameScreen extends StdScreenAdapter {
         clear();
         FileHandle file = Gdx.files.internal("level"+levelNumber+".json");
         world.load(file, physics);
+        gui.setStatusLabel(world.levelName);
 
         //float aspectRatio = Gdx.graphics.getWidth() / (float)Gdx.graphics.getHeight();
         viewport.setWorldSize(world.width, world.height); //width/ aspectRatio);
@@ -611,11 +611,13 @@ public class GameScreen extends StdScreenAdapter {
         //System.out.println("Flag reached");
         gameOver = true;
         gui.showWin();
+        gui.setStatusLabel("Santa made it safely across.");
         Sounds.playFanfare();
         gui.showNextLevel(true);
 
         if(world.cost < personalBest) {
             personalBest = world.cost;
+            gui.setStatusLabel("A new personal best");
             System.out.println("New personal best! $"+personalBest);
             preferences.putInteger("bestScore" + levelNumber, personalBest);
             preferences.flush();
@@ -626,6 +628,7 @@ public class GameScreen extends StdScreenAdapter {
         System.out.println("Floor reached");
         gameOver = true;
         gui.showLoss();
+        gui.setStatusLabel("Santa breaks the ice like a shattered mirror..");
         world.floor.setShatter(true);
     }
 

@@ -24,15 +24,15 @@ public class Floor implements Json.Serializable {
             texture = new Texture("textures/ice.png");
         if(texture2 == null)
             texture2 = new Texture("textures/ice2.png");
-        W = 50*texture.getWidth()/16f;
+        W = 20*texture.getWidth()/16f;
         H = texture.getHeight()/16f;
         texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
         texture2.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
         sprite = new Sprite(texture);
         sprite.setOrigin(W/2f, H);
         sprite.setSize(W, H);
-        sprite.setU(-25);
-        sprite.setU2(25);
+        sprite.setU(-10);
+        sprite.setU2(10);
 
     }
 
