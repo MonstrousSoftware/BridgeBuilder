@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.monstrous.bridgebuilder.physics.Physics;
 
+import java.io.File;
 import java.io.StringWriter;
 
 public class GameWorld implements Json.Serializable {
@@ -30,11 +31,9 @@ public class GameWorld implements Json.Serializable {
         levelName = "level name";
         zoom = 1.0f;
         cost = 0;
-        floor = new Floor();
-        floor.setPosition(0,-11f);
     }
 
-    public void save( String fileName)
+    public void save( FileHandle fileHandle )
     {
         Json json = new Json(JsonWriter.OutputType.json);
         JsonWriter writer = new JsonWriter(new StringWriter());
@@ -43,25 +42,26 @@ public class GameWorld implements Json.Serializable {
         json.addClassTag("Beam", Beam.class);
         json.addClassTag("Flag", Flag.class);
         json.addClassTag("Vehicle", Vehicle.class);
+        json.addClassTag("Floor", Floor.class);
 
-        FileHandle file = Gdx.files.local(fileName);	// save file
-        file.writeString("",  false);	// overwrite
+        //FileHandle file = Gdx.files.local(fileName);	// save file
+        fileHandle.writeString("",  false);	// overwrite
 
         String s = json.prettyPrint(this);
-        file.writeString(s,  true);	// append
+        fileHandle.writeString(s,  true);	// append
     }
 
-    public boolean load( final String fileName, Physics physics )
+    public boolean load(FileHandle file, Physics physics )
     {
         Json json = new Json();
-        FileHandle file;
+        //FileHandle file;
         String string;
-        System.out.println("loading file: "+fileName);
-        file = Gdx.files.local(fileName);
+        System.out.println("loading file: "+file.name());
+        //file = Gdx.files.local(fileName);
         try { // save file
             string = file.readString();
         } catch(Exception e) {
-            System.out.println("Could not read file: "+fileName);
+            System.out.println("Could not read file: "+file.name());
             return false;
         }
         //System.out.println("loaded: "+string);
@@ -69,6 +69,9 @@ public class GameWorld implements Json.Serializable {
         json.addClassTag("Beam", Beam.class);
         json.addClassTag("Flag", Flag.class);
         json.addClassTag("Vehicle", Vehicle.class);
+        json.addClassTag("Floor", Floor.class);
+
+
 
         GameWorld loaded = json.fromJson(GameWorld.class, string);
         this.width = loaded.width;
@@ -79,6 +82,8 @@ public class GameWorld implements Json.Serializable {
         this.zoom = loaded.zoom;
         this.levelName = loaded.levelName;
         this.cost = loaded.cost;
+        floor = new Floor();
+        floor.setPosition(0,-11f);
 
         for(Pin pin: pins){
             physics.addPin(pin);
@@ -91,6 +96,7 @@ public class GameWorld implements Json.Serializable {
             physics.addBeam(beam);
         }
         physics.addFlag(flag);
+        physics.addFloor(floor);
         return true;
         //System.out.println("Loaded "+pins.size+" pins and "+beams.size+" beams.");
     }

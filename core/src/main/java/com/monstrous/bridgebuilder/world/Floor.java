@@ -14,6 +14,7 @@ public class Floor {
     public Sprite sprite;
     public float W;
     public float H;
+    public Body body;
 
     public Floor() {
         this.position = new Vector2();

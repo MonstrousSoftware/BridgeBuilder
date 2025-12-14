@@ -17,10 +17,11 @@ L to load
 N next level
 P previous level
 F11 toggle full screen
+D show physics debug outlines
 
 
 to do
-- skin
+- adapt to web viewport
 
 ## Platforms
 

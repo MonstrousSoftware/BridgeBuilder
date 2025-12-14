@@ -1,6 +1,7 @@
 package com.monstrous.bridgebuilder;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -17,6 +18,8 @@ import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.monstrous.bridgebuilder.physics.Physics;
 import com.monstrous.bridgebuilder.world.*;
+
+import java.io.File;
 
 
 public class GameScreen extends StdScreenAdapter {
@@ -63,7 +66,7 @@ public class GameScreen extends StdScreenAdapter {
         particleEffects = new ParticleEffects();
         shapeRenderer = new ShapeRenderer();
         postFilter = new PostFilter();
-        //particleEffects.start();
+
 
 
         camera = new OrthographicCamera(); //Gdx.graphics.getWidth()/32f, Gdx.graphics.getHeight()/32f);
@@ -273,7 +276,8 @@ public class GameScreen extends StdScreenAdapter {
 
         gameOver = false;
         // save construction before running physics
-        world.save("attempt"+levelNumber+".json");
+        FileHandle fh = Gdx.files.local("attempt"+levelNumber+".json");
+        world.save(fh);
         runPhysics = true;
         addVehicle();
         particleEffects.start();
@@ -291,7 +295,8 @@ public class GameScreen extends StdScreenAdapter {
     public void retry(){
         stopSimulation();
         clear();
-        world.load("attempt"+levelNumber+".json", physics);
+        FileHandle file = Gdx.files.local("attempt"+levelNumber+".json");
+        world.load(file, physics);
     }
 
     public void nextLevel(){
@@ -346,12 +351,13 @@ public class GameScreen extends StdScreenAdapter {
             previousLevel();
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
-            world.save("savefile"+levelNumber+".json");
+            world.save(Gdx.files.local("savefile"+levelNumber+".json"));
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
             runPhysics = false;
             clear();
-            if(!world.load("savefile"+levelNumber+".json", physics))
+            FileHandle fileHandle = Gdx.files.local("savefile"+levelNumber+".json");
+            if(!world.load(fileHandle, physics))
                 loadLevel(levelNumber);
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
@@ -365,6 +371,9 @@ public class GameScreen extends StdScreenAdapter {
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){
             setBuildMaterial(BuildMaterial.CABLE);
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.D)){
+            showPhysics = !showPhysics;
         }
 
 //        CharArray sb = new CharArray();
@@ -415,6 +424,7 @@ public class GameScreen extends StdScreenAdapter {
         }
         world.flag.draw(spriteBatch);
         world.floor.draw(spriteBatch);
+
         spriteBatch.end();
 
         pfxSpriteBatch.begin();
@@ -422,17 +432,16 @@ public class GameScreen extends StdScreenAdapter {
         pfxSpriteBatch.end();
 
 
-
-        if(showPhysics)
-            physics.debugRender(camera);
-
-
-        gui.draw();
-
         if(runPhysics){
             fbo.end();
             postFilter.render(fbo);
         }
+
+        if(showPhysics)
+            physics.debugRender(camera);
+
+        gui.draw();
+
     }
 
     private void testBeamStress(Beam beam){
@@ -528,7 +537,8 @@ public class GameScreen extends StdScreenAdapter {
         Sounds.stopJingle();
         runPhysics = false;
         clear();
-        world.load("level"+levelNumber+".json", physics);
+        FileHandle file = Gdx.files.internal("level"+levelNumber+".json");
+        world.load(file, physics);
 
         viewport.setMinWorldWidth(world.width);
         viewport.setMinWorldHeight(world.height);
@@ -542,6 +552,9 @@ public class GameScreen extends StdScreenAdapter {
                 physics.addRamp(pin);
             }
         }
+        Vector2 screenPos = new Vector2(world.floor.position);
+        viewport.project(screenPos);
+        postFilter.setReflectionY(screenPos.y);
 
         personalBest = preferences.getInteger("bestScore"+levelNumber, NO_PB);
         setBuildMaterial(BuildMaterial.DECK);
@@ -573,13 +586,13 @@ public class GameScreen extends StdScreenAdapter {
         }
         world.pins.clear();
         physics.destroyFlag(world.flag);
-
+        physics.destroyFloor(world.floor);
         if(world.vehicle != null)
             destroyVehicle();
     }
 
     public void reset(){
-        clear();
+
         loadLevel(levelNumber);
     }
 

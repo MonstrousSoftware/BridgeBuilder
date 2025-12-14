@@ -34,26 +34,29 @@ public class Physics {
         world = new World(gravity, true);
         world.setContactListener(new MyContactListener(screen));
         debugRenderer = new Box2DDebugRenderer();
+    }
 
-        //world.setAutoClearForces(true); // useful?
+    public void addFloor(Floor floor){
 
-
-        // define ground
-
-
-        // Create our body definition
         BodyDef groundBodyDef = new BodyDef();
-        // Set its world position
-        groundBodyDef.position.set(new Vector2(0, -12));
+        groundBodyDef.position.set(new Vector2(floor.position.x, floor.position.y-0.5f));
 
         // Create a body from the definition and add it to the world
         Body groundBody = world.createBody(groundBodyDef);
+        floor.body = groundBody;
         //staticBodies.add(groundBody);
         groundBody.setUserData(new Floor());
         PolygonShape groundBox = new PolygonShape();
-        groundBox.setAsBox(40, 1.0f);
+        groundBox.setAsBox(40, 0.5f);       // viewport width
         groundBody.createFixture(groundBox, 0.0f);
         groundBox.dispose();
+    }
+
+    public void destroyFloor(Floor floor){
+        if(floor == null || floor.body == null)
+            return;
+        world.destroyBody(floor.body);
+        floor.body = null;
     }
 
     public void addRamp(Pin pin){
