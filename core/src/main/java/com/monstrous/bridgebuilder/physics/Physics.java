@@ -51,7 +51,7 @@ public class Physics {
         //staticBodies.add(groundBody);
         groundBody.setUserData(new Floor());
         PolygonShape groundBox = new PolygonShape();
-        groundBox.setAsBox(40, 0.5f);
+        groundBox.setAsBox(40, 1.0f);
         groundBody.createFixture(groundBox, 0.0f);
         groundBox.dispose();
     }

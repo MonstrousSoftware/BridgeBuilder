@@ -16,6 +16,7 @@ public class GameWorld implements Json.Serializable {
     public Array<Beam> beams;
     public Flag flag;
     public Vehicle vehicle;
+    public Floor floor;
     public float zoom;
     public int width;
     public int height;
@@ -29,6 +30,8 @@ public class GameWorld implements Json.Serializable {
         levelName = "level name";
         zoom = 1.0f;
         cost = 0;
+        floor = new Floor();
+        floor.setPosition(0,-11f);
     }
 
     public void save( String fileName)
@@ -54,7 +57,7 @@ public class GameWorld implements Json.Serializable {
         FileHandle file;
         String string;
         System.out.println("loading file: "+fileName);
-        file = Gdx.files.internal(fileName);
+        file = Gdx.files.local(fileName);
         try { // save file
             string = file.readString();
         } catch(Exception e) {

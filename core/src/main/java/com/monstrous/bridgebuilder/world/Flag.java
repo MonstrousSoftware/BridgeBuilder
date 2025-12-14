@@ -69,7 +69,6 @@ public class Flag implements Json.Serializable {
     public void draw(SpriteBatch spriteBatch){
         for(Sprite sprite : sprites)
             sprite.draw(spriteBatch);
-
     }
 
     @Override

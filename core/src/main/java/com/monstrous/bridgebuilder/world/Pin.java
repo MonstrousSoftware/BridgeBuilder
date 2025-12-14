@@ -2,6 +2,7 @@ package com.monstrous.bridgebuilder.world;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Json;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.utils.JsonValue;
 
 public class Pin implements Json.Serializable {
     private static Texture pinTexture;
+    private static Texture cliffTexture;
     private static int nextId = 1;
 
     public int id;
@@ -16,20 +18,29 @@ public class Pin implements Json.Serializable {
     public int anchorDirection;     // 1 left, 2 right, 3 bottom
     public Vector2 position;
     public Sprite sprite;
+    public Sprite cliffSprite;
     public float W;
     public float H;
     public Body body;
+    public float Wc, Hc;
 
     public Pin(){
         id = nextId++;
         this.position = new Vector2();
         if(pinTexture == null)
             pinTexture = new Texture("textures/pin.png");
+        if(cliffTexture == null)
+            cliffTexture = new Texture("textures/cliff.png");
         W = pinTexture.getWidth()/32f;
         H = pinTexture.getHeight()/32f;
         sprite = new Sprite(pinTexture);
         sprite.setOrigin(W/2f, H/2f);;
         sprite.setSize(W, H);
+        cliffSprite = new Sprite(cliffTexture);
+        Wc = pinTexture.getWidth()/2f;
+        Hc = pinTexture.getHeight()/1.5f;
+        cliffSprite.setOrigin(0.95f*Wc, 0.64f*Hc);
+        cliffSprite.setSize(Wc, Hc);
         anchorDirection = 0;
     }
 
@@ -42,11 +53,14 @@ public class Pin implements Json.Serializable {
         setPosition(x,y);
         this.isAnchor = isAnchor;
         this.anchorDirection = direction;
+
     }
 
     public void setPosition(float x, float y){
         position.set(x,y);
+        cliffSprite.setOriginBasedPosition(x,y);
         sprite.setOriginBasedPosition(x,y);
+
     }
 
     public boolean isOver(Vector2 pos){
@@ -56,6 +70,20 @@ public class Pin implements Json.Serializable {
             return false;
         return true;
     }
+
+    public void draw(SpriteBatch spriteBatch){
+        if(isAnchor && anchorDirection == 1)
+            cliffSprite.draw(spriteBatch);
+        if(isAnchor && anchorDirection == 2) {
+            cliffSprite.setScale(-1f, 1f);
+            //cliffSprite.setOrigin(0.05f*Wc, 0.64f*Hc);
+            cliffSprite.draw(spriteBatch);
+        }
+        sprite.draw(spriteBatch);
+
+            //spriteBatch.draw(cliffTexture, 0,0);
+    }
+
 
     @Override
     public void write(Json json) {

@@ -35,7 +35,7 @@
     "class": "Pin",
     "id": 4,
     "isAnchor": true,
-    "anchorDirection": 2,
+    "anchorDirection": 0,
     "position": {
       "x": 14,
       "y": 10

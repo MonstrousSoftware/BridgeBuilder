@@ -45,7 +45,7 @@ public class GameScreen extends StdScreenAdapter {
     public boolean gameOver = false;
     private BuildMaterial buildMaterial = BuildMaterial.DECK;
     public float zoom = 1;
-    public boolean showPhysics;
+    public boolean showPhysics = false;
     public int levelNumber;
     private Preferences preferences;
     public int personalBest;
@@ -58,7 +58,6 @@ public class GameScreen extends StdScreenAdapter {
         spriteBatch = new SpriteBatch();
         pfxSpriteBatch = new SpriteBatch();
         physics = new Physics(this);
-        showPhysics = true;
         new Sounds();
         preferences = Gdx.app.getPreferences("BridgeBuilder");
         particleEffects = new ParticleEffects();
@@ -279,6 +278,7 @@ public class GameScreen extends StdScreenAdapter {
         addVehicle();
         particleEffects.start();
         Sounds.playJingle();
+        world.floor.setShatter(false);
     }
 
     public void stopSimulation(){
@@ -403,6 +403,7 @@ public class GameScreen extends StdScreenAdapter {
 
         spriteBatch.begin();
 
+
         if(world.vehicle != null)
             world.vehicle.sprite.draw(spriteBatch);
 
@@ -410,9 +411,10 @@ public class GameScreen extends StdScreenAdapter {
             beam.sprite.draw(spriteBatch);
         }
         for(Pin pin : world.pins){
-            pin.sprite.draw(spriteBatch);
+            pin.draw(spriteBatch);
         }
         world.flag.draw(spriteBatch);
+        world.floor.draw(spriteBatch);
         spriteBatch.end();
 
         pfxSpriteBatch.begin();
@@ -602,6 +604,7 @@ public class GameScreen extends StdScreenAdapter {
         System.out.println("Floor reached");
         gameOver = true;
         gui.showLoss();
+        world.floor.setShatter(true);
     }
 
     public void renderGrid() {
