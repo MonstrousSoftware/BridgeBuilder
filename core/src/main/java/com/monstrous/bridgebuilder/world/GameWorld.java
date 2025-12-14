@@ -61,7 +61,7 @@ public class GameWorld implements Json.Serializable {
             System.out.println("Could not read file: "+fileName);
             return false;
         }
-        System.out.println("loaded: "+string);
+        //System.out.println("loaded: "+string);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
         json.addClassTag("Flag", Flag.class);
@@ -123,7 +123,7 @@ public class GameWorld implements Json.Serializable {
         zoom = json.readValue("zoom", Float.class, 1.0f, jsonData);
         levelName = json.readValue("levelName", String.class, "level name", jsonData);
         cost = json.readValue("cost", Integer.class, 0, jsonData);
-        System.out.println("read pins: "+pins.size);
+        //System.out.println("read pins: "+pins.size);
     }
 
 }

@@ -45,6 +45,7 @@ public class GameScreen extends StdScreenAdapter {
     public boolean gameOver = false;
     private BuildMaterial buildMaterial = BuildMaterial.DECK;
     public float zoom = 1;
+    public boolean showPhysics;
     public int levelNumber;
     private Preferences preferences;
     public int personalBest;
@@ -57,6 +58,7 @@ public class GameScreen extends StdScreenAdapter {
         spriteBatch = new SpriteBatch();
         pfxSpriteBatch = new SpriteBatch();
         physics = new Physics(this);
+        showPhysics = true;
         new Sounds();
         preferences = Gdx.app.getPreferences("BridgeBuilder");
         particleEffects = new ParticleEffects();
@@ -419,7 +421,8 @@ public class GameScreen extends StdScreenAdapter {
 
 
 
-        physics.debugRender(camera);
+        if(showPhysics)
+            physics.debugRender(camera);
 
 
         gui.draw();
@@ -579,7 +582,9 @@ public class GameScreen extends StdScreenAdapter {
     }
 
     public void flagReached(){
-        System.out.println("Flag reached");
+        if(gameOver)
+            return;
+        //System.out.println("Flag reached");
         gameOver = true;
         gui.showWin();
         Sounds.playFanfare();
