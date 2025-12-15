@@ -61,8 +61,9 @@ public class Physics {
 
     private final Vector2[] vertices = new Vector2[3];
 
+    // anchor direction: 1 left, 2 right, 3 bottom, 4 top left, 5 top right
     public void addRamp(Pin pin){
-        if(pin.anchorDirection == 0)
+        if(pin.anchorDirection == 0 || pin.anchorDirection == 4 || pin.anchorDirection == 5)
             return;
         BodyDef rampBodyDef = new BodyDef();
         if(pin.anchorDirection == 1)
@@ -75,7 +76,7 @@ public class Physics {
         staticBodies.add(rampBody);
         rampBody.setUserData(new Ramp());
         PolygonShape rampBox = new PolygonShape();
-        if(pin.anchorDirection == 3)
+        if(pin.anchorDirection == 3)    // pillar
             rampBox.setAsBox(0.5f, 5f);
         else if(pin.anchorDirection == 1){  // left side
             // triangle is better approximation but positioning somehow depends on world scale
@@ -84,7 +85,7 @@ public class Physics {
 //            vertices[2] = new Vector2(pin.position.x-10, pin.position.y+.5f);
 //            rampBox.set(vertices);
             rampBox.setAsBox(10, 0.5f);
-        } else {  // right side
+        } else if(pin.anchorDirection == 2){  // right side
 //            vertices[0] = new Vector2(pin.position.x-7, pin.position.y+.5f);
 //            vertices[1] = new Vector2(pin.position.x+10, pin.position.y+.5f);
 //            vertices[2] = new Vector2(pin.position.x, pin.position.y-15);
