@@ -3,6 +3,7 @@ package com.monstrous.bridgebuilder.world;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Joint;
@@ -46,8 +47,12 @@ public class Beam implements Json.Serializable {
         tint = new Color(Color.WHITE);
     }
 
+    /** note: we don't use the texture atlas here because these textures need to be wrapped as repeating
+     * textures and that won't work with texture regions.
+     */
     private void loadTextures(){
         textures = new Texture[4];
+
         textures[BuildMaterial.STEEL.index] = new Texture("textures/beam.png");
         textures[BuildMaterial.DECK.index] = new Texture("textures/deck.png");
         textures[BuildMaterial.CABLE.index] = new Texture("textures/cable.png");
@@ -123,6 +128,7 @@ public class Beam implements Json.Serializable {
         W = texture.getWidth()/16f;
         H = texture.getHeight()/16f;
         sprite.setOrigin(0, H/2f);
+        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
     }
 
     public void setEndPosition(float x, float y){

@@ -89,7 +89,7 @@ public class Physics {
     }
 
 
-    public void addFlag(Flag flag){
+    public void addFlag(Tree flag){
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(flag.position.x, flag.position.y+0.5f);
@@ -141,7 +141,7 @@ public class Physics {
     }
 
     /** update articulated tree segments */
-    public void updateFlagPositions(Flag flag){
+    public void updateFlagPositions(Tree flag){
 
         //System.out.println(time+"cos:"+Math.cos(time));
         flag.joint1.setMotorSpeed(0.1f*(float) Math.cos(time));
@@ -155,7 +155,7 @@ public class Physics {
 
     }
 
-    public void destroyFlag(Flag flag){
+    public void destroyFlag(Tree flag){
         if(flag == null || flag.body == null)
             return;
         world.destroyBody(flag.body);

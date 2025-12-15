@@ -1,6 +1,5 @@
 package com.monstrous.bridgebuilder.world;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -8,14 +7,13 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.monstrous.bridgebuilder.physics.Physics;
 
-import java.io.File;
 import java.io.StringWriter;
 
 public class GameWorld implements Json.Serializable {
 
     public Array<Pin> pins;
     public Array<Beam> beams;
-    public Flag flag;
+    public Tree flag;
     public Vehicle vehicle;
     public Floor floor;
     public float zoom;
@@ -42,7 +40,7 @@ public class GameWorld implements Json.Serializable {
         json.setWriter(writer);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
-        json.addClassTag("Flag", Flag.class);
+        json.addClassTag("Flag", Tree.class);
         json.addClassTag("Vehicle", Vehicle.class);
         json.addClassTag("Floor", Floor.class);
 
@@ -69,7 +67,7 @@ public class GameWorld implements Json.Serializable {
         //System.out.println("loaded: "+string);
         json.addClassTag("Pin", Pin.class);
         json.addClassTag("Beam", Beam.class);
-        json.addClassTag("Flag", Flag.class);
+        json.addClassTag("Flag", Tree.class);
         json.addClassTag("Vehicle", Vehicle.class);
         json.addClassTag("Floor", Floor.class);
 
@@ -131,7 +129,7 @@ public class GameWorld implements Json.Serializable {
         height = json.readValue("height", Integer.class, 20, jsonData);
         pins= json.readValue("pins", Array.class, Integer.class, jsonData);
         beams = json.readValue("beams", Array.class, Beam.class, jsonData);
-        flag = json.readValue("flag", Flag.class, jsonData);
+        flag = json.readValue("flag", Tree.class, jsonData);
         floor = json.readValue("floor", Floor.class, jsonData);
         //vehicle = json.readValue("vehicle", Vehicle.class, jsonData);
         zoom = json.readValue("zoom", Float.class, 1.0f, jsonData);

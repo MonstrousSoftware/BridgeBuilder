@@ -7,20 +7,16 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.monstrous.bridgebuilder.physics.Physics;
 import com.monstrous.bridgebuilder.world.*;
-
-import java.io.File;
 
 
 public class GameScreen extends StdScreenAdapter {
@@ -28,6 +24,7 @@ public class GameScreen extends StdScreenAdapter {
     public static int maxLevelNumber = 5;
 
 
+    public Main game;
     public GameWorld world;
 
     public Physics physics;
@@ -55,6 +52,16 @@ public class GameScreen extends StdScreenAdapter {
     public int personalBest;
     public ParticleEffects particleEffects;
     private PostFilter postFilter;
+    public Images images;
+
+
+    public GameScreen(Main game) {
+        this.game = game;
+
+        TextureAtlas atlas = game.assets.get("atlas/bridge.atlas");
+        images = new Images(atlas);
+
+    }
 
     @Override
     public void show() {
@@ -62,7 +69,7 @@ public class GameScreen extends StdScreenAdapter {
         spriteBatch = new SpriteBatch();
         pfxSpriteBatch = new SpriteBatch();
         physics = new Physics(this);
-        new Sounds();
+        new Sounds(game.assets);
         preferences = Gdx.app.getPreferences("BridgeBuilder");
         particleEffects = new ParticleEffects();
         shapeRenderer = new ShapeRenderer();
@@ -580,7 +587,7 @@ public class GameScreen extends StdScreenAdapter {
         world.pins.add(anchor2);
         physics.addRamp(anchor2);
 
-        world.flag = new Flag(10, 0.5f);
+        world.flag = new Tree(10, 0.5f);
         physics.addFlag(world.flag);
     }
 

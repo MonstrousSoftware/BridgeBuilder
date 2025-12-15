@@ -2,29 +2,32 @@ package com.monstrous.bridgebuilder.world;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class Vehicle implements Json.Serializable {
-    private static Texture pinTexture;
 
     public final Vector2 position;
     public float angle;
-    public final Sprite sprite;
-    public final float W;
-    public final float H;
+    public Sprite sprite;
+    public float W;
+    public float H;
     public Body body;
 
     public Vehicle(){
         this.position = new Vector2();
-        if(pinTexture == null)
-            pinTexture = new Texture("textures/vehicle.png");
-        W = pinTexture.getWidth()/16f;
-        H = pinTexture.getHeight()/16f;
-        sprite = new Sprite(pinTexture);
-        sprite.setOrigin(W/2f, H/2f);;
+        initSprites();
+    }
+
+    private void initSprites() {
+        TextureRegion region = Images.findRegion("santa");
+        W = region.getRegionWidth() / 64f;
+        H = region.getRegionHeight() / 64f;
+        sprite = new Sprite(region);
+        sprite.setOrigin(W / 2f, H / 2f);
         sprite.setSize(W, H);
     }
 

@@ -3,6 +3,7 @@ package com.monstrous.bridgebuilder.world;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Json;
@@ -17,23 +18,22 @@ public class Floor implements Json.Serializable {
     public float W;
     public float H;
     public Body body;
+    private TextureRegion region, region2;
 
     public Floor() {
         this.position = new Vector2();
-        if(texture == null)
-            texture = new Texture("textures/ice.png");
-        if(texture2 == null)
-            texture2 = new Texture("textures/ice2.png");
-        W = 20*texture.getWidth()/16f;
-        H = texture.getHeight()/16f;
-        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
-        texture2.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
-        sprite = new Sprite(texture);
+        initSprites();
+    }
+
+    private void initSprites() {
+        region = Images.findRegion("ice");
+        region2 = Images.findRegion("ice2");
+        assert region != null;
+        W = 20*region.getRegionWidth()/16f;
+        H = region.getRegionHeight()/16f;
+        sprite = new Sprite(region);
         sprite.setOrigin(W/2f, H);
         sprite.setSize(W, H);
-        sprite.setU(-10);
-        sprite.setU2(10);
-
     }
 
     public void setPosition(float x, float y){
@@ -43,10 +43,9 @@ public class Floor implements Json.Serializable {
 
     public void setShatter(boolean mode){
         if(mode)
-            sprite.setTexture(texture2);
+            sprite.setRegion(region2);
         else
-            sprite.setTexture(texture);
-        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.ClampToEdge);
+            sprite.setRegion(region);
     }
 
     public void draw(SpriteBatch spriteBatch){

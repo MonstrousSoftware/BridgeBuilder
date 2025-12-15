@@ -3,14 +3,15 @@ package com.monstrous.bridgebuilder.world;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class Pin implements Json.Serializable {
-    private static Texture pinTexture;
-    private static Texture cliffTexture;
+//    private static Texture pinTexture;
+//    private static Texture cliffTexture;
     private static int nextId = 1;
 
     public int id;
@@ -27,21 +28,23 @@ public class Pin implements Json.Serializable {
     public Pin(){
         id = nextId++;
         this.position = new Vector2();
-        if(pinTexture == null)
-            pinTexture = new Texture("textures/pin.png");
-        if(cliffTexture == null)
-            cliffTexture = new Texture("textures/cliff.png");
-        W = pinTexture.getWidth()/32f;
-        H = pinTexture.getHeight()/32f;
-        sprite = new Sprite(pinTexture);
-        sprite.setOrigin(W/2f, H/2f);;
+        anchorDirection = 0;
+        initSprites();
+    }
+
+    private void initSprites() {
+        TextureRegion region = Images.findRegion("pin");
+        W = region.getRegionWidth() / 32f;
+        H = region.getRegionHeight() / 32f;
+        sprite = new Sprite(region);
+        sprite.setOrigin(W/2f, H/2f);
         sprite.setSize(W, H);
-        cliffSprite = new Sprite(cliffTexture);
-        Wc = pinTexture.getWidth()/2f;
-        Hc = pinTexture.getHeight()/1.5f;
+        TextureRegion regionCliff = Images.findRegion("cliff");
+        Wc = region.getRegionWidth() / 2f;
+        Hc = region.getRegionHeight() / 1.5f;
+        cliffSprite = new Sprite(regionCliff);
         cliffSprite.setOrigin(0.95f*Wc, 0.64f*Hc);
         cliffSprite.setSize(Wc, Hc);
-        anchorDirection = 0;
     }
 
     public Pin(float x, float y) {

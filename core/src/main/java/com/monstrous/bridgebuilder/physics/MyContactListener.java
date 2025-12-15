@@ -39,9 +39,9 @@ public class MyContactListener implements ContactListener {
     private boolean isFlagReached(Object a, Object b){
         if(a == null || b == null)
             return false;
-        if(a.getClass() == Vehicle.class && b.getClass() == Flag.class)
+        if(a.getClass() == Vehicle.class && b.getClass() == Tree.class)
             return true;
-        if(b.getClass() == Vehicle.class && a.getClass() == Flag.class)
+        if(b.getClass() == Vehicle.class && a.getClass() == Tree.class)
             return true;
         return false;
     }
@@ -65,7 +65,7 @@ public class MyContactListener implements ContactListener {
         if(o.getClass() == Pin.class){
             return "Pin";
         }
-        if(o.getClass() == Flag.class){
+        if(o.getClass() == Tree.class){
             return "Flag";
         }
         if(o.getClass() == Vehicle.class){

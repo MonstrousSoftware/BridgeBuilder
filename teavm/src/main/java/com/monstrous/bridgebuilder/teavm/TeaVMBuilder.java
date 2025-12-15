@@ -30,6 +30,7 @@ public class TeaVMBuilder {
         TeaBuildConfiguration teaBuildConfiguration = new TeaBuildConfiguration();
         teaBuildConfiguration.assetsPath.add(new AssetFileHandle("../assets"));
         teaBuildConfiguration.webappPath = new File("build/dist").getCanonicalPath();
+        teaBuildConfiguration.htmlTitle = "Building Bridges with Father Christmas";
 
         // Register any extra classpath assets here:
         // teaBuildConfiguration.additionalAssetsClasspathFiles.add("com/monstrous/bridgebuilder/asset.extension");
