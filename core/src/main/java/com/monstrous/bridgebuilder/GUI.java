@@ -2,6 +2,7 @@ package com.monstrous.bridgebuilder;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -38,8 +39,9 @@ public class GUI implements Disposable {
         skin = new Skin(Gdx.files.internal("ui/bridge.json"));
 
         statusLabel = new Label("...", skin);
-        winImage = new Image(new Texture(Gdx.files.internal("textures/hooray.png")));
-        lossImage = new Image(new Texture(Gdx.files.internal("textures/ohno.png")));
+        TextureAtlas atlas = gameScreen.game.assets.get("atlas/bridge.atlas");
+        winImage = new Image(atlas.findRegion("hooray"));
+        lossImage = new Image(atlas.findRegion("ohno"));
         costLabel = new Label("0", skin);
         pbLabel = new Label("N/A", skin);
         fillStage();
