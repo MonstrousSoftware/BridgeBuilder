@@ -18,12 +18,16 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class TitleScreen extends StdScreenAdapter {
 
+    private static final float BAR_WIDTH = 300;
+    private static final float BAR_HEIGHT = 20f;
+
     Stage stage;
     Skin skin;
     TextButton startButton;
 
     Main game;
     Texture texture;
+    Texture whitePixel;
     SpriteBatch batch;
 
     public TitleScreen(Main main) {
@@ -31,6 +35,12 @@ public class TitleScreen extends StdScreenAdapter {
         stage = new Stage(new ScreenViewport());
         skin = new Skin(Gdx.files.internal("ui/bridge.json"));
         texture = new Texture("textures/title.png");
+        // Create loading segment part, use Pixmap to generate the texture
+        Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pm.setColor(Color.WHITE);
+        pm.fill();
+        whitePixel = new Texture(pm);
+        pm.dispose();
 
         game.assets.load("atlas/bridge.atlas", TextureAtlas.class );
         game.assets.load("textures/spanner.png", Pixmap.class );
@@ -84,11 +94,9 @@ public class TitleScreen extends StdScreenAdapter {
 
         float progress = game.assets.getProgress();
 
-        if(game.assets.update()){
+        if(game.assets.update(10)){
             // finished loading
             startButton.setVisible(true);
-        } else {
-            System.out.println("Loading "+(int)(progress * 100));
         }
 
 
@@ -98,6 +106,15 @@ public class TitleScreen extends StdScreenAdapter {
         float x = 0.5f*(Gdx.graphics.getWidth() - texture.getWidth());
         float y = 0.5f*(Gdx.graphics.getHeight() - texture.getHeight());
         batch.draw(texture, x, y);
+
+        // Draw the loading bar
+        float barX = 0.5f*(Gdx.graphics.getWidth() - BAR_WIDTH);
+        float barY = BAR_HEIGHT;
+        batch.setColor(Color.DARK_GRAY);
+        batch.draw(whitePixel, barX, barY, BAR_WIDTH, BAR_HEIGHT);
+        batch.setColor(Color.GREEN);
+        batch.draw(whitePixel, barX, barY, progress * BAR_WIDTH, BAR_HEIGHT);
+        batch.setColor(Color.WHITE);
         batch.end();
 
         stage.act();
@@ -109,5 +126,6 @@ public class TitleScreen extends StdScreenAdapter {
         stage.dispose();
         skin.dispose();
         batch.dispose();
+        whitePixel.dispose();
     }
 }
