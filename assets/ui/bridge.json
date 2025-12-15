@@ -1,69 +1,97 @@
 {
-"BitmapFont": {
-	"opensans-light32": {
-		"file": "opensans-light32.fnt",
-		"scaledSize": -1,
-		"markupEnabled": false,
-		"flip": false
-	},
-	"opensans-lightSmall": {
-		"file": "opensans-lightSmall.fnt",
-		"scaledSize": -1,
-		"markupEnabled": false,
-		"flip": false
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+	OpenSans-Bold: {
+		file: OpenSans-Regular.fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
 	}
-},
-"Color": {
-	"LBLUE": {
-		"r": 0.8666667,
-		"g": 0.9764706,
-		"b": 0.99215686,
-		"a": 1
-	},
-	"WHITE": {
-		"r": 1,
-		"g": 1,
-		"b": 1,
-		"a": 1
-	},
-	"YELLOW": {
-		"r": 1,
-		"g": 0.8764045,
-		"b": 0,
-		"a": 1
+	opensans-light32: {
+		file: opensans-light32.fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
 	}
-},
-"ButtonStyle": {
-	"default": {
-		"up": "button"
+	opensans-lightSmall: {
+		file: opensans-lightSmall.fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
 	}
-},
-"LabelStyle": {
-	"default": {
-		"font": "opensans-light32",
-		"fontColor": "LBLUE"
+}
+com.badlogic.gdx.graphics.Color: {
+	BLUE: {
+		r: 0.36078432
+		g: 0.5674157
+		b: 0.8392157
+		a: 1
 	}
-},
-"TextButtonStyle": {
-	"default": {
-		"parent": "default",
-		"font": "opensans-lightSmall",
-		"fontColor": "LBLUE",
-		"overFontColor": "WHITE"
-	},
-	"big": {
-		"parent": "default",
-		"font": "opensans-light32",
-		"fontColor": "LBLUE",
-		"overFontColor": "WHITE",
-		"checkedFontColor": "YELLOW",
-		"pressedOffsetY": -2,
-		"checkedOffsetY": -5
+	DARK: {
+		r: 0.10980392
+		g: 0
+		b: 0.35686275
+		a: 1
 	}
-},
-"TextTooltipStyle": {
-	"default": {
-		"label": "default"
+	LBLUE: {
+		r: 0.8666667
+		g: 0.9764706
+		b: 0.99215686
+		a: 1
+	}
+	WHITE: {
+		r: 1
+		g: 1
+		b: 1
+		a: 1
+	}
+	YELLOW: {
+		r: 1
+		g: 0.8764045
+		b: 0
+		a: 1
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+	default: {
+		up: button_up
+		down: button_down
+		checked: button_down
+		pressedOffsetY: 2
+		checkedOffsetY: 3
+	}
+	style2: {
+		up: button_up
+		down: button_down
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	default: {
+		font: opensans-light32
+		fontColor: LBLUE
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+	default: {
+		parent: default
+		font: OpenSans-Bold
+		fontColor: DARK
+		downFontColor: DARK
+		overFontColor: BLUE
+		checkedFontColor: YELLOW
+	}
+	big: {
+		parent: default
+		font: opensans-light32
+		fontColor: LBLUE
+		overFontColor: WHITE
+		checkedFontColor: YELLOW
+		pressedOffsetY: -2
+		checkedOffsetY: -5
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
+	default: {
+		label: default
 	}
 }
 }

@@ -74,13 +74,15 @@ public class GUI implements Disposable {
         Table screenTable = new Table();
         screenTable.setFillParent(true);
 
+
+
         // Material buttons (these should act as radio buttons and highlight the selected one)
         //
         deckButton = new TextButton("Deck", skin);
         deckButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.DECK);
-                deckButton.setChecked(true);
+                //deckButton.setChecked(true);
             }
         });
 
@@ -88,7 +90,7 @@ public class GUI implements Disposable {
         woodButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.WOOD);
-                woodButton.setChecked(true);
+                //woodButton.setChecked(true);
             }
         });
 
@@ -96,7 +98,7 @@ public class GUI implements Disposable {
         steelButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.STEEL);
-                steelButton.setChecked(true);
+                //steelButton.setChecked(true);
             }
         });
 
@@ -107,6 +109,11 @@ public class GUI implements Disposable {
             }
         });
 
+
+        ButtonGroup<TextButton> buttonGroup = new ButtonGroup(deckButton, woodButton, steelButton, cableButton);
+        buttonGroup.setMinCheckCount(1);
+        buttonGroup.setMaxCheckCount(1);
+        buttonGroup.setUncheckLast(true);
 
         // button toggles between Edit mode and Run mode
         modeButton = new TextButton("Go!", skin, "big");

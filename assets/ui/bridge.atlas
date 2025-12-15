@@ -4,9 +4,16 @@ size: 512, 512
 format: RGBA8888
 filter: Linear, Linear
 repeat: none
+OpenSans-Regular
+  rotate: false
+  xy: 1, 192
+  size: 506, 60
+  orig: 506, 60
+  offset: 0, 0
+  index: -1
 button
   rotate: false
-  xy: 1, 143
+  xy: 1, 81
   size: 372, 109
   split: 26, 23, 32, 33
   pad: 26, 28, 24, 21
@@ -25,5 +32,23 @@ opensans-lightSmall
   xy: 1, 254
   size: 506, 84
   orig: 506, 84
+  offset: 0, 0
+  index: -1
+button_down
+  rotate: false
+  xy: 149, 23
+  size: 146, 56
+  split: 26, 23, 22, 22
+  pad: 18, 22, 18, 18
+  orig: 146, 56
+  offset: 0, 0
+  index: -1
+button_up
+  rotate: false
+  xy: 1, 23
+  size: 146, 56
+  split: 25, 21, 20, 24
+  pad: 17, 21, 16, 24
+  orig: 146, 56
   offset: 0, 0
   index: -1
