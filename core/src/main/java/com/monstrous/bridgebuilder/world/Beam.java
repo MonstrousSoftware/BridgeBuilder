@@ -4,9 +4,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -78,6 +80,13 @@ public class Beam implements Json.Serializable {
         this.position2.set(end);
         sprite.setOriginBasedPosition(start.x, start.y);
         adaptShape();
+    }
+
+
+    public boolean isOver(Vector2 pos){
+
+        float dst =  Intersector.distanceSegmentPoint(position1, position2, pos);
+        return dst < 0.5*H;
     }
 
     private void adaptShape(){

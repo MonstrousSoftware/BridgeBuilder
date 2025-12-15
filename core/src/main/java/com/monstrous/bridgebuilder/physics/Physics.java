@@ -59,6 +59,8 @@ public class Physics {
         floor.body = null;
     }
 
+    private final Vector2[] vertices = new Vector2[3];
+
     public void addRamp(Pin pin){
         if(pin.anchorDirection == 0)
             return;
@@ -75,8 +77,21 @@ public class Physics {
         PolygonShape rampBox = new PolygonShape();
         if(pin.anchorDirection == 3)
             rampBox.setAsBox(0.5f, 5f);
-        else
+        else if(pin.anchorDirection == 1){  // left side
+            // triangle is better approximation but positioning somehow depends on world scale
+//            vertices[0] = new Vector2(pin.position.x+7, pin.position.y+.5f);
+//            vertices[1] = new Vector2(pin.position.x, pin.position.y-15);
+//            vertices[2] = new Vector2(pin.position.x-10, pin.position.y+.5f);
+//            rampBox.set(vertices);
             rampBox.setAsBox(10, 0.5f);
+        } else {  // right side
+//            vertices[0] = new Vector2(pin.position.x-7, pin.position.y+.5f);
+//            vertices[1] = new Vector2(pin.position.x+10, pin.position.y+.5f);
+//            vertices[2] = new Vector2(pin.position.x, pin.position.y-15);
+//
+//            rampBox.set(vertices);
+            rampBox.setAsBox(10, 0.5f);
+        }
 
         rampBody.createFixture(rampBox, 0.0f);
         rampBox.dispose();

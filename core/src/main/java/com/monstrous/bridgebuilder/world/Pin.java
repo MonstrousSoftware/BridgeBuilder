@@ -20,10 +20,12 @@ public class Pin implements Json.Serializable {
     public Vector2 position;
     public Sprite sprite;
     public Sprite cliffSprite;
+    public Sprite pillarSprite;
     public float W;
     public float H;
     public Body body;
     public float Wc, Hc;
+    public float Wp, Hp;
 
     public Pin(){
         id = nextId++;
@@ -45,6 +47,12 @@ public class Pin implements Json.Serializable {
         cliffSprite = new Sprite(regionCliff);
         cliffSprite.setOrigin(0.95f*Wc, 0.64f*Hc);
         cliffSprite.setSize(Wc, Hc);
+        TextureRegion regionPillar = Images.findRegion("pillar");
+        Wp = region.getRegionWidth() / 16f;
+        Hp = regionPillar.getRegionHeight() / 32f;
+        pillarSprite = new Sprite(regionPillar);
+        pillarSprite.setSize(Wp, Hp);
+        pillarSprite.setOrigin(0.5f*Wp, Hp);
     }
 
     public Pin(float x, float y) {
@@ -61,6 +69,7 @@ public class Pin implements Json.Serializable {
 
     public void setPosition(float x, float y){
         position.set(x,y);
+        pillarSprite.setOriginBasedPosition(x,y);
         cliffSprite.setOriginBasedPosition(x,y);
         sprite.setOriginBasedPosition(x,y);
 
@@ -82,6 +91,8 @@ public class Pin implements Json.Serializable {
             //cliffSprite.setOrigin(0.05f*Wc, 0.64f*Hc);
             cliffSprite.draw(spriteBatch);
         }
+        if(isAnchor && anchorDirection == 3)
+            pillarSprite.draw(spriteBatch);
         sprite.draw(spriteBatch);
 
             //spriteBatch.draw(cliffTexture, 0,0);

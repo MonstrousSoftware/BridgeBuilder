@@ -36,6 +36,7 @@ public class GameScreen extends StdScreenAdapter {
     private Pin currentPin;             // is not in pins, non-null during dragging
     private Beam currentBeam;           // is in beams
     private Pin overPin;                // highlighted pin, or null
+    private Beam overBeam;
     private final Vector2 worldPos = new Vector2();
     private final Vector2 startPos = new Vector2();
     private final Vector2 correctedPos = new Vector2();
@@ -99,6 +100,7 @@ public class GameScreen extends StdScreenAdapter {
             public boolean mouseMoved(int x, int y) {
                 screenToWorldUnits(x,y, worldPos);
                 checkOverPin(worldPos);
+                checkOverBeam(worldPos);
                 return false;
             }
 
@@ -137,6 +139,10 @@ public class GameScreen extends StdScreenAdapter {
                 if(runPhysics)
                     return false;
                 if(button == Input.Buttons.RIGHT){  // RMB to delete
+                    if(overBeam != null){
+                        deleteBeam(overBeam);
+                        overBeam = null;
+                    }
                     if(overPin != null) {
                         deletePin(overPin);
                         overPin = null;
@@ -227,7 +233,7 @@ public class GameScreen extends StdScreenAdapter {
 
     /** check if the mouse is over a pin and if so highlight it and assign it to 'overPin' */
     private void checkOverPin(Vector2 mousePosition) {
-        if (overPin != null)
+        if (overPin != null)    // unhighlight the "over" pin before testing again
             overPin.sprite.setColor(Color.WHITE);
         // check if the mouse is over a pin and if so highlight it
         overPin = null;
@@ -235,6 +241,21 @@ public class GameScreen extends StdScreenAdapter {
             if (pin.isOver(mousePosition)) {
                 overPin = pin;
                 overPin.sprite.setColor(Color.RED);
+                //System.out.println("highlight pin "+overPin.id);
+                break;
+            }
+        }
+    }
+
+    private void checkOverBeam(Vector2 mousePosition) {
+        if (overBeam != null)    // unhighlight the "over" pin before testing again
+            overBeam.sprite.setColor(Color.WHITE);
+        // check if the mouse is over a pin and if so highlight it
+        overBeam = null;
+        for (Beam beam : world.beams) {
+            if (beam.isOver(mousePosition)) {
+                overBeam = beam;
+                overBeam.sprite.setColor(Color.RED);
                 //System.out.println("highlight pin "+overPin.id);
                 break;
             }
@@ -267,6 +288,12 @@ public class GameScreen extends StdScreenAdapter {
     private void addBeam(Beam beam){
         physics.addBeam(beam);
         world.cost += beam.getCost();
+    }
+
+    private void deleteBeam(Beam beam){
+        world.cost -= beam.getCost();
+        physics.destroyBeam(beam);
+        world.beams.removeValue(beam, true);
     }
 
     private void destroyBeam(Beam beam){
