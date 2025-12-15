@@ -10,22 +10,22 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class Pin implements Json.Serializable {
-//    private static Texture pinTexture;
-//    private static Texture cliffTexture;
     private static int nextId = 1;
 
     public int id;
     public boolean isAnchor;
-    public int anchorDirection;     // 1 left, 2 right, 3 bottom
+    public int anchorDirection;     // 1 left, 2 right, 3 bottom, 4 top
     public Vector2 position;
     public Sprite sprite;
     public Sprite cliffSprite;
     public Sprite pillarSprite;
+    public Sprite caneSprite;
     public float W;
     public float H;
     public Body body;
     public float Wc, Hc;
     public float Wp, Hp;
+    public float Wk, Hk;
 
     public Pin(){
         id = nextId++;
@@ -53,6 +53,12 @@ public class Pin implements Json.Serializable {
         pillarSprite = new Sprite(regionPillar);
         pillarSprite.setSize(Wp, Hp);
         pillarSprite.setOrigin(0.5f*Wp, Hp);
+        TextureRegion regionCane = Images.findRegion("candycane");
+        Wk = regionCane.getRegionWidth() / 32f;
+        Hk = regionCane.getRegionHeight() / 40f;
+        caneSprite = new Sprite(regionCane);
+        caneSprite.setSize(Wk, Hk);
+        caneSprite.setOrigin(0.8f*Wk, 0.85f*Hk);
     }
 
     public Pin(float x, float y) {
@@ -71,6 +77,7 @@ public class Pin implements Json.Serializable {
         position.set(x,y);
         pillarSprite.setOriginBasedPosition(x,y);
         cliffSprite.setOriginBasedPosition(x,y);
+        caneSprite.setOriginBasedPosition(x,y);
         sprite.setOriginBasedPosition(x,y);
 
     }
@@ -93,6 +100,12 @@ public class Pin implements Json.Serializable {
         }
         if(isAnchor && anchorDirection == 3)
             pillarSprite.draw(spriteBatch);
+        if(isAnchor && anchorDirection == 4)
+            caneSprite.draw(spriteBatch);
+        if(isAnchor && anchorDirection == 5) {
+            caneSprite.setScale(-1f, 1f);
+            caneSprite.draw(spriteBatch);
+        }
         sprite.draw(spriteBatch);
 
             //spriteBatch.draw(cliffTexture, 0,0);
