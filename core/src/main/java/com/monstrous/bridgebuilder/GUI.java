@@ -53,6 +53,7 @@ public class GUI implements Disposable {
         runMode = mode;
         if(runMode) {
             modeButton.setText("Retry");
+            //modeButton.setChecked(false);
             deckButton.setVisible(false);
             steelButton.setVisible(false);
             woodButton.setVisible(false);
@@ -60,6 +61,7 @@ public class GUI implements Disposable {
             //statusLabel.setVisible(false);
         } else {
             modeButton.setText("Go!");
+            //modeButton.setChecked(false);
             deckButton.setVisible(true);
             steelButton.setVisible(true);
             woodButton.setVisible(true);
@@ -82,7 +84,6 @@ public class GUI implements Disposable {
         deckButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.DECK);
-                //deckButton.setChecked(true);
             }
         });
 
@@ -90,7 +91,6 @@ public class GUI implements Disposable {
         woodButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.WOOD);
-                //woodButton.setChecked(true);
             }
         });
 
@@ -98,7 +98,6 @@ public class GUI implements Disposable {
         steelButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 gameScreen.setBuildMaterial(BuildMaterial.STEEL);
-                //steelButton.setChecked(true);
             }
         });
 
@@ -108,6 +107,13 @@ public class GUI implements Disposable {
                 gameScreen.setBuildMaterial(BuildMaterial.CABLE);
             }
         });
+
+
+        deckButton.setChecked(gameScreen.buildMaterial == BuildMaterial.DECK);
+        woodButton.setChecked(gameScreen.buildMaterial == BuildMaterial.WOOD);
+        steelButton.setChecked(gameScreen.buildMaterial == BuildMaterial.STEEL);
+        cableButton.setChecked(gameScreen.buildMaterial == BuildMaterial.CABLE);
+
 
 
         ButtonGroup<TextButton> buttonGroup = new ButtonGroup(deckButton, woodButton, steelButton, cableButton);

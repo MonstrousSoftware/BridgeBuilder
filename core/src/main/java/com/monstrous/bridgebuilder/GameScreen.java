@@ -41,7 +41,7 @@ public class GameScreen extends StdScreenAdapter {
     private final Vector2 correctedPos = new Vector2();
     public boolean runPhysics = false;
     public boolean gameOver = false;
-    private BuildMaterial buildMaterial = BuildMaterial.DECK;
+    public BuildMaterial buildMaterial = BuildMaterial.DECK;
     public float zoom = 1;
     public boolean showPhysics = false;
     public int levelNumber;
