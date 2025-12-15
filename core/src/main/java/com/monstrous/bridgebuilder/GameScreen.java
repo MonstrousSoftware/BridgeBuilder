@@ -334,7 +334,7 @@ public class GameScreen extends StdScreenAdapter {
     }
 
     public void nextLevel(){
-        if(levelNumber < maxLevelNumber)
+        if(levelNumber < maxLevelNumber-1)
             levelNumber++;
         stopSimulation();
 
