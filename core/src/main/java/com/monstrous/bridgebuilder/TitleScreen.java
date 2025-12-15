@@ -3,6 +3,7 @@ package com.monstrous.bridgebuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -32,6 +33,7 @@ public class TitleScreen extends StdScreenAdapter {
         texture = new Texture("textures/title.png");
 
         game.assets.load("atlas/bridge.atlas", TextureAtlas.class );
+        game.assets.load("textures/spanner.png", Pixmap.class );
         game.assets.load("sounds/break.ogg", Sound.class );
         game.assets.load("sounds/fanfare.ogg", Sound.class );
         game.assets.load("sounds/groundContact.ogg", Sound.class );

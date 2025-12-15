@@ -2,10 +2,7 @@ package com.monstrous.bridgebuilder;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -76,6 +73,12 @@ public class GameScreen extends StdScreenAdapter {
         postFilter = new PostFilter();
 
 
+        Pixmap pixmap = game.assets.get("textures/spanner.png");
+        // Set hotspot to the middle of it (0,0 would be the top-left corner)
+        int xHotspot = 15, yHotspot = 15;
+        Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
+        pixmap.dispose(); // We don't need the pixmap anymore
+        Gdx.graphics.setCursor(cursor);
 
         camera = new OrthographicCamera(); //Gdx.graphics.getWidth()/32f, Gdx.graphics.getHeight()/32f);
         viewport = new FitViewport(30, 20, camera);
