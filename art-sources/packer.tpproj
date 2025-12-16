@@ -8,8 +8,8 @@ debug=false
 duplicatePadding=true
 edgePadding=true
 fast=false
-filterMag=Nearest
-filterMin=Nearest
+filterMag=MipMap
+filterMin=Linear
 ignoreBlankImages=true
 maxHeight=2048
 maxWidth=2048
@@ -34,7 +34,7 @@ prettyPrint=false
 legacyOutput=false
 
 scaleFactors=[{suffix:"",factor:1,resampling:bicubic}]
-inputFiles=[{path:pillar.png,type:Input,regionName:null},{path:pin.png,type:Input,regionName:null},{path:santa.png,type:Input,regionName:null},{path:spanner.png,type:Input,regionName:null},{path:tree1.png,type:Input,regionName:null},{path:tree2.png,type:Input,regionName:null},{path:tree3.png,type:Input,regionName:null},{path:cliff.png,type:Input,regionName:null},{path:hooray.png,type:Input,regionName:null},{path:ice.png,type:Input,regionName:null},{path:ice2.png,type:Input,regionName:null},{path:ohno.png,type:Input,regionName:null},{path:candycane.png,type:Input,regionName:null}]
+inputFiles=[{path:pillar.png,type:Input,regionName:null},{path:pin.png,type:Input,regionName:null},{path:santa.png,type:Input,regionName:null},{path:spanner.png,type:Input,regionName:null},{path:tree1.png,type:Input,regionName:null},{path:tree2.png,type:Input,regionName:null},{path:tree3.png,type:Input,regionName:null},{path:cliff.png,type:Input,regionName:null},{path:ice.png,type:Input,regionName:null},{path:ice2.png,type:Input,regionName:null},{path:ohno.png,type:Input,regionName:null},{path:candycane.png,type:Input,regionName:null},{path:hooray3.png,type:Input,regionName:null}]
 keepInputFileExtensions=false
 
 

@@ -99,6 +99,8 @@ public class GameScreen extends StdScreenAdapter {
         gui.showNextLevel(false);   // unlocked on level completion
 
         GestureDetector.GestureListener gestureListener = new GestureDetector.GestureAdapter() {
+
+
             @Override
             public boolean touchDown(float x, float y, int pointer, int button) {
                 //System.out.println("touch down "+x +" x "+y);
@@ -220,6 +222,17 @@ public class GameScreen extends StdScreenAdapter {
                 currentBeam = null;
                 return true;
             }
+
+            @Override
+            public boolean zoom(float initialDistance, float distance) {
+                if(runPhysics)
+                    return false;
+                zoom *= 0.2f * distance/initialDistance;
+                zoom = MathUtils.clamp(zoom, 0.5f, 2.0f);
+                viewport.setWorldSize(zoom*world.width, zoom*world.height);
+                System.out.println("zoom "+zoom);
+                return true;
+            }
         };
 
         InputAdapter inputProcessor = new InputAdapter() {
@@ -235,14 +248,10 @@ public class GameScreen extends StdScreenAdapter {
             @Override
             public boolean scrolled(float amountX, float amountY) {
                 if(runPhysics)
-                    return true;
+                    return false;
                 zoom += 0.1f*amountY;
                 zoom = MathUtils.clamp(zoom, 0.5f, 2.0f);
                 viewport.setWorldSize(zoom*world.width, zoom*world.height);
-                System.out.println("zoom "+zoom);
-                //viewport.
-
-                //setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
                 return true;
             }
         };
