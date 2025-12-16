@@ -11,11 +11,13 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
 
-// post-processing effect to render an FBO to screen applying shader effects
-
+/** Post-processing effect to render an FBO to screen applying shader effects.
+* Shows a vignette.
+* Reflects top part of the screen at the bottom of the screen, the reflection is blended.
+*/
 public class PostFilter implements Disposable {
 
-    private SpriteBatch batch;
+    public SpriteBatch batch;
     private ShaderProgram program;
     private float[] resolution = { 640, 480 };
     private int reflectionY = 80;
@@ -32,16 +34,14 @@ public class PostFilter implements Disposable {
         batch = new SpriteBatch();
     }
 
-    public void resize (int width, int height) {
+    public void resize ( int width, int height) {
         resolution[0] = width;
         resolution[1] = height;
         batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);  // to ensure the fbo is rendered to the full window after a resize
-
     }
 
-    public void setReflectionY(int y){
-        System.out.println("reflection Y "+y);
-        reflectionY = y;
+    public void setReflectionY(float yfraction){
+        reflectionY = (int)(yfraction * Gdx.graphics.getHeight());
     }
 
     public void render( FrameBuffer fbo ) {

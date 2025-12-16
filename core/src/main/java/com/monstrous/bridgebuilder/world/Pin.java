@@ -83,9 +83,9 @@ public class Pin implements Json.Serializable {
     }
 
     public boolean isOver(Vector2 pos){
-        if(pos.x < position.x - 0.5*W || pos.x > position.x + 0.5*W)
+        if(pos.x < position.x - W || pos.x > position.x + W)
             return false;
-        if(pos.y < position.y - 0.5*H || pos.y > position.y + 0.5* H)
+        if(pos.y < position.y - H || pos.y > position.y + H)
             return false;
         return true;
     }

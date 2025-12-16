@@ -21,6 +21,7 @@ public class GameScreen extends StdScreenAdapter {
     public static int NO_PB = 999999;           // no personal best so far ("infinite" cost)
     public static int maxLevelNumber = 5;
     public static Color HIGHLIGHT_COLOR = Color.GREEN;
+    public static float Y_OFF = -30f;    // offset from drag position
 
 
     public Main game;
@@ -165,7 +166,8 @@ public class GameScreen extends StdScreenAdapter {
 
                 // continue dragging
                 followMouse(x, y);  // on a touch screen we don't receive mouseMoved()
-                screenToWorldUnits(x,y, worldPos);
+                // show the dragged end above the touch location so that the user's finger doesn't obscure the view.
+                screenToWorldUnits(x,y+Y_OFF, worldPos);
 
                 currentPin.setPosition(worldPos.x, worldPos.y);
                 currentBeam.setEndPosition(worldPos.x, worldPos.y);
@@ -196,7 +198,7 @@ public class GameScreen extends StdScreenAdapter {
                 if(runPhysics)
                     return false;
 
-                screenToWorldUnits(x,y, worldPos);
+                screenToWorldUnits(x,y+Y_OFF, worldPos);
                 if(currentBeam.startPin.isOver(worldPos)){   // we didn't move from start position, remove beam
                     world.beams.removeValue(currentBeam, true);
                 } else {
@@ -363,6 +365,7 @@ public class GameScreen extends StdScreenAdapter {
         Sounds.stopJingle();
         runPhysics = false;
         particleEffects.stop();
+        gui.setStatusLabel("");
     }
 
     public void retry(){
@@ -373,7 +376,7 @@ public class GameScreen extends StdScreenAdapter {
     }
 
     public void nextLevel(){
-        if(levelNumber < maxLevelNumber-1)
+        if(levelNumber < maxLevelNumber)
             levelNumber++;
         stopSimulation();
 
@@ -478,6 +481,7 @@ public class GameScreen extends StdScreenAdapter {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), lightBlue, lightBlue, darkBlue, darkBlue);
             shapeRenderer.end();
+            postFilter.setReflectionY((world.height/2f + world.floor.position.y)/world.height);
         } else {
             ScreenUtils.clear(Color.TEAL);
             renderGrid();
@@ -578,29 +582,31 @@ public class GameScreen extends StdScreenAdapter {
     public void resize(int width, int height) {
         System.out.println("Resize "+width +" x "+height);
         if(width <= 0 || height <= 0) return;
+
+        //float aspectRatio = width / (float)height;
+        viewport.setWorldSize(world.width, world.height); /// aspectRatio);
+        viewport.update(width, height);
+
         if(fbo != null)
             fbo.dispose();
         fbo = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
         postFilter.resize(width, height);
 
-        //float aspectRatio = width / (float)height;
-        viewport.setWorldSize(world.width, world.height); /// aspectRatio);
-        viewport.update(width, height);
+
         particleEffects.resize(width, height);
         pfxSpriteBatch.getProjectionMatrix().setToOrtho2D(0,0, width, height);
 
         gui.resize(width, height);
 
-        Vector2 screenPos = new Vector2(world.floor.position);
-        viewport.project(screenPos);
-        postFilter.setReflectionY((int)screenPos.y);
+
+        postFilter.setReflectionY((world.height/2f + world.floor.position.y)/world.height);
     }
 
-    private void setCameraView(int width, int height){
-        camera.viewportWidth = zoom * width/32f;
-        camera.viewportHeight = zoom * height/32f;
-        camera.update();
-    }
+//    private void setCameraView(int width, int height){
+//        camera.viewportWidth = zoom * width/32f;
+//        camera.viewportHeight = zoom * height/32f;
+//        camera.update();
+//    }
 
     public void addVehicle(){
         Pin startAnchor = world.pins.get(0);
@@ -625,12 +631,8 @@ public class GameScreen extends StdScreenAdapter {
 
         //float aspectRatio = Gdx.graphics.getWidth() / (float)Gdx.graphics.getHeight();
         viewport.setWorldSize(world.width, world.height); //width/ aspectRatio);
-//        viewport.setMinWorldWidth(world.width);
-//        viewport.setMinWorldHeight(world.height);
         viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        //zoom = world.zoom;
-        //setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
+        postFilter.setReflectionY((world.height/2f + world.floor.position.y)/world.height);
 
         for(Pin pin : world.pins){
             if(pin.isAnchor){

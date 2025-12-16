@@ -77,7 +77,6 @@ public class GUI implements Disposable {
         screenTable.setFillParent(true);
 
 
-
         // Material buttons (these should act as radio buttons and highlight the selected one)
         //
         deckButton = new TextButton("Deck", skin);
@@ -122,7 +121,8 @@ public class GUI implements Disposable {
         buttonGroup.setUncheckLast(true);
 
         // button toggles between Edit mode and Run mode
-        modeButton = new TextButton("Go!", skin, "big");
+        // todo should not appear in Down position during run mode
+        modeButton = new TextButton("Go!", skin);
         modeButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 if(runMode) {
@@ -135,7 +135,7 @@ public class GUI implements Disposable {
             }
         });
 
-        nextButton = new TextButton("Next Level", skin);
+        nextButton = new TextButton("Next", skin);
         nextButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 setRunMode(false);
@@ -143,7 +143,7 @@ public class GUI implements Disposable {
             }
         });
 
-        prevButton = new TextButton("Previous Level", skin);
+        prevButton = new TextButton("Previous", skin);
         prevButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 setRunMode(false);
@@ -155,41 +155,33 @@ public class GUI implements Disposable {
 
 
         Table materials = new Table();
-        materials.add(deckButton).width(120).height(80);
-        materials.add(woodButton).width(120).height(80);
-        materials.add(steelButton).width(120).height(80);
-        materials.add(cableButton).width(120).height(80);
+        materials.add(deckButton).width(100).height(60);
+        materials.add(woodButton).width(100).height(60);
+        materials.add(steelButton).width(100).height(60);
+        materials.add(cableButton).width(100).height(60);
 
         Table buttonLine = new Table();
         buttonLine.add(materials);
         buttonLine.add().expandX();
-        buttonLine.add(prevButton).width(200).height(80).pad(10);
-        buttonLine.add(nextButton).width(200).height(80).pad(10);
-        buttonLine.add(modeButton).width(200).height(80).pad(10);
+        buttonLine.add(prevButton).width(100).height(60);
+        buttonLine.add(nextButton).width(100).height(60);
+        buttonLine.add(modeButton).width(100).height(60);
 
-        Table costTable = new Table();
-        costTable.add(new Label("$", skin)).pad(5);
-        costTable.add(costLabel).pad(5).width(100);
-
-        Table pbTable = new Table();
-        pbTable.add(new Label("Personal Best: $", skin)).pad(5);
-        pbTable.add(pbLabel).pad(5).width(100);
-
+        // $ 800                          Best: $ 150
         Table topLine = new Table();
-        topLine.add(costTable).left().expandX();
-        topLine.add(pbTable).right();
+        topLine.add(new Label("$", skin)).pad(5);
+        topLine.add(costLabel).pad(5).width(100);
+        topLine.add().expandX();
+        topLine.add(new Label("Best: $", skin)).pad(5);
+        topLine.add(pbLabel).pad(5).width(100);
 
-        screenTable.add(topLine).top().row();
+        screenTable.add(topLine).fillX().top().row();
 
         screenTable.add(statusLabel).pad(10).left().expandX();
         screenTable.row();
         screenTable.add(buttonLine).fillX().pad(10).bottom().expandY();
 
-//
-
-
         stage.addActor(screenTable);
-
     }
 
 
