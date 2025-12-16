@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -21,7 +22,7 @@ public class GameScreen extends StdScreenAdapter {
     public static int NO_PB = 999999;           // no personal best so far ("infinite" cost)
     public static int maxLevelNumber = 5;
     public static Color HIGHLIGHT_COLOR = Color.GREEN;
-    public static float Y_OFF = -30f;    // offset from drag position
+    public static float Y_OFF = -10f;    // offset from drag position
 
 
     public Main game;
@@ -230,14 +231,20 @@ public class GameScreen extends StdScreenAdapter {
                 return true;
             }
 
-            // don't allow zoom because it screws up the game layout
-//            @Override
-//            public boolean scrolled(float amountX, float amountY) {
-//                zoom += 0.1f*amountY;
-//                zoom = MathUtils.clamp(zoom, 0.3f, 5.0f);
-//                setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//                return true;
-//            }
+
+            @Override
+            public boolean scrolled(float amountX, float amountY) {
+                if(runPhysics)
+                    return true;
+                zoom += 0.1f*amountY;
+                zoom = MathUtils.clamp(zoom, 0.5f, 2.0f);
+                viewport.setWorldSize(zoom*world.width, zoom*world.height);
+                System.out.println("zoom "+zoom);
+                //viewport.
+
+                //setCameraView(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                return true;
+            }
         };
         InputMultiplexer im = new InputMultiplexer();
         im.addProcessor(gui.stage);
@@ -347,6 +354,9 @@ public class GameScreen extends StdScreenAdapter {
     public void startSimulation(){
         if(runPhysics)
             return;
+        // reset zoom to 1.0
+        zoom = 1.0f;
+        viewport.setWorldSize(world.width, world.height);
 
         gameOver = false;
         // save construction before running physics
@@ -452,16 +462,12 @@ public class GameScreen extends StdScreenAdapter {
             showPhysics = !showPhysics;
         }
 
-//        CharArray sb = new CharArray();
-//        sb.append(world.levelName);
-        //gui.setStatusLabel(world.levelName);
 
         if(runPhysics) {
             physics.update(delta);
             physics.updatePinPositions(world.pins);
             physics.updateBeamPositions(world.beams);
             for(Beam beam : world.beams){
-                //beam.updatePosition();
                 testBeamStress(beam);
             }
             if(world.vehicle != null) {
@@ -564,7 +570,6 @@ public class GameScreen extends StdScreenAdapter {
             if (force > beam.material.strength) {
                 gui.setStatusLabel("The bridge can't take it");
                 System.out.println("break joint at "+force);
-                //runPhysics = false;
                 destroyBeam(beam);
                 Sounds.playBreak();
                 return;
@@ -583,8 +588,7 @@ public class GameScreen extends StdScreenAdapter {
         System.out.println("Resize "+width +" x "+height);
         if(width <= 0 || height <= 0) return;
 
-        //float aspectRatio = width / (float)height;
-        viewport.setWorldSize(world.width, world.height); /// aspectRatio);
+        viewport.setWorldSize(world.width, world.height);
         viewport.update(width, height);
 
         if(fbo != null)
@@ -687,9 +691,12 @@ public class GameScreen extends StdScreenAdapter {
         //System.out.println("Flag reached");
         gameOver = true;
         gui.showWin();
-        gui.setStatusLabel("Santa made it safely across.");
+        if(levelNumber == maxLevelNumber)
+            gui.setStatusLabel("You have completed all levels.");
+        else
+            gui.setStatusLabel("Santa made it safely across.");
         Sounds.playFanfare();
-        gui.showNextLevel(true);
+        gui.showNextLevel(levelNumber < maxLevelNumber);
 
         if(world.cost < personalBest) {
             personalBest = world.cost;

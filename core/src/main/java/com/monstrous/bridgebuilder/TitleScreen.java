@@ -35,6 +35,7 @@ public class TitleScreen extends StdScreenAdapter {
         this.game = main;
         stage = new Stage(new ScreenViewport());
         skin = new Skin(Gdx.files.internal("ui/bridge.json"));
+        //texture = new Texture("textures/title.png");
         texture = new Texture("textures/title.png");
         // Create loading segment part, use Pixmap to generate the texture
         Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -116,7 +117,7 @@ public class TitleScreen extends StdScreenAdapter {
         // draw a grey rectangle
         batch.setColor(Color.DARK_GRAY);
         batch.draw(whitePixel, barX, barY, BAR_WIDTH, BAR_HEIGHT);
-        // overlay a green rectangle that grouws in size 
+        // overlay a green rectangle that grouws in size
         batch.setColor(Color.GREEN);
         batch.draw(whitePixel, barX, barY, progress * BAR_WIDTH, BAR_HEIGHT);
         // restore default colour

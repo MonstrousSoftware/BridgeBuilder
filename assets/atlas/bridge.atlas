@@ -1,12 +1,13 @@
 bridge.png
 size:2048,1024
+filter:Linear,MipMap
 repeat:none
 pma:true
 candycane
 bounds:3,3,181,470
 cliff
 bounds:3,479,376,530
-hooray
+hooray3
 bounds:385,784,666,225
 ice
 bounds:973,522,64,256

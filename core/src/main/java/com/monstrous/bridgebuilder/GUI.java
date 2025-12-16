@@ -40,7 +40,7 @@ public class GUI implements Disposable {
 
         statusLabel = new Label("...", skin);
         TextureAtlas atlas = gameScreen.game.assets.get("atlas/bridge.atlas");
-        winImage = new Image(atlas.findRegion("hooray"));
+        winImage = new Image(atlas.findRegion("hooray3"));
         lossImage = new Image(atlas.findRegion("ohno"));
         costLabel = new Label("0", skin);
         pbLabel = new Label("N/A", skin);
