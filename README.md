@@ -7,6 +7,11 @@ Makes use of box2d for physics.
  ![screen shot](screenshot3.png) 
 
 
+Drag to place a deck (bridge surface), wooden beams, steel beams or cables.
+Use double click or right mouse button click to delete items.
+
+Shortcut keys:
+
 - G to go (run physics)
 - R to retry
 - C to clear
