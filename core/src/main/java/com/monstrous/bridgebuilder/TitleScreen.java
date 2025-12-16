@@ -18,13 +18,12 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class TitleScreen extends StdScreenAdapter {
 
-    private static final float BAR_WIDTH = 300;
+    private static final float BAR_WIDTH = 300;        // loading progress bar
     private static final float BAR_HEIGHT = 20f;
 
     Stage stage;
     Skin skin;
     TextButton startButton;
-
     Main game;
     Texture texture;
     Texture whitePixel;
@@ -60,8 +59,6 @@ public class TitleScreen extends StdScreenAdapter {
         Table screenTable = new Table();
         screenTable.setFillParent(true);
 
-        // Material buttons (these should act as radio buttons and highlight the selected one)
-        //
         startButton = new TextButton("Start", skin);
         startButton.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
@@ -70,14 +67,13 @@ public class TitleScreen extends StdScreenAdapter {
 
             }
         });
-        startButton.setVisible(false);
+        startButton.setVisible(false);    // hide until assets loaded
         screenTable.add(startButton).bottom().pad(40).width(200).expand();
 
         stage.addActor(screenTable);
     }
 
     private void start(){
-        System.out.println("Starting");
         game.setScreen(new GameScreen(game));
     }
 
@@ -94,8 +90,10 @@ public class TitleScreen extends StdScreenAdapter {
 
         float progress = game.assets.getProgress();
 
-        if(game.assets.update(10)){
+        if(game.assets.update(10)){    // 10ms per call
             // finished loading
+            // show button to proceeed
+            // (for web it is important the user interacts before we can play any sound)
             startButton.setVisible(true);
         }
 
@@ -103,17 +101,23 @@ public class TitleScreen extends StdScreenAdapter {
         ScreenUtils.clear(Color.TEAL);
 
         batch.begin();
-        float x = 0.5f*(Gdx.graphics.getWidth() - texture.getWidth());
-        float y = 0.5f*(Gdx.graphics.getHeight() - texture.getHeight());
-        batch.draw(texture, x, y);
+        // ensure texture will fit on screen
+        int texWidth = Math.min(Gdx.graphics.getWidth(), texture.getWidth());
+        int texHeight = Math.min(Gdx.graphics.getHeight(), texture.getHeight());
+        float x = 0.5f*(Gdx.graphics.getWidth() - texWidth);
+        float y = 0.5f*(Gdx.graphics.getHeight() - texHeight);
+        batch.draw(texture, x, y, texWidth, texHeight);
 
         // Draw the loading bar
-        float barX = 0.5f*(Gdx.graphics.getWidth() - BAR_WIDTH);
-        float barY = BAR_HEIGHT;
+        float barX = 0.5f*(Gdx.graphics.getWidth() - BAR_WIDTH);    // centred
+        float barY = BAR_HEIGHT;        // close to the bottom
+        // draw a grey rectangle
         batch.setColor(Color.DARK_GRAY);
         batch.draw(whitePixel, barX, barY, BAR_WIDTH, BAR_HEIGHT);
+        // overlay a green rectangle that grouws in size 
         batch.setColor(Color.GREEN);
         batch.draw(whitePixel, barX, barY, progress * BAR_WIDTH, BAR_HEIGHT);
+        // restore default colour
         batch.setColor(Color.WHITE);
         batch.end();
 
