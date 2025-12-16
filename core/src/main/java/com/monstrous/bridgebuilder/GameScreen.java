@@ -110,7 +110,19 @@ public class GameScreen extends StdScreenAdapter {
             @Override
             public boolean tap(float x, float y, int count, int button) {
                 System.out.println("tap "+x +" x "+y+" count:"+count);
-                if(count == 2|| button == Input.Buttons.RIGHT){ // double tap to take out pin or beam (or RMB tap)
+                if(count == 1 && button == Input.Buttons.LEFT){ // place a pin
+                    followMouse(x, y);  // update overPin
+                    if (overPin == null) {    // don't place on top of another pin
+                        screenToWorldUnits(x, y, startPos);
+                        Pin pin = new Pin(startPos.x, startPos.y);
+                        snapPinToGrid(pin);
+                        addPin(pin);
+//                        physics.addPin(pin);
+//                        world.pins.add(pin);
+                    }
+                    return true;
+                }
+                if(count == 2 || button == Input.Buttons.RIGHT){ // double tap to take out pin or beam (or RMB tap)
                     if(overBeam != null){
                         deleteBeam(overBeam);
                         overBeam = null;
@@ -138,8 +150,7 @@ public class GameScreen extends StdScreenAdapter {
                     } else {
                         startPin = new Pin(startPos.x, startPos.y);
                         snapPinToGrid(startPin);
-                        physics.addPin(startPin);
-                        world.pins.add(startPin);
+                        addPin(startPin);
                     }
 
                     screenToWorldUnits(x,y, worldPos);  // get current drag position which may differ from startPos
@@ -165,8 +176,7 @@ public class GameScreen extends StdScreenAdapter {
                     correctedPos.set(currentBeam.position2.x, currentBeam.position2.y);
                     currentPin.setPosition(correctedPos.x, correctedPos.y);
                     snapPinToGrid(currentPin);
-                    physics.addPin(currentPin);
-                    world.pins.add(currentPin);
+                    addPin(currentPin);
                     currentBeam.setEndPosition(currentPin.position.x, currentPin.position.y);
                     currentBeam.setEndPin(currentPin);
                     addBeam(currentBeam);
@@ -197,8 +207,7 @@ public class GameScreen extends StdScreenAdapter {
                         currentBeam.setEndPin(overPin);
                     } else {
                         snapPinToGrid(currentPin);
-                        physics.addPin(currentPin);
-                        world.pins.add(currentPin);
+                        addPin(currentPin);
                         currentBeam.setEndPosition(currentPin.position.x, currentPin.position.y);
                         currentBeam.setEndPin(currentPin);
                     }
@@ -213,6 +222,7 @@ public class GameScreen extends StdScreenAdapter {
         InputAdapter inputProcessor = new InputAdapter() {
 
             @Override
+            // on a touchscreen this will not get called, so call followMouse() again in the pan and touchDown events
             public boolean mouseMoved(int x, int y) {
                 followMouse(x, y);
                 return true;
@@ -287,6 +297,12 @@ public class GameScreen extends StdScreenAdapter {
     private final Array<Beam> beamsToDelete = new Array<>();
 
 
+    private void addPin(Pin pin){
+        physics.addPin(pin);
+        world.pins.add(pin);
+        world.cost += pin.getCost();
+    }
+
     private void deletePin( Pin pinToDelete ){
         if(pinToDelete.isAnchor)    // cannot delete anchors
             return;
@@ -305,6 +321,7 @@ public class GameScreen extends StdScreenAdapter {
 
         world.pins.removeValue(pinToDelete, true);
         physics.destroyPin(pinToDelete);
+        world.cost -= pinToDelete.getCost();
     }
 
     private void addBeam(Beam beam){
@@ -630,13 +647,11 @@ public class GameScreen extends StdScreenAdapter {
 
     public void populate(){
         Pin anchor1 = new Pin(-7, 0, true, 1);
-        physics.addPin(anchor1);
-        world.pins.add(anchor1);
+        addPin(anchor1);
         physics.addRamp(anchor1);
 
         Pin anchor2 = new Pin(7, 0, true, 2);
-        physics.addPin(anchor2);
-        world.pins.add(anchor2);
+        addPin(anchor2);
         physics.addRamp(anchor2);
 
         world.flag = new Tree(10, 0.5f);

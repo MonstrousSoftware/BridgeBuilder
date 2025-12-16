@@ -111,6 +111,11 @@ public class Pin implements Json.Serializable {
             //spriteBatch.draw(cliffTexture, 0,0);
     }
 
+    public int getCost(){
+        return (isAnchor ? 0 : 10);
+    }
+
+
 
     @Override
     public void write(Json json) {
