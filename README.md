@@ -4,10 +4,7 @@ Entry for libgdx game jam #35 (December 2025).
 Bridge builder game with a Christmas theme.
 Makes use of box2d for physics.
 
-
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
-
-This project was generated with a template including simple application launchers and a main class extending `Game` that sets the first screen.
+ ![screen shot](screenshot3.png) 
 
 
 - G to go (run physics)
