@@ -1538,7 +1538,7 @@ jsonData: {
 						type: com.badlogic.gdx.graphics.Color
 						name: overFontColor
 						optional: true
-						value: YELLOW
+						value: BLUE
 					}
 					focusedFontColor: {
 						type: com.badlogic.gdx.graphics.Color
@@ -1556,7 +1556,7 @@ jsonData: {
 						type: com.badlogic.gdx.graphics.Color
 						name: checkedFontColor
 						optional: true
-						value: BLUE
+						value: YELLOW
 					}
 					checkedDownFontColor: {
 						type: com.badlogic.gdx.graphics.Color

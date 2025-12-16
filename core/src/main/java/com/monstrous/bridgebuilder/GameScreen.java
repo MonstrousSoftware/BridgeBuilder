@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -17,8 +18,9 @@ import com.monstrous.bridgebuilder.world.*;
 
 
 public class GameScreen extends StdScreenAdapter {
-    public static int NO_PB = 999999;
+    public static int NO_PB = 999999;           // no personal best so far ("infinite" cost)
     public static int maxLevelNumber = 5;
+    public static Color HIGHLIGHT_COLOR = Color.GREEN;
 
 
     public Main game;
@@ -94,23 +96,66 @@ public class GameScreen extends StdScreenAdapter {
         loadLevel(levelNumber);
         gui.showNextLevel(false);   // unlocked on level completion
 
-        InputAdapter inputProcessor = new InputAdapter() {
-
+        GestureDetector.GestureListener gestureListener = new GestureDetector.GestureAdapter() {
             @Override
-            public boolean mouseMoved(int x, int y) {
-                screenToWorldUnits(x,y, worldPos);
-                checkOverPin(worldPos);
-                checkOverBeam(worldPos);
+            public boolean touchDown(float x, float y, int pointer, int button) {
+                //System.out.println("touch down "+x +" x "+y);
+                if(runPhysics)
+                    return false;
+                followMouse(x, y);  // on a touch screen we don't receive mouseMoved()
+                screenToWorldUnits(x, y, startPos);  // keep track of drag start
                 return false;
             }
 
-            public boolean touchDragged(int x, int y, int pointer) {
+            @Override
+            public boolean tap(float x, float y, int count, int button) {
+                System.out.println("tap "+x +" x "+y+" count:"+count);
+                if(count == 2|| button == Input.Buttons.RIGHT){ // double tap to take out pin or beam (or RMB tap)
+                    if(overBeam != null){
+                        deleteBeam(overBeam);
+                        overBeam = null;
+                    }
+                    if(overPin != null) {
+                        deletePin(overPin);
+                        overPin = null;
+                    }
+                }
+                return super.tap(x, y, count, button);
+            }
+
+            @Override
+            public boolean pan(float x, float y, float deltaX, float deltaY) {
+                //System.out.println("pan "+x +" x "+y);
                 if(runPhysics)
                     return false;
+
+                if (currentPin == null) { // start dragging
+                    // use startPos and overPin from touchDown() as x - deltaX is not reliable
+                    Pin startPin;
+                    if (overPin != null) {    // if we were over a pin, use that as start
+                        startPos.set(overPin.position.x, overPin.position.y);
+                        startPin = overPin;
+                    } else {
+                        startPin = new Pin(startPos.x, startPos.y);
+                        snapPinToGrid(startPin);
+                        physics.addPin(startPin);
+                        world.pins.add(startPin);
+                    }
+
+                    screenToWorldUnits(x,y, worldPos);  // get current drag position which may differ from startPos
+                    // use snapped position to start beam (instead of startPos)
+                    currentBeam = new Beam(startPin.position.x, startPin.position.y, worldPos.x, worldPos.y);
+                    currentBeam.setMaterial(buildMaterial);
+                    currentBeam.setStartPin(startPin);
+                    world.beams.add(currentBeam);
+                    currentPin = new Pin(worldPos.x, worldPos.y);   // this pin will follow the mouse
+                    return true;
+                }
+
+                // continue dragging
+                followMouse(x, y);  // on a touch screen we don't receive mouseMoved()
                 screenToWorldUnits(x,y, worldPos);
-                checkOverPin(worldPos);
-                if(currentPin == null)
-                    return false;
+
                 currentPin.setPosition(worldPos.x, worldPos.y);
                 currentBeam.setEndPosition(worldPos.x, worldPos.y);
                 // if the beam gets too long, place a pin and create a new beam
@@ -132,53 +177,13 @@ public class GameScreen extends StdScreenAdapter {
                     currentPin = new Pin(currentPin.position.x, currentPin.position.y);
                     world.beams.add(currentBeam);
                 }
-                return false;
+                return true;
             }
 
-            public boolean touchDown(int x, int y, int pointer, int button) {
+            @Override
+            public boolean panStop(float x, float y, int pointer, int button) {
+                System.out.println("panStop "+x +" x "+y);
                 if(runPhysics)
-                    return false;
-                if(button == Input.Buttons.RIGHT){  // RMB to delete
-                    if(overBeam != null){
-                        deleteBeam(overBeam);
-                        overBeam = null;
-                    }
-                    if(overPin != null) {
-                        deletePin(overPin);
-                        overPin = null;
-                    }
-                    return false;
-                }
-                // LMB
-                if (currentPin != null) // already dragging
-                    return false;
-                screenToWorldUnits(x,y, worldPos);
-                System.out.println(worldPos);
-                startPos.set(worldPos);
-                Pin startPin;
-                if (overPin != null) {    // if we were over a pin, use that as start
-                    startPos.set(overPin.position.x, overPin.position.y);
-                    startPin = overPin;
-                } else {
-                    startPin = new Pin(startPos.x, startPos.y);
-                    snapPinToGrid(startPin);
-                    physics.addPin(startPin);
-                    world.pins.add(startPin);
-                }
-                // use snapped position to start beam
-                currentBeam = new Beam(startPin.position.x, startPin.position.y, worldPos.x, worldPos.y);
-                currentBeam.setMaterial(buildMaterial);
-                currentBeam.setStartPin(startPin);
-                world.beams.add(currentBeam);
-                currentPin = new Pin(worldPos.x, worldPos.y);
-
-                return false;
-            }
-
-            public boolean touchUp(int x, int y, int pointer, int button) {
-                if(runPhysics)
-                    return false;
-                if(button == Input.Buttons.RIGHT)
                     return false;
 
                 screenToWorldUnits(x,y, worldPos);
@@ -201,7 +206,16 @@ public class GameScreen extends StdScreenAdapter {
                 }
                 currentPin = null;
                 currentBeam = null;
-                return false;
+                return true;
+            }
+        };
+
+        InputAdapter inputProcessor = new InputAdapter() {
+
+            @Override
+            public boolean mouseMoved(int x, int y) {
+                followMouse(x, y);
+                return true;
             }
 
             // don't allow zoom because it screws up the game layout
@@ -215,9 +229,17 @@ public class GameScreen extends StdScreenAdapter {
         };
         InputMultiplexer im = new InputMultiplexer();
         im.addProcessor(gui.stage);
+        im.addProcessor(new GestureDetector(gestureListener));
         im.addProcessor(inputProcessor);
         Gdx.input.setInputProcessor(im);
 
+    }
+
+    /** highlights pin or beam that the mouse is over, sets variables overPin and overBeam */
+    private void followMouse(float screenX, float screenY){
+        screenToWorldUnits(screenX, screenY, worldPos);
+        checkOverPin(worldPos);
+        checkOverBeam(worldPos);
     }
 
     private void snapPinToGrid(Pin pin){
@@ -226,7 +248,7 @@ public class GameScreen extends StdScreenAdapter {
         pin.setPosition(x,y);
     }
 
-    public void screenToWorldUnits(int x, int y, Vector2 worldPos){
+    public void screenToWorldUnits(float x, float y, Vector2 worldPos){
         worldPos.set(x,y);
         viewport.unproject(worldPos);
     }
@@ -240,7 +262,7 @@ public class GameScreen extends StdScreenAdapter {
         for (Pin pin : world.pins) {
             if (pin.isOver(mousePosition)) {
                 overPin = pin;
-                overPin.sprite.setColor(Color.RED);
+                overPin.sprite.setColor(HIGHLIGHT_COLOR);
                 //System.out.println("highlight pin "+overPin.id);
                 break;
             }
@@ -255,7 +277,7 @@ public class GameScreen extends StdScreenAdapter {
         for (Beam beam : world.beams) {
             if (beam.isOver(mousePosition)) {
                 overBeam = beam;
-                overBeam.sprite.setColor(Color.RED);
+                overBeam.sprite.setColor(HIGHLIGHT_COLOR);
                 //System.out.println("highlight pin "+overPin.id);
                 break;
             }
