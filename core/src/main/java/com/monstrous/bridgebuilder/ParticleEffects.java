@@ -67,6 +67,8 @@ public class ParticleEffects {
     }
 
     public void draw(SpriteBatch batch, float deltaTime){
+        if(deltaTime > 0.05f)   // cap the delta time, e.g. after browser minimize
+            deltaTime = 0.05f;
 
         for (int i = effects.size - 1; i >= 0; i--) {
             ParticleEffectPool.PooledEffect effect = effects.get(i);
