@@ -50,6 +50,7 @@ public class TitleScreen extends StdScreenAdapter {
         game.assets.load("sounds/fanfare.ogg", Sound.class );
         game.assets.load("sounds/groundContact.ogg", Sound.class );
         game.assets.load("sounds/jingle.ogg", Sound.class );
+        game.assets.load("sounds/fireworks.ogg", Sound.class );
     }
 
     @Override

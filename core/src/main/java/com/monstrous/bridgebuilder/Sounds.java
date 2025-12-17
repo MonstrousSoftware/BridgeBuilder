@@ -12,12 +12,14 @@ public class Sounds {
     private static Sound breakSound;
     private static Sound dropSound;
     private static Sound fanfareSound;
+    private static Sound fireworksSound;
 
     public Sounds(AssetManager assets) {
         jingleSound = assets.get("sounds/jingle.ogg");
         breakSound = assets.get("sounds/break.ogg");
         dropSound = assets.get("sounds/groundContact.ogg");
         fanfareSound = assets.get("sounds/fanfare.ogg");
+        fireworksSound = assets.get("sounds/fireworks.ogg");
     }
 
     public static void playDrop(){
@@ -33,6 +35,9 @@ public class Sounds {
         fanfareSound.play();
     }
 
+    public static void playFireworks(){
+        fireworksSound.play();
+    }
 
     public static void playJingle(){
         jingleSound.loop();

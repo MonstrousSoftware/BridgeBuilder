@@ -70,6 +70,13 @@ public class GUI implements Disposable {
         }
     }
 
+    public void setBuildMaterial(BuildMaterial buildMaterial){
+        deckButton.setChecked(buildMaterial == BuildMaterial.DECK);
+        woodButton.setChecked(buildMaterial == BuildMaterial.WOOD);
+        steelButton.setChecked(buildMaterial == BuildMaterial.STEEL);
+        cableButton.setChecked(buildMaterial == BuildMaterial.CABLE);
+    }
+
     private void fillStage(){
         stage.clear();
         //stage.setDebugAll(true);
@@ -108,12 +115,7 @@ public class GUI implements Disposable {
         });
 
 
-        deckButton.setChecked(gameScreen.buildMaterial == BuildMaterial.DECK);
-        woodButton.setChecked(gameScreen.buildMaterial == BuildMaterial.WOOD);
-        steelButton.setChecked(gameScreen.buildMaterial == BuildMaterial.STEEL);
-        cableButton.setChecked(gameScreen.buildMaterial == BuildMaterial.CABLE);
-
-
+        setBuildMaterial(gameScreen.buildMaterial);
 
         ButtonGroup<TextButton> buttonGroup = new ButtonGroup(deckButton, woodButton, steelButton, cableButton);
         buttonGroup.setMinCheckCount(1);

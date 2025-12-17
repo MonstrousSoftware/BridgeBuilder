@@ -12,7 +12,9 @@ import com.badlogic.gdx.utils.Array;
 public class ParticleEffects {
 
     ParticleEffect snowEffect;
-    ParticleEffectPool effectPool;
+    ParticleEffect fireworksEffect;
+    ParticleEffectPool snowEffectPool;
+    ParticleEffectPool fireworksEffectPool;
     Array<ParticleEffectPool.PooledEffect> effects;
     private int width, height;
     private boolean running = false;
@@ -22,29 +24,46 @@ public class ParticleEffects {
         TextureAtlas particleAtlas = new TextureAtlas(Gdx.files.internal("pfx/snow.atlas"));
         snowEffect = new ParticleEffect();
         snowEffect.load(Gdx.files.internal("pfx/snow.p"), particleAtlas);
-        effectPool = new ParticleEffectPool(snowEffect, 1, 20);
-        running = false;
+        snowEffectPool = new ParticleEffectPool(snowEffect, 1, 20);
 
+        fireworksEffect = new ParticleEffect();
+        fireworksEffect.load(Gdx.files.internal("pfx/fireworks.p"), particleAtlas);
+        fireworksEffectPool = new ParticleEffectPool(fireworksEffect, 1, 20);
+
+        running = false;
     }
 
     public void resize(int width, int height){
         this.width = width;
         this.height = height;
         if(running) {
-            stop();
-            start();
+            //stop();
+            startSnow();    // restart the snow on resize because it depends on window width
         }
     }
 
-    public void start(){
+    public void startSnow(){
         for(int x = 0; x < width; x+= 200) {
-            ParticleEffectPool.PooledEffect effect = effectPool.obtain();
+            ParticleEffectPool.PooledEffect effect = snowEffectPool.obtain();
             effect.setPosition(x, height);
             effect.scaleEffect(0.7f, 0.7f * height / (float) width, 0.7f);
             effect.start();
             effects.add(effect);
         }
         running = true;
+    }
+
+    public void startFireworks(float x, float y){
+        if(effects.size > 40)   // cap number of effects (they may be continuous, i.e. never ending)
+            return;
+
+        ParticleEffectPool.PooledEffect effect = fireworksEffectPool.obtain();
+        effect.setPosition(x, y); //width/2f, height/2f);
+        effect.scaleEffect(0.3f, 0.3f * height / (float) width, 0.3f);
+        effect.start();
+        effects.add(effect);
+
+        System.out.println("number of particle effects: "+effects.size);
     }
 
     public void draw(SpriteBatch batch, float deltaTime){

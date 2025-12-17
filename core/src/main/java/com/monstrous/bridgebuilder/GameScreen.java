@@ -46,6 +46,8 @@ public class GameScreen extends StdScreenAdapter {
     private final Vector2 correctedPos = new Vector2();
     public boolean runPhysics = false;
     public boolean gameOver = false;
+    public boolean showingFireworks = false;
+    public float fireworksTimer = .5f;
     public BuildMaterial buildMaterial = BuildMaterial.DECK;
     public float zoom = 1;
     public boolean showPhysics = false;
@@ -373,10 +375,17 @@ public class GameScreen extends StdScreenAdapter {
         world.save(fh);
         runPhysics = true;
         addVehicle();
-        particleEffects.start();
+        particleEffects.startSnow();
         Sounds.playJingle();
         world.floor.setShatter(false);
         gui.setStatusLabel("Santa is rolling down the hill...");
+    }
+
+    private void launchFirework(){
+        float xx = MathUtils.random(0.0f, 1.0f);
+        float yy = MathUtils.random(0.6f, 1.2f);
+        particleEffects.startFireworks(xx*Gdx.graphics.getWidth(), yy*Gdx.graphics.getHeight());   // screen coordinates
+        Sounds.playFireworks();
     }
 
     public void stopSimulation(){
@@ -418,6 +427,7 @@ public class GameScreen extends StdScreenAdapter {
 
     public void setBuildMaterial( BuildMaterial mat ){
         buildMaterial = mat;
+
     }
 
     @Override
@@ -457,15 +467,19 @@ public class GameScreen extends StdScreenAdapter {
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
             setBuildMaterial(BuildMaterial.DECK);
+            gui.setBuildMaterial(BuildMaterial.DECK);
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
             setBuildMaterial(BuildMaterial.WOOD);
+            gui.setBuildMaterial(BuildMaterial.WOOD);
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
             setBuildMaterial(BuildMaterial.STEEL);
+            gui.setBuildMaterial(BuildMaterial.STEEL);
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){
             setBuildMaterial(BuildMaterial.CABLE);
+            gui.setBuildMaterial(BuildMaterial.CABLE);
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.D)){
             showPhysics = !showPhysics;
@@ -483,6 +497,14 @@ public class GameScreen extends StdScreenAdapter {
                 physics.updateVehiclePosition(world.vehicle, !gameOver);
             }
             physics.updateFlagPositions(world.flag);
+
+            if(showingFireworks){
+                fireworksTimer -= delta;
+                if(fireworksTimer < 0){
+                    launchFirework();
+                    fireworksTimer = MathUtils.random(0.5f, 2.0f);
+                }
+            }
         }
 
 
@@ -501,10 +523,15 @@ public class GameScreen extends StdScreenAdapter {
             ScreenUtils.clear(Color.TEAL);
             renderGrid();
         }
+
+        pfxSpriteBatch.begin();
+        particleEffects.draw(pfxSpriteBatch, delta);
+        pfxSpriteBatch.end();
+
+
+
         spriteBatch.setProjectionMatrix(camera.combined);
-
         spriteBatch.begin();
-
 
         if(world.vehicle != null)
             world.vehicle.sprite.draw(spriteBatch);
@@ -520,9 +547,7 @@ public class GameScreen extends StdScreenAdapter {
 
         spriteBatch.end();
 
-        pfxSpriteBatch.begin();
-        particleEffects.draw(pfxSpriteBatch, delta);
-        pfxSpriteBatch.end();
+
 
 
         if(runPhysics){
@@ -700,8 +725,10 @@ public class GameScreen extends StdScreenAdapter {
         //System.out.println("Flag reached");
         gameOver = true;
         gui.showWin();
-        if(levelNumber == maxLevelNumber)
+        if(levelNumber == maxLevelNumber) {
             gui.setStatusLabel("You have completed all levels.");
+            showingFireworks = true;
+        }
         else
             gui.setStatusLabel("Santa made it safely across.");
         Sounds.playFanfare();
