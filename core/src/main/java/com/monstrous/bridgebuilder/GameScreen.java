@@ -376,6 +376,7 @@ public class GameScreen extends StdScreenAdapter {
         runPhysics = true;
         addVehicle();
         particleEffects.startSnow();
+        showingFireworks = false;
         Sounds.playJingle();
         world.floor.setShatter(false);
         gui.setStatusLabel("Santa is rolling down the hill...");
@@ -383,7 +384,7 @@ public class GameScreen extends StdScreenAdapter {
 
     private void launchFirework(){
         float xx = MathUtils.random(0.0f, 1.0f);
-        float yy = MathUtils.random(0.6f, 1.2f);
+        float yy = MathUtils.random(0.5f, 1.2f);
         particleEffects.startFireworks(xx*Gdx.graphics.getWidth(), yy*Gdx.graphics.getHeight());   // screen coordinates
         Sounds.playFireworks();
     }
